@@ -1,0 +1,19 @@
+<form [formGroup]="contactForm" (ngSubmit)="send()" class="contact-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" rows="4" required></textarea>
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit">Envoyer</button>
+  </form>
+  

@@ -1,0 +1,31 @@
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  button[type="submit"] {
+    align-self: flex-end;
+  }
+  
+  @media (max-width: 600px) {
+    .contact-form {
+      padding: 16px;
+      gap: 12px;
+    }
+  
+    button[type="submit"] {
+      width: 100%;
+      align-self: center;
+    }
+  }

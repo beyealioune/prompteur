@@ -2,24 +2,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 20px;
+    gap: 16px;
+    padding: 24px;
     position: relative;
+    background-color: #f2f4ff;
+    min-height: 100vh;
+  }
+  
+  .video-card {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
   
   video {
     width: 100%;
-    max-width: 600px;
     height: auto;
-    background: black;
+    background-color: #000;
+    border-radius: 0;
   }
   
   .texte-overlay {
     position: absolute;
-    top: 40px;
+    top: 50px;
     width: 100%;
     max-width: 600px;
-    height: 150px;
+    height: 140px;
     overflow: hidden;
     pointer-events: none;
   }
@@ -28,8 +38,9 @@
     position: absolute;
     white-space: pre-line;
     font-size: 24px;
-    color: white;
-    text-shadow: 1px 1px 2px black;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 6px rgba(60, 0, 120, 0.7);
+    animation: scroll-up 20s linear infinite;
   }
   
   .trait {
@@ -37,7 +48,7 @@
     top: 50%;
     width: 100%;
     height: 2px;
-    background: red;
+    background: #7b61ff;
     z-index: 10;
   }
   
@@ -50,26 +61,55 @@
     }
   }
   
-  textarea {
+  mat-form-field.full-width {
     width: 100%;
     max-width: 600px;
-    height: 100px;
+    background: white;
+    border-radius: 8px;
+  }
+  
+  textarea.mat-input-element {
     font-size: 16px;
+    color: #333;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px;
   }
   
   .actions button {
-    margin: 5px;
     padding: 10px 20px;
     font-size: 16px;
   }
+  
   .countdown {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 72px;
+    font-size: 64px;
     font-weight: bold;
-    color: red;
+    color: #7b61ff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     z-index: 20;
+  }
+  
+  @media (max-width: 600px) {
+    .container {
+      padding: 16px;
+    }
+  
+    .texte {
+      font-size: 20px;
+    }
+  
+    .countdown {
+      font-size: 48px;
+    }
   }
   

@@ -1,0 +1,16 @@
+<nav class="bottom-navbar">
+    <button mat-button routerLink="/prompteur" routerLinkActive="active" (click)="setActive('video')">
+      <mat-icon>videocam</mat-icon>
+      <span>Vidéo</span>
+    </button>
+    <button mat-button routerLink="/contact" routerLinkActive="active" (click)="setActive('contact')">
+      <mat-icon routerLink="/contact" routerLinkActive="active" >contacts</mat-icon>
+      <span>Contact</span>
+    </button>
+    <button mat-button routerLink="/profil" routerLinkActive="active" (click)="setActive('profile')">
+      <mat-icon>person</mat-icon>
+      <span>Profil</span>
+    </button>
+  </nav>
+  
+  
