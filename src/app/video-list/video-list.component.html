@@ -1,0 +1,18 @@
+<div class="video-list">
+    <h2 class="mat-headline">📼 Vidéos enregistrées</h2>
+    <div *ngFor="let video of videos" class="video-card mat-elevation-z4">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ video.fileName }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <video width="100%" height="250" controls [src]="getSafeUrl(video.fileName)"></video>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="download(video.fileName)">
+            ⬇️ Télécharger
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
