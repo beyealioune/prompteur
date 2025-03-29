@@ -1,11 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'; // ✅ import manquant ici
+
 @Injectable({ providedIn: 'root' })
 export class VideoService {
   private baseUrl = 'http://localhost:8080/api/videos';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private sanitizer: DomSanitizer) {}
+
+  getStreamBlob(fileName: string): Observable<SafeResourceUrl> {
+    return this.http.get(`${this.baseUrl}/stream/${fileName}`, { responseType: 'blob' }).pipe(
+      map((blob: Blob) => {
+        const url = URL.createObjectURL(blob);
+        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      })
+    );
+  }
 
   uploadVideo(blob: Blob): Observable<string> {
     const formData = new FormData();
@@ -26,4 +38,3 @@ export class VideoService {
     return `${this.baseUrl}/stream/${fileName}`;
   }
 }
-

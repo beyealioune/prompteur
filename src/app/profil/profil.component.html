@@ -1,1 +1,50 @@
-<p>profil works!</p>
+<div class="profile-wrapper">
+    <div class="profile-container">
+      <h2 class="text-center mb-4">Mon profil</h2>
+  
+      <!-- Photo -->
+      <img
+        [src]="user.photoFilename ? '/assets/profiles/' + user.photoFilename : '/assets/default-profile.jpg'"
+        (error)="onImageError($event)"
+        class="profile-picture"
+        alt="Photo de profil"
+      />
+  
+      <!-- Upload -->
+      <div class="upload-wrapper mt-3 mb-4">
+        <input type="file" (change)="onFileSelected($event)" class="form-control" />
+        <button class="btn btn-secondary w-100 mt-2" (click)="uploadPhoto()">Uploader</button>
+      </div>
+  
+      <!-- Form Profil -->
+      <form class="w-100">
+        <div class="form-group mb-3">
+          <label class="form-label">Nom d'utilisateur</label>
+          <input type="text" class="form-control" [(ngModel)]="user.username" name="username" />
+        </div>
+  
+        <div class="form-group mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [(ngModel)]="user.email" name="email" />
+        </div>
+  
+        <div class="form-group mb-4">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
+        </div>
+  
+        <button class="btn btn-primary w-100" type="button" (click)="updateProfile()">Sauvegarder</button>
+      </form>
+  
+      <hr class="my-4 w-100" />
+  
+      <form class="w-100">
+        <div class="form-group mb-3">
+          <label class="form-label">Nouveau mot de passe</label>
+          <input type="password" class="form-control" [(ngModel)]="newPassword" name="password" />
+        </div>
+        <button class="btn btn-danger w-100" type="button" (click)="updatePassword()">Changer le mot de passe</button>
+      </form>
+    </div>
+  </div>
+  

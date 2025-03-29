@@ -1,16 +1,47 @@
-<nav class="bottom-navbar">
-    <button mat-button routerLink="/prompteur" routerLinkActive="active" (click)="setActive('video')">
-      <mat-icon>videocam</mat-icon>
-      <span>Vidéo</span>
-    </button>
-    <button mat-button routerLink="/contact" routerLinkActive="active" (click)="setActive('contact')">
-      <mat-icon routerLink="/contact" routerLinkActive="active" >contacts</mat-icon>
-      <span>Contact</span>
-    </button>
-    <button mat-button routerLink="/profil" routerLinkActive="active" (click)="setActive('profile')">
-      <mat-icon>person</mat-icon>
-      <span>Profil</span>
-    </button>
-  </nav>
+<nav class="navbar">
+    <div
+      class="nav-item"
+      [class.selected]="activeIndex === 1"
+      (click)="setActive(1, '/prompteur')"
+    >
+      <i class="icon-item fa-solid fa-house"></i>
+      <span>Accueil</span>
+    </div>
   
+    <div
+      class="nav-item"
+      [class.selected]="activeIndex === 2"
+      (click)="setActive(2, '/videolist')"
+    >
+      <i class="icon-item fa-solid fa-video"></i>
+      <span>Vidéo</span>
+    </div>
+  
+    <div
+      class="nav-item"
+      [class.selected]="activeIndex === 3"
+      (click)="setActive(3, '/contact')"
+    >
+      <i class="icon-item fa-solid fa-message"></i>
+      <span>Contact</span>
+    </div>
+  
+    <div
+      class="nav-item"
+      [class.selected]="activeIndex === 4"
+      (click)="setActive(4, '/profil')"
+    >
+      <i class="icon-item fa-solid fa-user"></i>
+      <span>Profil</span>
+    </div>
+  
+    <div class="bullet" [style.--bullet-index]="activeIndex">
+      <div class="bullet-inside">
+        <i
+          class="icon-item fa-solid"
+          [ngClass]="getBulletIconClass(activeIndex)"
+        ></i>
+      </div>
+    </div>
+  </nav>
   

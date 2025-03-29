@@ -19,12 +19,24 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class VideoListComponent implements OnInit {
   videos: any[] = [];
+  videoUrls: { [key: string]: SafeResourceUrl } = {};
+
 
   constructor(private videoService: VideoService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
-    this.videoService.getAllVideos().subscribe(data => this.videos = data);
+    this.videoService.getAllVideos().subscribe(videos => {
+      this.videos = videos;
+  
+      // Charge les vidéos une par une avec token sécurisé
+      videos.forEach(video => {
+        this.videoService.getStreamBlob(video.fileName).subscribe(url => {
+          this.videoUrls[video.fileName] = url;
+        });
+      });
+    });
   }
+  
 
   getSafeUrl(fileName: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.videoService.streamVideoUrl(fileName));

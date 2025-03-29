@@ -5,6 +5,7 @@ import { AccueilComponent } from './accueil/accueil.component';
 import { VideoListComponent } from './video-list/video-list.component';
 import { ContactComponent } from './contact/contact.component';
 import { ProfilComponent } from './profil/profil.component';
+import { ConnexionComponent } from './connexion/connexion.component';
 
 export const routes: Routes = [
     {
@@ -12,6 +13,12 @@ export const routes: Routes = [
       },
       {
         path: 'contact',component: ContactComponent,
+      },
+      {
+        path: 'connexion',component: ConnexionComponent,
+      },
+      {
+        path: 'register',component: RegisterComponent,
       },
       {
         path: 'videolist',component: VideoListComponent,

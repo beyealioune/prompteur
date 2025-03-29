@@ -29,6 +29,7 @@ export class PrompteurComponent {
   stream: any;
   vitesse: number = 20;
   countdown: number = 0;
+  isFullscreen = false;
 
   constructor(private videoService: VideoService) {}
 
@@ -77,15 +78,19 @@ export class PrompteurComponent {
     }, 1000);
   }
   
-  
-  toggleFullscreen() {
-    const elem = document.documentElement;
-    if (!document.fullscreenElement) {
-      elem.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
+
+toggleFullscreen(): void {
+  const elem = document.documentElement;
+
+  if (!document.fullscreenElement) {
+    elem.requestFullscreen();
+    this.isFullscreen = true;
+  } else {
+    document.exitFullscreen();
+    this.isFullscreen = false;
   }
+}
+
   
   stopRecording() {
     this.mediaRecorder.stop();
