@@ -6,6 +6,7 @@ import { VideoListComponent } from './video-list/video-list.component';
 import { ContactComponent } from './contact/contact.component';
 import { ProfilComponent } from './profil/profil.component';
 import { ConnexionComponent } from './connexion/connexion.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 export const routes: Routes = [
     {
@@ -32,6 +33,9 @@ export const routes: Routes = [
       },
     {
         path: 'register',component: RegisterComponent,
+      },
+      {
+        path: 'forgot',component: ResetPasswordComponent,
       },
       {
         path: '',component: RegisterComponent,

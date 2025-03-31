@@ -49,13 +49,23 @@
     width: 100%;
   }
   
-  .form-control {
+  .form-control,
+  textarea.form-control {
     width: 100%;
-    padding: 8px 10px;
-    font-size: 14px;
+    padding: 10px 12px;
+    font-size: 15px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
+    resize: none;
   }
+  
+  .form-control:focus,
+  textarea.form-control:focus {
+    border-color: rgb(4, 0, 65);
+    outline: none;
+  }
+  
   
   .form-label {
     font-weight: 500;
@@ -67,7 +77,7 @@
   }
   
   .btn {
-    padding: 10px;
+    padding: 12px;
     font-size: 15px;
     border: none;
     border-radius: 6px;
@@ -75,11 +85,11 @@
     color: white;
     cursor: pointer;
     transition: background 0.3s ease;
-    display: block;
-    margin: 10px auto 0 auto;
     width: 100%;
-    max-width: 300px;
+    max-width: 100%;
+    margin-top: 10px;
   }
+  
   
   .btn:hover {
     background-color: #2d2d6d;
@@ -103,5 +113,9 @@
     .btn {
       font-size: 14px;
     }
+  }
+  .form-group {
+    width: 100%;
+    margin-bottom: 16px;
   }
   

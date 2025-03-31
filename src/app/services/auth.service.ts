@@ -29,6 +29,8 @@ export class AuthService {
 }
 
 forgotPassword(email: string) {
+  console.log("ok");
+  
   return this.httpClient.post('http://localhost:8080/api/auth/forgot-password', { email });
 }
 

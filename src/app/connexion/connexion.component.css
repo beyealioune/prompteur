@@ -2,12 +2,15 @@ body {
   background-color: #f8f9fa;
   font-family: Arial, sans-serif;
 }
-
 .container {
-  max-width: 500px;
-  margin: 50px auto;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
+  box-sizing: border-box;
 }
+
 
 .login-container,
 .signup-container,
@@ -15,7 +18,6 @@ body {
 .forget-container {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
   padding: 50px 15px;
 }
 
@@ -48,6 +50,17 @@ h2 {
 .otp-input:focus {
   border-color: rgb(4, 0, 65);
   outline: none;
+}
+/* Corrige la structure globale des champs */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-control,
+.btn-custom {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn-custom {
@@ -106,7 +119,6 @@ a:hover {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
 @media (max-width: 480px) {
   .container {
     padding: 10px;
@@ -116,7 +128,14 @@ a:hover {
   .signup-container,
   .otp-container,
   .forget-container {
-    padding: 30px 10px;
+    padding: 30px 15px;
+  }
+
+  .login-form,
+  .signup-form,
+  .otp-form,
+  .forget-form {
+    padding: 20px;
   }
 
   .otp-input {

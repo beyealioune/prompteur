@@ -1,88 +1,98 @@
 body {
   background-color: #f8f9fa;
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-  max-width: 500px;
-  margin: 50px auto;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
-}
-
-
-
-@media (max-width: 480px) {
-  .custom-logo {
-    max-height: 60px;
-    margin-bottom: 15px;
-  }
+  box-sizing: border-box;
 }
 
 .signup-container {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
-  padding: 30px 15px;
 }
 
 .signup-form {
   background-color: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 25px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .signup-form h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  font-size: 24px;
 }
 
 .form-control {
-  margin-bottom: 8px;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .form-control:focus {
-  border-color: rgb(4, 0, 65);
+  border-color: #00124d;
   outline: none;
 }
 
 .btn-custom {
   width: 100%;
-  padding: 10px;
-  background-color: rgb(4, 0, 65);
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #00124d;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .btn-custom:hover {
-  background-color: rgb(4, 0, 65);
+  background-color: #0a1d75;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid #00124d;
+  color: #00124d;
+}
+
+.btn-secondary:hover {
+  background-color: #00124d;
+  color: white;
 }
 
 .text-danger {
   font-size: 13px;
+  margin-top: 4px;
 }
 
+/* Mobile responsive */
 @media (max-width: 480px) {
-  .container {
-    padding: 10px;
+  .signup-form {
+    padding: 20px 15px;
   }
 
   .form-control {
-    font-size: 14px;
+    font-size: 15px;
+    padding: 10px;
   }
 
   .btn-custom {
-    font-size: 14px;
-    margin-top: 12px;
+    font-size: 15px;
+    padding: 10px;
   }
-
-  
 }

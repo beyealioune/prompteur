@@ -61,11 +61,26 @@ export class ConnexionComponent implements OnInit {
     }
   }
 
-  onForgotPassword(): void {
-    this.authService.forgotPassword(this.forgotEmail).subscribe(() => {
-      this.emailSent = true;
+  onForgotPassword(event?: Event): void {
+    if (event) event.preventDefault(); // 👈 bloque l'effet par défaut du submit
+  
+    console.log("Appel de onForgotPassword() avec :", this.forgotEmail);
+  
+    this.authService.forgotPassword(this.forgotEmail).subscribe({
+      next: () => {
+        console.log("Réinitialisation envoyée !");
+        this.emailSent = true;
+      },
+      error: (err) => {
+        console.error("Erreur lors de la demande de réinitialisation :", err);
+      }
     });
   }
+  
+  switchView(view: 'login' | 'register' | 'forgot' | 'otp') {
+    this.currentView = view;
+  }
+  
 
   onVerifyOTP(): void {
     const code = this.otp.join('');
