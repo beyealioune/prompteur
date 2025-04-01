@@ -6,13 +6,12 @@ import { LoginRequest } from '../models/loginRequest';
 import { environment } from '../environments/environment';
 import { AuthSuccess } from '../models/authSuccess';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private pathService = environment.baseUrl + 'auth';
+  private pathService = environment.apiUrl + '/api/auth'; // Ajoute le /api ici
 
   constructor(private httpClient: HttpClient) { }
 
@@ -24,22 +23,19 @@ export class AuthService {
     return this.httpClient.post<AuthSuccess>(`${this.pathService}/login`, loginRequest);
   }
 
- public me(): Observable<any> {
-  return this.httpClient.get<any>("http://localhost:8080/api/auth/me");
-}
+  public me(): Observable<any> {
+    return this.httpClient.get<any>(`${this.pathService}/me`);
+  }
 
-forgotPassword(email: string) {
-  console.log("ok");
-  
-  return this.httpClient.post('http://localhost:8080/api/auth/forgot-password', { email });
-}
+  forgotPassword(email: string) {
+    return this.httpClient.post(`${this.pathService}/forgot-password`, { email });
+  }
 
-resetPassword(token: string, password: string) {
-  return this.httpClient.post('http://localhost:8080/api/auth/reset-password', {
-    token,
-    password
-  });
-}
-
+  resetPassword(token: string, password: string) {
+    return this.httpClient.post(`${this.pathService}/reset-password`, {
+      token,
+      password
+    });
+  }
 
 }

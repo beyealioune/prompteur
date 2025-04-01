@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
@@ -14,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [FormsModule,    MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule,MatIconModule],
+    MatCardModule,MatIconModule,CommonModule],
   templateUrl: './prompteur.component.html',
   styleUrl: './prompteur.component.css'
 })

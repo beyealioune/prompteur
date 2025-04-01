@@ -3,15 +3,17 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'; // ✅ import manquant ici
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class VideoService {
-  private baseUrl = 'http://localhost:8080/api/videos';
+    private pathService = environment.apiUrl + 'videos';
+  
 
   constructor(private http: HttpClient, private sanitizer: DomSanitizer) {}
 
   getStreamBlob(fileName: string): Observable<SafeResourceUrl> {
-    return this.http.get(`${this.baseUrl}/stream/${fileName}`, { responseType: 'blob' }).pipe(
+    return this.http.get(`${this.pathService}/stream/${fileName}`, { responseType: 'blob' }).pipe(
       map((blob: Blob) => {
         const url = URL.createObjectURL(blob);
         return this.sanitizer.bypassSecurityTrustResourceUrl(url);
@@ -23,18 +25,18 @@ export class VideoService {
     const formData = new FormData();
     const file = new File([blob], 'video.webm', { type: 'video/webm' });
     formData.append('file', file);
-    return this.http.post(`${this.baseUrl}/upload`, formData, { responseType: 'text' });
+    return this.http.post(`${this.pathService}/upload`, formData, { responseType: 'text' });
   }
 
   getAllVideos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/all`);
+    return this.http.get<any[]>(`${this.pathService}/all`);
   }
 
   downloadVideo(fileName: string): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/download/${fileName}`, { responseType: 'blob' });
+    return this.http.get(`${this.pathService}/download/${fileName}`, { responseType: 'blob' });
   }
 
   streamVideoUrl(fileName: string): string {
-    return `${this.baseUrl}/stream/${fileName}`;
+    return `${this.pathService}/stream/${fileName}`;
   }
 }
