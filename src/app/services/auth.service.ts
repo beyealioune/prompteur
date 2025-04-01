@@ -4,7 +4,7 @@ import { RegisterRequest } from '../models/registerRequest';
 import { Observable } from 'rxjs';
 import { LoginRequest } from '../models/loginRequest';
 import { AuthSuccess } from '../models/authSuccess';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
