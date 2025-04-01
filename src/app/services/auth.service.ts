@@ -11,7 +11,7 @@ import { AuthSuccess } from '../models/authSuccess';
 })
 export class AuthService {
 
-  private pathService = environment.apiUrl + '/api/auth'; // Ajoute le /api ici
+  private pathService = environment.apiUrl + 'auth'; 
 
   constructor(private httpClient: HttpClient) { }
 
