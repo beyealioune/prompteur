@@ -7,18 +7,27 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   const auth = inject(AuthService);
   const token = localStorage.getItem('token');
 
-  if (!token) { 
-    return next(req)
+  // 👉 Ne pas ajouter le token pour les routes publiques
+  if (
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
+    req.url.includes('/auth/forgot-password') ||
+    req.url.includes('/auth/reset-password')
+  ) {
+    return next(req);
   }
-console.log('test token',token);
+
+  if (!token) {
+    return next(req);
+  }
+
+  console.log('test token', token);
 
   const headers = new HttpHeaders({
-    Authorization: "Bearer "+ token
-  })
+    Authorization: 'Bearer ' + token
+  });
 
-  const newReq = req.clone({
-    headers
-  })
+  const newReq = req.clone({ headers });
 
-  return next(newReq)
+  return next(newReq);
 }
