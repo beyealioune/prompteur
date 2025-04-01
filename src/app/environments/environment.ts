@@ -6,6 +6,7 @@ export const environment = {
   apiUrl: 'http://localhost:8080/api/',
   production: false
 };
+console.log(">>> ENV DEV");
 
 /*
  * For easier debugging in development mode, you can import the following file

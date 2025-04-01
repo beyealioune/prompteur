@@ -3,15 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { RegisterRequest } from '../models/registerRequest';
 import { Observable } from 'rxjs';
 import { LoginRequest } from '../models/loginRequest';
-import { environment } from '../environments/environment';
 import { AuthSuccess } from '../models/authSuccess';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private pathService = environment.apiUrl + 'auth'; 
+  private pathService = environment.apiUrl + 'auth'; // Ajoute le /api ici
 
   constructor(private httpClient: HttpClient) { }
 
