@@ -22,6 +22,8 @@ export class AppComponent {
     this.pingService.ping().subscribe({
       next: (res) => this.message = res,
       error: (err) => this.message = 'Erreur : ' + err.status
-    });
+    } );
+    console.log(this.message);
+
   }
 }

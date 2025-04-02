@@ -9,6 +9,6 @@ export class PingService {
   constructor(private http: HttpClient) {}
 
   ping() {
-    return this.http.get(`${environment.apiUrl}ping`, { responseType: 'text' });
+    return this.http.get(`https://prompteur-render.onrender.com/ping`, { responseType: 'text' });
   }
 }
