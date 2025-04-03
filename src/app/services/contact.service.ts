@@ -12,6 +12,8 @@ export class ContactService {
 
   constructor(private http: HttpClient) {}
 
-  sendMessage(data: { name: string; email: string; message: string }): Observable<void> {
-    return this.http.post<void>(this.pathService, data);
-  }}
+  sendMessage(data: { name: string; email: string; message: string }): Observable<String> {
+    return this.http.post<string>(this.pathService, data, {
+      responseType: 'text' as 'json'  
+    });
+      }}

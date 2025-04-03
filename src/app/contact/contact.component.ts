@@ -32,10 +32,25 @@ export class ContactComponent {
 
   send() {
     if (this.contactForm.valid) {
-      this.contactService.sendMessage(this.contactForm.value).subscribe(() => {
-        this.snackBar.open('✅ Message envoyé avec succès !', 'Fermer', { duration: 3000 });
-        this.contactForm.reset();
+      this.contactService.sendMessage(this.contactForm.value).subscribe({
+        next: (message) => {
+          // Affiche le message renvoyé par le backend (ex: "Message envoyé !")
+          this.snackBar.open('✅ ' + message, 'Fermer', { duration: 3000 });
+          this.contactForm.reset({
+            name: '',
+            email: '',
+            message: ''
+          });
+          this.contactForm.markAsPristine();
+this.contactForm.markAsUntouched();
+
+                  },
+        error: (err) => {
+          console.error('Erreur d’envoi :', err);
+          this.snackBar.open('❌ Échec de l’envoi du message.', 'Fermer', { duration: 3000 });
+        }
       });
     }
   }
+  
 }
