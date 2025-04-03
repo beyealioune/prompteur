@@ -15,16 +15,16 @@ export class ProfilService {
 
 
   updateProfile(user: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/api/users/auth/me`, user);
+    return this.http.put(`${this.baseUrl}users/auth/me`, user);
   }
 
   updatePassword(password: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/api/users/auth/password`, { password });
+    return this.http.put(`${this.baseUrl}users/auth/password`, { password });
   }
 
   uploadPhoto(userId: number, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.baseUrl}/api/users/${userId}/upload-photo`, formData);
+    return this.http.post(`${this.baseUrl}users/${userId}/upload-photo`, formData);
   }
 }
