@@ -31,6 +31,8 @@ export class ProfilComponent {
     this.authService.me().subscribe((data) => {
       this.user = data;
     });
+    console.log("coucou");
+    
   }
 
  onFileSelected(event: any): void {

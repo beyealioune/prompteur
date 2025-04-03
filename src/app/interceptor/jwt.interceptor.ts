@@ -8,6 +8,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   const token = localStorage.getItem('token');
 
   // 👉 Ne pas ajouter le token pour les routes publiques
+ 
 
   console.log('test tokennnn', token);
 
