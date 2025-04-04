@@ -7,8 +7,15 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
   const auth = inject(AuthService);
   const token = localStorage.getItem('token');
 
-  // 👉 Ne pas ajouter le token pour les routes publiques
- 
+  if (
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
+    req.url.includes('/auth/forgot-password') ||
+    req.url.includes('/auth/reset-password')
+  ) {
+    return next(req);
+  }
+  
 
   console.log('test tokennnn', token);
 

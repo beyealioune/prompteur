@@ -42,7 +42,8 @@ export class ConnexionComponent implements OnInit {
       const loginData = this.loginForm.value;
       this.authService.login(loginData).subscribe({
         next: (res) => {
-          localStorage.setItem('token', res.token);
+          localStorage.setItem('token', res.token); // ⬅️ Manquait ici !
+
           this.router.navigate(['/prompteur']);
         },
         error: () => {

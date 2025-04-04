@@ -46,6 +46,8 @@ export class ProfilComponent {
   }
 
   updateProfile(): void {
+    console.log("oooooooooooo");
+    
     this.profilService.updateProfile(this.user)
       .subscribe(() => alert('Profil mis à jour !'));
   }

@@ -1,44 +1,46 @@
 <div class="container mat-elevation-z4">
-    <mat-card class="video-card">
-      <video #videoElement autoplay muted></video>
-      <div class="texte-overlay">
-        <div class="trait"></div>
-        <div class="texte" #texteElement>
-          {{ texte }}
-        </div>
+  <mat-card class="video-card">
+    <video #videoElement autoplay muted></video>
+    <div class="texte-overlay">
+      <div class="trait"></div>
+      <div class="texte" #texteElement [class.scrolling]="isScrolling">
+        {{ texte }}
       </div>
-    </mat-card>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Texte du prompteur</mat-label>
-      <textarea
-        matInput
-        [(ngModel)]="texte"
-        placeholder="Entrez votre texte ici..."
-        rows="4">
-      </textarea>
-    </mat-form-field>
-  
-    <div class="actions">
-      <button mat-raised-button color="primary" (click)="startCamera()">📷 Démarrer caméra</button>
-  
-      <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-  
-      <button mat-raised-button color="accent" (click)="startRecording()" [disabled]="isRecording">
-        🎬 Démarrer
-      </button>
-  
-      <button mat-raised-button color="warn" (click)="stopRecording()" [disabled]="!isRecording">
-        🛑 Arrêter
-      </button>
-      <mat-icon
+    </div>
+    <div *ngIf="isRecording" class="timer">
+      ⏱️ {{ recordingTime }}s
+    </div>
+  </mat-card>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Texte du prompteur</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="texte"
+      (ngModelChange)="scrollTexte()"
+      placeholder="Entrez votre texte ici..."
+      rows="4">
+    </textarea>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="startCamera()">📷 Démarrer caméra</button>
+
+    <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
+
+    <button mat-raised-button color="accent" (click)="startRecording()" [disabled]="isRecording">
+      🎬 Démarrer
+    </button>
+
+    <button mat-raised-button color="warn" (click)="stopRecording()" [disabled]="!isRecording">
+      🛑 Arrêter
+    </button>
+
+    <mat-icon
       class="fullscreen-icon"
       (click)="toggleFullscreen()"
       matTooltip="Plein écran">
       fullscreen
     </mat-icon>
-    
-
-    </div>
   </div>
-  
+</div>

@@ -25,6 +25,8 @@ export class VideoService {
     const formData = new FormData();
     const file = new File([blob], 'video.webm', { type: 'video/webm' });
     formData.append('file', file);
+    console.log('Token used:', localStorage.getItem('token'));
+
     return this.http.post(`${this.pathService}/upload`, formData, { responseType: 'text' });
   }
 

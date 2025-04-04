@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RegisterRequest } from '../models/registerRequest';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { LoginRequest } from '../models/loginRequest';
 import { AuthSuccess } from '../models/authSuccess';
 import { environment } from '../../environments/environment';
@@ -16,11 +16,22 @@ export class AuthService {
   constructor(private httpClient: HttpClient) { }
 
   public register(registerRequest: RegisterRequest): Observable<AuthSuccess> {
-    return this.httpClient.post<AuthSuccess>(`${this.pathService}/register`, registerRequest);
+    return this.httpClient.post<AuthSuccess>(`${this.pathService}/register`, registerRequest).pipe(
+      tap((res: AuthSuccess) => {
+        localStorage.setItem('token', res.token);
+      })
+    );
   }
 
   public login(loginRequest: LoginRequest): Observable<AuthSuccess> {
-    return this.httpClient.post<AuthSuccess>(`${this.pathService}/login`, loginRequest);
+    
+    return this.httpClient.post<AuthSuccess>(`${this.pathService}/login`, loginRequest).pipe(
+      tap((res: AuthSuccess) => {
+        localStorage.setItem('token', res.token);
+        console.log("token : ", res.token);
+
+      })
+    );
   }
 
   public me(): Observable<any> {
@@ -37,5 +48,4 @@ export class AuthService {
       password
     });
   }
-
 }
