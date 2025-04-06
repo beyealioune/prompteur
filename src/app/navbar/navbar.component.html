@@ -1,47 +1,49 @@
 <nav class="navbar">
-    <div
-      class="nav-item"
-      [class.selected]="activeIndex === 1"
-      (click)="setActive(1, '/prompteur')"
-    >
-      <i class="icon-item fa-solid fa-house"></i>
-      <span>Accueil</span>
+  <div
+    class="nav-item"
+    [class.selected]="activeIndex === 1"
+    (click)="setActive(1, '/prompteur')"
+    *ngIf="sessionService.isLogged">
+    <i class="icon-item fa-solid fa-house"></i>
+    <span>Accueil</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.selected]="activeIndex === 2"
+    (click)="setActive(2, '/videolist')"
+    *ngIf="sessionService.isLogged">
+    <i class="icon-item fa-solid fa-video"></i>
+    <span>Vidéo</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.selected]="activeIndex === 3"
+    (click)="setActive(3, '/contact')"
+    *ngIf="sessionService.isLogged">
+    <i class="icon-item fa-solid fa-message"></i>
+    <span>Contact</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.selected]="activeIndex === 4"
+    (click)="setActive(4, '/profil')"
+    *ngIf="sessionService.isLogged">
+    <i class="icon-item fa-solid fa-user"></i>
+    <span>Profil</span>
+  </div>
+  <div
+  class="nav-item"
+  (click)="handleAuthAction()" >
+  <i *ngIf="sessionService.isLogged"  class="icon-item fa-solid" [ngClass]="sessionService.isLogged ? 'fa-right-from-bracket' : 'fa-right-to-bracket'"></i>
+  <span *ngIf="sessionService.isLogged">{{ sessionService.isLogged ? 'Déconnexion' : 'Connexion' }}</span>
+</div>
+
+  <div class="bullet" [style.--bullet-index]="activeIndex">
+    <div class="bullet-inside">
+      <i class="icon-item fa-solid" [ngClass]="getBulletIconClass(activeIndex)"></i>
     </div>
-  
-    <div
-      class="nav-item"
-      [class.selected]="activeIndex === 2"
-      (click)="setActive(2, '/videolist')"
-    >
-      <i class="icon-item fa-solid fa-video"></i>
-      <span>Vidéo</span>
-    </div>
-  
-    <div
-      class="nav-item"
-      [class.selected]="activeIndex === 3"
-      (click)="setActive(3, '/contact')"
-    >
-      <i class="icon-item fa-solid fa-message"></i>
-      <span>Contact</span>
-    </div>
-  
-    <div
-      class="nav-item"
-      [class.selected]="activeIndex === 4"
-      (click)="setActive(4, '/profil')"
-    >
-      <i class="icon-item fa-solid fa-user"></i>
-      <span>Profil</span>
-    </div>
-  
-    <div class="bullet" [style.--bullet-index]="activeIndex">
-      <div class="bullet-inside">
-        <i
-          class="icon-item fa-solid"
-          [ngClass]="getBulletIconClass(activeIndex)"
-        ></i>
-      </div>
-    </div>
-  </nav>
-  
+  </div>
+</nav>

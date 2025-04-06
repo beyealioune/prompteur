@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'app-connexion',
@@ -22,7 +23,7 @@ export class ConnexionComponent implements OnInit {
   emailSent = false;
   currentView: 'login' | 'register' | 'forgot' | 'otp' = 'login';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router,private sessionService : SessionService) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -42,14 +43,23 @@ export class ConnexionComponent implements OnInit {
       const loginData = this.loginForm.value;
       this.authService.login(loginData).subscribe({
         next: (res) => {
-          localStorage.setItem('token', res.token); // ⬅️ Manquait ici !
-
-          this.router.navigate(['/prompteur']);
+          localStorage.setItem('token', res.token);
+      
+          this.authService.me().subscribe({
+            next: (user) => {
+              this.sessionService.logIn(user); 
+              this.router.navigate(['/prompteur']);
+            },
+            error: () => {
+              this.onError = true;
+            }
+          });
         },
         error: () => {
           this.onError = true;
         }
       });
+      
     }
   }
 

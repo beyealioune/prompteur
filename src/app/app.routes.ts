@@ -7,37 +7,31 @@ import { ContactComponent } from './contact/contact.component';
 import { ProfilComponent } from './profil/profil.component';
 import { ConnexionComponent } from './connexion/connexion.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { AuthGuard } from './guard/auth.guard';
+import { UnauthGuard } from './guard/unauth.guard';
+
 
 export const routes: Routes = [
-    {
-        path: 'accueil',component: AccueilComponent,
-      },
-      {
-        path: 'contact',component: ContactComponent,
-      },
-      {
-        path: 'connexion',component: ConnexionComponent,
-      },
-      {
-        path: 'register',component: RegisterComponent,
-      },
-      {
-        path: 'videolist',component: VideoListComponent,
-      },
-      {
-        path: 'profil',component: ProfilComponent,
-      },
-      
-    {
-        path: 'prompteur',component: PrompteurComponent,
-      },
-    {
-        path: 'register',component: RegisterComponent,
-      },
-      {
-        path: 'forgot',component: ResetPasswordComponent,
-      },
-      {
-        path: '',component: RegisterComponent,
-      }
+  { path: 'accueil', component: AccueilComponent, canActivate: [AuthGuard] },
+  { path: 'contact', component: ContactComponent, canActivate: [AuthGuard] },
+  { path: 'videolist', component: VideoListComponent, canActivate: [AuthGuard] },
+  { path: 'profil', component: ProfilComponent, canActivate: [AuthGuard] },
+  { path: 'prompteur', component: PrompteurComponent, canActivate: [AuthGuard] },
+  {
+    path: 'connexion',
+    component: ConnexionComponent,
+    canActivate: [UnauthGuard]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [UnauthGuard]
+  },
+  {
+    path: 'forgot',
+    component: ResetPasswordComponent,
+    canActivate: [UnauthGuard]
+  },
+  { path: '', component: RegisterComponent },
 ];
+
