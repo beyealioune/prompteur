@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SessionService } from '../services/session.service';
+import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 
 @Component({
   selector: 'app-connexion',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaymentPopupComponent],
   templateUrl: './connexion.component.html',
   styleUrls: ['./connexion.component.scss']
 })
@@ -22,6 +23,7 @@ export class ConnexionComponent implements OnInit {
   onError = false;
   emailSent = false;
   currentView: 'login' | 'register' | 'forgot' | 'otp' = 'login';
+
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router,private sessionService : SessionService) {}
 
@@ -44,11 +46,10 @@ export class ConnexionComponent implements OnInit {
       this.authService.login(loginData).subscribe({
         next: (res) => {
           localStorage.setItem('token', res.token);
-      
           this.authService.me().subscribe({
             next: (user) => {
-              this.sessionService.logIn(user); 
-              this.router.navigate(['/prompteur']);
+              this.sessionService.logIn(user);
+              this.router.navigate(['/prompteur']); // 👈 Redirection après connexion réussie
             },
             error: () => {
               this.onError = true;
@@ -59,9 +60,10 @@ export class ConnexionComponent implements OnInit {
           this.onError = true;
         }
       });
-      
     }
   }
+  
+  
 
   onRegister(): void {
     if (this.registerForm.valid) {

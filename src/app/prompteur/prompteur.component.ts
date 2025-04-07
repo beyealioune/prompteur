@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
+import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'app-prompteur',
@@ -19,11 +21,12 @@ import { CommonModule } from '@angular/common';
     MatCardModule,
     MatIconModule,
     CommonModule,
+    PaymentPopupComponent
   ],
   templateUrl: './prompteur.component.html',
   styleUrl: './prompteur.component.css',
 })
-export class PrompteurComponent implements AfterViewInit {
+export class PrompteurComponent implements AfterViewInit, OnInit {
   @ViewChild('videoElement') videoElement!: ElementRef;
   @ViewChild('texteElement') texteElement!: ElementRef;
 
@@ -38,13 +41,23 @@ export class PrompteurComponent implements AfterViewInit {
 
   recordingTime = 0;
   timerInterval: any;
+  showPaymentPopup = false;
 
   isScrolling = true;
 
-  constructor(private videoService: VideoService) {}
+  constructor(
+    private videoService: VideoService,
+    private sessionService: SessionService
+  ) {}
+
+  ngOnInit(): void {
+    if (!this.sessionService.hasAccess()) {
+      this.showPaymentPopup = true;
+    }
+  }
 
   ngAfterViewInit() {
-    this.scrollTexte(); // ✅ lance le scroll dès l’affichage du composant
+    this.scrollTexte();
   }
 
   async startCamera() {
@@ -53,6 +66,11 @@ export class PrompteurComponent implements AfterViewInit {
   }
 
   startRecording() {
+    if (!this.sessionService.hasAccess()) {
+      this.showPaymentPopup = true;
+      return;
+    }
+
     this.countdown = 3;
 
     const interval = setInterval(() => {
@@ -100,7 +118,6 @@ export class PrompteurComponent implements AfterViewInit {
     clearInterval(this.timerInterval);
     this.mediaRecorder.stop();
     this.isRecording = false;
-    // ⛔️ ne pas stopper l’animation ici, car on veut qu'elle continue
   }
 
   toggleFullscreen(): void {

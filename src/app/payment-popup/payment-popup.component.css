@@ -1,0 +1,66 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+  
+  .popup-card {
+    background-color: #ffffff;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+  }
+  
+  .popup-card h2 {
+    margin-bottom: 12px;
+    font-size: 20px;
+    color: #00124d;
+  }
+  
+  .popup-card p {
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+  
+  .btn-custom {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #00124d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .btn-secondary {
+    background-color: transparent;
+    border: 1px solid #00124d;
+    color: #00124d;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #00124d;
+    color: white;
+  }
+  
+  .btn-close {
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  

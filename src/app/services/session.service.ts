@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -32,5 +31,18 @@ export class SessionService {
 
   private next(): void {
     this.isLoggedSubject.next(this.isLogged);
+  }
+
+  public hasAccess(): boolean {
+    if (!this.user) return false;
+    if (this.user.isPremium) return true;
+    return this.isTrialValid();
+  }
+
+  public isTrialValid(): boolean {
+    if (!this.user?.trialEnd) return false;
+    const trialEnd = new Date(this.user.trialEnd);
+    const now = new Date();
+    return now <= trialEnd;
   }
 }

@@ -1,11 +1,14 @@
 import { Availability } from "./Availability";
+// 🧾 user.ts – nouvelle version propre du modèle User côté frontend
 
 export interface User {
 	id: number;
 	username: string;
 	email: string;
-	password?: string; // Facultatif, car il n'est pas toujours nécessaire de l'envoyer côté front
-	bio?: string; // Facultatif
-	subscriptions?: Set<number>; // IDs des abonnements
-	availabilities?: Availability[]; // Disponibilités associées
+	password?: string;
+	bio?: string;
+	photoFilename?: string;
+  
+	isPremium: boolean; // 
+	trialEnd: string;   // 
   }
