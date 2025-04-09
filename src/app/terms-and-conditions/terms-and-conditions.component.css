@@ -1,0 +1,23 @@
+.terms-container {
+    position: relative;
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  @media (max-width: 768px) {
+    .terms-container {
+      font-size: 14px;
+      padding: 15px;
+    }
+  }
+
+  

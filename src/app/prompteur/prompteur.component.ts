@@ -61,6 +61,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
   }
 
   async startCamera() {
+    if (!this.sessionService.hasAccess()) {
+      this.showPaymentPopup = true;
+      return;
+    }
+  
     this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     this.videoElement.nativeElement.srcObject = this.stream;
   }

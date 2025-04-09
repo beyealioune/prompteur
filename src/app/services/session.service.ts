@@ -6,43 +6,54 @@ import { User } from '../models/user';
   providedIn: 'root'
 })
 export class SessionService {
-
-  public isLogged = false;
+  private readonly TOKEN_KEY = 'token'; // Clé unique pour le stockage
+  private isLoggedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public user: User | undefined;
 
-  private isLoggedSubject = new BehaviorSubject<boolean>(this.isLogged);
+  constructor() {
+  }
 
+  // Getter basé sur la présence du token
+  public get isLogged(): boolean {
+    return this.hasToken();
+  }
+
+  // Observable pour écouter les changements
   public $isLogged(): Observable<boolean> {
     return this.isLoggedSubject.asObservable();
   }
 
-  public logIn(user: any): void {
+  // Connexion (stocke le token + met à jour l'état)
+  public logIn(user: User, token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
     this.user = user;
-    this.isLogged = true;
-    this.next();
+    this.isLoggedSubject.next(true);
   }
 
+  // Déconnexion (supprime le token + nettoie l'état)
   public logOut(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem(this.TOKEN_KEY);
     this.user = undefined;
-    this.isLogged = false;
-    this.next();
+    this.isLoggedSubject.next(false);
   }
 
-  private next(): void {
-    this.isLoggedSubject.next(this.isLogged);
+  // Vérifie la présence du token
+  private hasToken(): boolean {
+    return !!localStorage.getItem(this.TOKEN_KEY);
   }
 
+  // Récupère le token (pour l'intercepteur)
+  public getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  // Gestion des accès premium/trial
   public hasAccess(): boolean {
     if (!this.user) return false;
-    if (this.user.isPremium) return true;
-    return this.isTrialValid();
+    return this.user.isPremium || this.isTrialValid();
   }
 
-  public isTrialValid(): boolean {
-    if (!this.user?.trialEnd) return false;
-    const trialEnd = new Date(this.user.trialEnd);
-    const now = new Date();
-    return now <= trialEnd;
+  private isTrialValid(): boolean {
+    return this.user?.trialEnd ? new Date() <= new Date(this.user.trialEnd) : false;
   }
 }

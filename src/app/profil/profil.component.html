@@ -31,6 +31,33 @@
         </div>
         <button class="btn btn-danger w-100" type="button" (click)="updatePassword()">Changer le mot de passe</button>
       </form>
+      <hr class="my-4 w-100" />
+
+<div class="form-group mb-3 text-center">
+  <label class="form-label">Mon abonnement :</label>
+  <p [ngClass]="{'text-success': user.isPremium, 'text-danger': !user.isPremium}">
+    {{ user.isPremium ? 'En cours' : 'Inactif' }}
+  </p>
+  <button 
+    class="btn btn-outline-danger"
+    *ngIf="user.isPremium"
+    (click)="cancelSubscription()"
+  >
+    Désactiver mon abonnement
+  </button>
+</div>
+
     </div>
   </div>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <ul>
+          <li><a routerLink="/terms" href="/terms">Conditions d'utilisation</a></li>
+          <li><a routerLink="/politique-confidentialite" href="/politique-confidentialite">Politique de Confidentialité</a></li>
+          <li><a routerLink="/faq" href="/faq">FAQ</a></li>
+        </ul>
+      </div>
+      </div>
+  </footer>
   

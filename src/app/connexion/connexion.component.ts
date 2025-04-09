@@ -48,7 +48,7 @@ export class ConnexionComponent implements OnInit {
           localStorage.setItem('token', res.token);
           this.authService.me().subscribe({
             next: (user) => {
-              this.sessionService.logIn(user);
+              this.sessionService.logIn(user, res.token);
               this.router.navigate(['/prompteur']); // 👈 Redirection après connexion réussie
             },
             error: () => {

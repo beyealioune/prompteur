@@ -27,4 +27,10 @@ export class ProfilService {
     formData.append('file', file);
     return this.http.post(`${this.baseUrl}users/${userId}/upload-photo`, formData);
   }
+
+  cancelSubscription(): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}users/cancel`, {});
+  }
+  
+  
 }

@@ -9,11 +9,17 @@ import { ConnexionComponent } from './connexion/connexion.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { AuthGuard } from './guard/auth.guard';
 import { UnauthGuard } from './guard/unauth.guard';
+import { TermsAndConditionsComponent } from './terms-and-conditions/terms-and-conditions.component';
+import { FaqComponent } from './faq/faq.component';
+import { PolitiqueConfidentialiteComponent } from './politique-confidentialite/politique-confidentialite.component';
 
 
 export const routes: Routes = [
   { path: 'accueil', component: AccueilComponent, canActivate: [AuthGuard] },
   { path: 'contact', component: ContactComponent, canActivate: [AuthGuard] },
+  { path: 'terms', component: TermsAndConditionsComponent },
+  { path: 'faq', component: FaqComponent },
+  { path: 'politique-confidentialite', component: PolitiqueConfidentialiteComponent },
   { path: 'videolist', component: VideoListComponent, canActivate: [AuthGuard] },
   { path: 'profil', component: ProfilComponent, canActivate: [AuthGuard] },
   { path: 'prompteur', component: PrompteurComponent, canActivate: [AuthGuard] },

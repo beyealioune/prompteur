@@ -7,11 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [FormsModule, MatCardModule,
+  imports: [ CommonModule, FormsModule, MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule],
@@ -61,4 +62,21 @@ export class ProfilComponent {
     const target = event.target as HTMLImageElement;
     target.src = '/assets/default-profile.jpg';
   }
+
+  cancelSubscription(): void {
+    if (confirm("Souhaitez-vous vraiment désactiver votre abonnement ?")) {
+      this.profilService.cancelSubscription().subscribe({
+        next: (res) => {
+          alert(res.message); // ✅ Récupère le message dynamique du backend
+          this.user.isPremium = false;
+        },
+        error: (err) => {
+          console.error("Erreur résiliation :", err);
+          alert("Une erreur est survenue lors de la résiliation.");
+        }
+      });
+    }
+  }
+  
+  
 }

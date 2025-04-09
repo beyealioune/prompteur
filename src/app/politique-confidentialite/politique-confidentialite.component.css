@@ -1,0 +1,30 @@
+.content-wrapper {
+    position: relative;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  h1 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    margin-bottom: 10px;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .close-button mat-icon {
+    font-size: 24px;
+    color: #000;
+  }
+  

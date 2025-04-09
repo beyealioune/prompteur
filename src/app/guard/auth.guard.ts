@@ -11,12 +11,14 @@ export class AuthGuard implements CanActivate {
   ) {
   }
 
-  public canActivate(): boolean {
-    if (!this.sessionService.isLogged) {
-      this.router.navigate(['/connexion']);
-      return false;
-    }
-    return true;
+// auth.guard.ts
+public canActivate(): boolean {
+  const token = localStorage.getItem('token'); // Même méthode que l'intercepteur
+  if (!token) {
+    this.router.navigate(['/connexion']);
+    return false;
   }
+  return true;
+}
   
 }

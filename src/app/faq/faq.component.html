@@ -1,0 +1,15 @@
+<div class="faq-container">
+    <button class="close-button" (click)="closePage()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+    <h1>Foire Aux Questions</h1>
+    <div *ngFor="let item of faqItems" class="faq-item">
+      <button (click)="toggle(item)" class="faq-question">
+        {{ item.question }}
+      </button>
+      <div class="faq-answer" [class.open]="item.open">
+        <p>{{ item.answer }}</p>
+      </div>
+    </div>
+  </div>
+  
