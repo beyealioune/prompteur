@@ -1,16 +1,17 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../services/session.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-stripe-success',
   standalone: true,
-  imports: [],
+  imports: [CommonModule,HttpClientModule],
   templateUrl: './stripe-success.component.html',
   styleUrl: './stripe-success.component.css'
 })
-export class StripeSuccessComponent {
+export class StripeSuccessComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
