@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./navbar/navbar.component";
 import { PingService } from './ping.service';
 import { CommonModule } from '@angular/common';
+import { SessionService } from './services/session.service';
 
 @Component({
   selector: 'app-root',
@@ -15,8 +16,15 @@ export class AppComponent {
   title = 'prompteur';
 
   message = '';
+  isLogged = false;
 
-  constructor(private pingService: PingService) {}
+
+  constructor(private pingService: PingService,private sessionService: SessionService) {
+    this.sessionService.$isLogged().subscribe(logged => {
+      this.isLogged = logged;
+    });
+  }
+  
 
   ngOnInit() {
     this.pingService.ping().subscribe({
