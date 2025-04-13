@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>PrompteurApp</string>
+	<string>PromptCam</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,12 +45,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-
-	<!-- 🔐 Permission pour utiliser la caméra -->
 	<key>NSCameraUsageDescription</key>
-	<string>Cette application a besoin d'accéder à la caméra pour prendre des photos ou vidéos.</string>
-
-	<!-- 🔊 Permission pour le micro (nécessaire pour enregistrer une vidéo) -->
+	<string>Cette application a besoin d&apos;accéder à la caméra pour prendre des photos ou vidéos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Cette application a besoin du micro pour enregistrer l’audio pendant la vidéo.</string>
 </dict>
