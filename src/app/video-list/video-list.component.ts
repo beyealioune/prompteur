@@ -28,14 +28,13 @@ export class VideoListComponent implements OnInit {
     this.videoService.getAllVideos().subscribe(videos => {
       this.videos = videos;
   
-      // Charge les vidéos une par une avec token sécurisé
       videos.forEach(video => {
-        this.videoService.getStreamBlob(video.fileName).subscribe(url => {
-          this.videoUrls[video.fileName] = url;
-        });
+        const url = this.videoService.streamVideoUrl(video.fileName);
+        this.videoUrls[video.fileName] = this.sanitizer.bypassSecurityTrustResourceUrl(url);
       });
     });
   }
+  
   
 
   getSafeUrl(fileName: string): SafeResourceUrl {

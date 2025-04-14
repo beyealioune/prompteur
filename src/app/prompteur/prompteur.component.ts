@@ -87,7 +87,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       this.showPaymentPopup = true;
       return;
     }
-
+  
+    if (!this.stream || this.stream.getVideoTracks().length === 0) {
+      alert('La caméra n’est pas active. Veuillez la démarrer.');
+      return;
+    }
     this.countdown = 3;
 
     const interval = setInterval(() => {
@@ -133,21 +137,30 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
 
   stopRecording() {
     clearInterval(this.timerInterval);
-    this.mediaRecorder.stop();
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+      this.mediaRecorder = null; // <-- IMPORTANT
+    }
     this.isRecording = false;
   }
-
+  
   toggleFullscreen(): void {
     const elem = document.documentElement;
-
+  
     if (!document.fullscreenElement) {
       elem.requestFullscreen();
       this.isFullscreen = true;
     } else {
       document.exitFullscreen();
       this.isFullscreen = false;
+  
+      // 🔁 Si le flux est figé après plein écran, on le relance
+      setTimeout(() => {
+        this.startCamera();
+      }, 500); // Légère pause après exit
     }
   }
+  
 
   scrollTexte() {
     this.isScrolling = false;

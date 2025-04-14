@@ -26,3 +26,9 @@
     justify-content: flex-end;
     padding: 10px 16px;
   }
+
+  .video-list h2 {
+    margin-top: 60px; /* ou ajuste selon l’espace que tu veux */
+    text-align: center;
+  }
+  
