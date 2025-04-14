@@ -1,16 +1,17 @@
-<div class="container mat-elevation-z4">
-  <mat-card class="video-card">
-    <video #videoElement autoplay muted></video>
-    <div class="texte-overlay">
-      <div class="trait"></div>
-      <div class="texte" #texteElement [class.scrolling]="isScrolling">
-        {{ texte }}
-      </div>
+<mat-card class="video-card">
+  <video #videoElement autoplay muted playsinline></video>
+
+  <div class="texte-overlay">
+    <div class="trait"></div>
+    <div class="texte" #texteElement [class.scrolling]="isScrolling">
+      {{ texte }}
     </div>
-    <div *ngIf="isRecording" class="timer">
-      ⏱️ {{ recordingTime }}s
-    </div>
-  </mat-card>
+  </div>
+
+  <div *ngIf="isRecording" class="timer">
+    ⏱️ {{ recordingTime }}s
+  </div>
+</mat-card>
 
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Texte du prompteur</mat-label>
@@ -44,4 +45,5 @@
     </mat-icon>
   </div>
 </div>
+
 <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" />

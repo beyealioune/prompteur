@@ -1,4 +1,10 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  OnInit
+} from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -42,7 +48,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-
   isScrolling = true;
 
   constructor(
@@ -59,6 +64,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.scrollTexte();
   }
+
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach((track: any) => {
@@ -67,31 +73,36 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       this.stream = null;
     }
   }
+
   async startCamera() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
       return;
     }
-  
-    this.stopCamera(); // ✅ Arrêter tout flux précédent
-  
+
+    this.stopCamera();
+
     this.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' }, // 📱 Caméra frontale
+      video: { facingMode: 'user' },
       audio: true
     });
-        this.videoElement.nativeElement.srcObject = this.stream;
+
+    this.videoElement.nativeElement.srcObject = this.stream;
+    this.videoElement.nativeElement.muted = true;
+    this.videoElement.nativeElement.play();
   }
-  
+
   startRecording() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
       return;
     }
-  
+
     if (!this.stream || this.stream.getVideoTracks().length === 0) {
       alert('La caméra n’est pas active. Veuillez la démarrer.');
       return;
     }
+
     this.countdown = 3;
 
     const interval = setInterval(() => {
@@ -111,16 +122,16 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
 
         this.mediaRecorder.onstop = () => {
           const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+
+          this.videoElement.nativeElement.srcObject = null;
+          this.videoElement.nativeElement.src = URL.createObjectURL(blob);
+          this.videoElement.nativeElement.controls = true;
+          this.videoElement.nativeElement.play();
+
           this.videoService.uploadVideo(blob).subscribe({
             next: (message) => alert('Upload réussi : ' + message),
             error: (err) => alert('Erreur upload : ' + err.message),
           });
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'enregistrement.webm';
-          a.click();
         };
 
         this.mediaRecorder.start();
@@ -139,28 +150,26 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
     clearInterval(this.timerInterval);
     if (this.mediaRecorder) {
       this.mediaRecorder.stop();
-      this.mediaRecorder = null; // <-- IMPORTANT
+      this.mediaRecorder = null;
     }
     this.isRecording = false;
   }
-  
+
   toggleFullscreen(): void {
     const elem = document.documentElement;
-  
+
     if (!document.fullscreenElement) {
       elem.requestFullscreen();
       this.isFullscreen = true;
     } else {
       document.exitFullscreen();
       this.isFullscreen = false;
-  
-      // 🔁 Si le flux est figé après plein écran, on le relance
+
       setTimeout(() => {
         this.startCamera();
-      }, 500); // Légère pause après exit
+      }, 500);
     }
   }
-  
 
   scrollTexte() {
     this.isScrolling = false;
