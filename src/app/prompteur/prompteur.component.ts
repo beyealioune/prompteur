@@ -3,7 +3,8 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  OnInit
+  OnInit,
+  OnDestroy
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { SessionService } from '../services/session.service';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-prompteur',
@@ -32,23 +34,23 @@ import { SessionService } from '../services/session.service';
   templateUrl: './prompteur.component.html',
   styleUrl: './prompteur.component.css',
 })
-export class PrompteurComponent implements AfterViewInit, OnInit {
-  @ViewChild('videoElement') videoElement!: ElementRef;
-  @ViewChild('texteElement') texteElement!: ElementRef;
+export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
+  @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording: boolean = false;
-  mediaRecorder: any;
-  recordedChunks: any[] = [];
-  stream: any;
+  mediaRecorder: MediaRecorder | null = null;
+  recordedChunks: Blob[] = [];
+  stream: MediaStream | null = null;
   vitesse: number = 20;
   countdown: number = 0;
   isFullscreen = false;
-
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
   isScrolling = true;
+  private videoBlobUrl: string | null = null;
 
   constructor(
     private videoService: VideoService,
@@ -65,13 +67,26 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
     this.scrollTexte();
   }
 
+  ngOnDestroy() {
+    this.cleanupResources();
+  }
+
+  private cleanupResources() {
+    this.stopRecording();
+    this.stopCamera();
+    if (this.videoBlobUrl) {
+      URL.revokeObjectURL(this.videoBlobUrl);
+    }
+  }
+
   stopCamera() {
     if (this.stream) {
-      this.stream.getTracks().forEach((track: any) => {
-        track.stop();
-      });
+      this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
+    const video = this.videoElement.nativeElement;
+    video.srcObject = null;
+    video.src = '';
   }
 
   async startCamera() {
@@ -79,35 +94,66 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       this.showPaymentPopup = true;
       return;
     }
-  
+
     this.stopCamera();
-  
+
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+        webUseInput: true
       });
-  
-      const video: HTMLVideoElement = this.videoElement.nativeElement;
-  
-      video.srcObject = this.stream;
+
+      if (!image.dataUrl) {
+        throw new Error('No data URL returned from camera');
+      }
+
+      const video = this.videoElement.nativeElement;
+      video.src = image.dataUrl;
+      video.muted = true;
       video.setAttribute('playsinline', 'true');
-      video.setAttribute('autoplay', 'true');
-      video.setAttribute('muted', 'true');
-      video.setAttribute('disablePictureInPicture', 'true');
-      video.setAttribute('controls', 'false');
-  
-      await video.play();
+      video.setAttribute('webkit-playsinline', 'true');
+
+      // Créer un stream factice pour la compatibilité avec MediaRecorder
+      this.stream = await this.createDummyStream(video);
+
+      await video.play().catch(e => {
+        console.error('Playback error:', e);
+        // Solution de repli pour iOS
+        if (this.isIOS()) {
+          document.addEventListener('click', () => video.play(), { once: true });
+        }
+      });
+
     } catch (err) {
-      console.error('Erreur accès caméra :', err);
-      alert('Impossible d’accéder à la caméra.');
+      console.error('Camera error:', err);
+      alert(`Camera error: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
-  
+
+  private async createDummyStream(videoElement: HTMLVideoElement): Promise<MediaStream> {
+    // Cette méthode crée un stream compatible avec MediaRecorder
+    try {
+      // Essayez d'abord de capturer le flux depuis l'élément vidéo
+      if ('captureStream' in videoElement) {
+        return (videoElement as any).captureStream();
+      }
+      // Fallback: utilisez getUserMedia si captureStream n'est pas disponible
+      return await navigator.mediaDevices.getUserMedia({ 
+        video: true,
+        audio: false
+      });
+    } catch (e) {
+      console.warn('Failed to create dummy stream:', e);
+      throw new Error('Could not create recording stream');
+    }
+  }
+
+  private isIOS(): boolean {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
 
   startRecording() {
     if (!this.sessionService.hasAccess()) {
@@ -115,8 +161,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       return;
     }
 
-    if (!this.stream || this.stream.getVideoTracks().length === 0) {
-      alert('La caméra n’est pas active. Veuillez la démarrer.');
+    if (!this.stream) {
+      alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
 
@@ -124,66 +170,72 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
 
     const interval = setInterval(() => {
       this.countdown--;
-
       if (this.countdown === 0) {
         clearInterval(interval);
-
-        this.recordedChunks = [];
-        this.mediaRecorder = new MediaRecorder(this.stream);
-
-        this.mediaRecorder.ondataavailable = (e: any) => {
-          if (e.data.size > 0) {
-            this.recordedChunks.push(e.data);
-          }
-        };
-
-        this.mediaRecorder.onstop = () => {
-          const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
-
-          // ✅ Affiche l'enregistrement dans la vidéo
-          this.previewRecording(blob);
-
-          // ✅ Upload backend
-          this.videoService.uploadVideo(blob).subscribe({
-            next: (message) => alert('Upload réussi : ' + message),
-            error: (err) => alert('Erreur upload : ' + err.message),
-          });
-        };
-
-        this.mediaRecorder.start();
-        this.recordingTime = 0;
-        this.timerInterval = setInterval(() => {
-          this.recordingTime++;
-        }, 1000);
-
-        this.isRecording = true;
-        this.scrollTexte();
+        this.startMediaRecorder();
       }
     }, 1000);
   }
 
-  stopRecording() {
-    clearInterval(this.timerInterval);
-    if (this.mediaRecorder) {
-      this.mediaRecorder.stop();
-      this.mediaRecorder = null;
+  private startMediaRecorder() {
+    try {
+      this.recordedChunks = [];
+      this.mediaRecorder = new MediaRecorder(this.stream!);
+
+      this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        if (e.data.size > 0) {
+          this.recordedChunks.push(e.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+        this.previewRecording(blob);
+        this.uploadVideo(blob);
+      };
+
+      this.mediaRecorder.start();
+      this.startRecordingTimer();
+      this.isRecording = true;
+      this.scrollTexte();
+
+    } catch (err) {
+      console.error('Recording error:', err);
+      alert('Erreur lors du démarrage de l\'enregistrement');
     }
+  }
+
+  private startRecordingTimer() {
+    this.recordingTime = 0;
+    this.timerInterval = setInterval(() => {
+      this.recordingTime++;
+    }, 1000);
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
+    }
+    clearInterval(this.timerInterval);
     this.isRecording = false;
   }
 
+  private uploadVideo(blob: Blob) {
+    this.videoService.uploadVideo(blob).subscribe({
+      next: (message) => console.log('Upload successful:', message),
+      error: (err) => console.error('Upload error:', err)
+    });
+  }
+
   toggleFullscreen(): void {
-    const elem = document.documentElement;
-
     if (!document.fullscreenElement) {
-      elem.requestFullscreen();
-      this.isFullscreen = true;
+      document.documentElement.requestFullscreen()
+        .then(() => this.isFullscreen = true)
+        .catch(console.error);
     } else {
-      document.exitFullscreen();
-      this.isFullscreen = false;
-
-      setTimeout(() => {
-        this.startCamera();
-      }, 500);
+      document.exitFullscreen()
+        .then(() => this.isFullscreen = false)
+        .catch(console.error);
     }
   }
 
@@ -195,10 +247,17 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
   }
 
   private previewRecording(blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    this.videoElement.nativeElement.srcObject = null;
-    this.videoElement.nativeElement.src = url;
-    this.videoElement.nativeElement.setAttribute('controls', 'true');
-    this.videoElement.nativeElement.play();
+    if (this.videoBlobUrl) {
+      URL.revokeObjectURL(this.videoBlobUrl);
+    }
+
+    this.videoBlobUrl = URL.createObjectURL(blob);
+    const video = this.videoElement.nativeElement;
+    
+    video.srcObject = null;
+    video.src = this.videoBlobUrl;
+    video.setAttribute('controls', 'true');
+    
+    video.play().catch(e => console.error('Playback error:', e));
   }
 }
