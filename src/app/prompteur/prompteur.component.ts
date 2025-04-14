@@ -59,17 +59,29 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.scrollTexte();
   }
-
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track: any) => {
+        track.stop();
+      });
+      this.stream = null;
+    }
+  }
   async startCamera() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
       return;
     }
   
-    this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    this.videoElement.nativeElement.srcObject = this.stream;
+    this.stopCamera(); // ✅ Arrêter tout flux précédent
+  
+    this.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' }, // 📱 Caméra frontale
+      audio: true
+    });
+        this.videoElement.nativeElement.srcObject = this.stream;
   }
-
+  
   startRecording() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;

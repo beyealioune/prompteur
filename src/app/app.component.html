@@ -1,4 +1,7 @@
-<div class="page-content">
-  <router-outlet></router-outlet>
+<!-- Ne rien afficher tant que la session est en train de charger -->
+<div *ngIf="!isLoadingSession">
+  <div class="page-content">
+    <router-outlet></router-outlet>
+  </div>
+  <app-navbar *ngIf="isLogged"></app-navbar>
 </div>
-<app-navbar *ngIf="isLogged"></app-navbar>
