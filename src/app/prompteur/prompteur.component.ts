@@ -81,7 +81,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
     });
         this.videoElement.nativeElement.srcObject = this.stream;
   }
-  
   startRecording() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
@@ -92,48 +91,51 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       alert('La caméra n’est pas active. Veuillez la démarrer.');
       return;
     }
+  
     this.countdown = 3;
-
     const interval = setInterval(() => {
       this.countdown--;
-
+  
       if (this.countdown === 0) {
         clearInterval(interval);
-
+  
         this.recordedChunks = [];
         this.mediaRecorder = new MediaRecorder(this.stream);
-
+  
         this.mediaRecorder.ondataavailable = (e: any) => {
           if (e.data.size > 0) {
             this.recordedChunks.push(e.data);
           }
         };
-
+  
         this.mediaRecorder.onstop = () => {
           const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+  
+          // ✅ Lecture directe dans le <video>
+          this.videoElement.nativeElement.srcObject = null;
+          this.videoElement.nativeElement.src = URL.createObjectURL(blob);
+          this.videoElement.nativeElement.controls = true;
+          this.videoElement.nativeElement.play();
+  
+          // ✅ Upload backend
           this.videoService.uploadVideo(blob).subscribe({
             next: (message) => alert('Upload réussi : ' + message),
             error: (err) => alert('Erreur upload : ' + err.message),
           });
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'enregistrement.webm';
-          a.click();
         };
-
+  
         this.mediaRecorder.start();
         this.recordingTime = 0;
         this.timerInterval = setInterval(() => {
           this.recordingTime++;
         }, 1000);
-
+  
         this.isRecording = true;
         this.scrollTexte();
       }
     }, 1000);
   }
+  
 
   stopRecording() {
     clearInterval(this.timerInterval);
