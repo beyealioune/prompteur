@@ -79,18 +79,35 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       this.showPaymentPopup = true;
       return;
     }
-
+  
     this.stopCamera();
-
-    this.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' },
-      audio: true
-    });
-
-    this.videoElement.nativeElement.srcObject = this.stream;
-    this.videoElement.nativeElement.muted = true;
-    this.videoElement.nativeElement.play();
+  
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
+  
+      const video: HTMLVideoElement = this.videoElement.nativeElement;
+  
+      video.srcObject = this.stream;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('autoplay', 'true');
+      video.setAttribute('muted', 'true');
+      video.setAttribute('disablePictureInPicture', 'true');
+      video.setAttribute('controls', 'false');
+  
+      await video.play();
+    } catch (err) {
+      console.error('Erreur accès caméra :', err);
+      alert('Impossible d’accéder à la caméra.');
+    }
   }
+  
 
   startRecording() {
     if (!this.sessionService.hasAccess()) {
@@ -181,7 +198,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
     const url = URL.createObjectURL(blob);
     this.videoElement.nativeElement.srcObject = null;
     this.videoElement.nativeElement.src = url;
-    this.videoElement.nativeElement.controls = true;
+    this.videoElement.nativeElement.setAttribute('controls', 'true');
     this.videoElement.nativeElement.play();
   }
 }
