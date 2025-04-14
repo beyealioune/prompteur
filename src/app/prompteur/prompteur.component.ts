@@ -102,6 +102,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
       alert('La caméra n’est pas active. Veuillez la démarrer.');
       return;
     }
+  
 
     this.countdown = 3;
 
@@ -122,6 +123,14 @@ export class PrompteurComponent implements AfterViewInit, OnInit {
 
         this.mediaRecorder.onstop = () => {
           const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+  
+          // ✅ Lecture directe dans le <video>
+          this.videoElement.nativeElement.srcObject = null;
+          this.videoElement.nativeElement.src = URL.createObjectURL(blob);
+          this.videoElement.nativeElement.controls = true;
+          this.videoElement.nativeElement.play();
+  
+          // ✅ Upload backend
 
           this.videoElement.nativeElement.srcObject = null;
           this.videoElement.nativeElement.src = URL.createObjectURL(blob);
