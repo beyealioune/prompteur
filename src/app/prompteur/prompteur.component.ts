@@ -156,41 +156,56 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private startMediaRecorder() {
     try {
-      if (!this.stream) throw new Error("Aucun stream disponible");
-
+      console.log("🔹 Initialisation MediaRecorder...");
+  
+      if (!this.stream) throw new Error("❌ Aucun stream disponible");
+  
       if (!MediaRecorder) {
         alert('MediaRecorder non supporté');
         return;
       }
-
+  
       if (!MediaRecorder.isTypeSupported('video/webm')) {
-        console.warn('⚠️ video/webm non supporté sur cette plateforme');
+        console.warn('⚠️ video/webm non supporté');
       }
-
+  
       this.recordedChunks = [];
-      this.mediaRecorder = new MediaRecorder(this.stream);
-
+  
+      console.log("🔹 Création du MediaRecorder...");
+      try {
+        this.mediaRecorder = new MediaRecorder(this.stream);
+      } catch (error) {
+        console.error("❌ Échec création MediaRecorder :", error);
+        alert("Impossible de démarrer l’enregistrement : " + (error as Error).message);
+        return;
+      }
+        
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        console.log("📦 Chunk reçu", e.data);
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
-
+  
       this.mediaRecorder.onstop = () => {
+        console.log("✅ Enregistrement terminé.");
         const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+        console.log("📹 Vidéo prête :", blob);
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
-
-      this.mediaRecorder.start(100); // collect data every 100ms
+  
+      console.log("▶️ Démarrage MediaRecorder...");
+      this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
     } catch (err) {
-      console.error('Recording error:', err);
-      alert('Erreur lors du démarrage de l\'enregistrement : ' + (err instanceof Error ? err.message : err));
+      console.error('❌ Recording error:', err);
+      alert('Erreur MediaRecorder : ' + (err instanceof Error ? err.message : err));
     }
   }
+  
 
   private startRecordingTimer() {
     this.recordingTime = 0;
