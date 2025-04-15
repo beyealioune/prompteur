@@ -1,14 +1,52 @@
 import Capacitor
+import Foundation
+import UIKit
+import MobileCoreServices
+import AVFoundation
 
 @objc(VideoRecorderPlugin)
-public class VideoRecorderPlugin: CAPPlugin {
+public class VideoRecorderPlugin: CAPPlugin, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    var call: CAPPluginCall?
     
     @objc func recordVideo(_ call: CAPPluginCall) {
-        print("🎉 plugin utilisé ✅")
+        self.call = call
+        
+        // Vérifie l'accès caméra
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            DispatchQueue.main.async {
+                if !granted {
+                    call.reject("Autorisation caméra refusée")
+                    return
+                }
 
-        // Simule une réponse pour test
-        call.resolve([
-            "path": "capacitor://localhost/assets/test-video.mp4"
+                let picker = UIImagePickerController()
+                picker.sourceType = .camera
+                picker.mediaTypes = [kUTTypeMovie as String]
+                picker.videoQuality = .typeHigh
+                picker.cameraDevice = .front
+                picker.delegate = self
+
+                self.bridge?.viewController?.present(picker, animated: true, completion: nil)
+            }
+        }
+    }
+
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+        guard let mediaURL = info[.mediaURL] as? URL else {
+            self.call?.reject("Impossible d'obtenir l'URL de la vidéo")
+            return
+        }
+
+        // On retourne le chemin local vers la vidéo
+        self.call?.resolve([
+            "path": mediaURL.absoluteString
         ])
+    }
+
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+        self.call?.reject("Enregistrement annulé par l'utilisateur")
     }
 }
