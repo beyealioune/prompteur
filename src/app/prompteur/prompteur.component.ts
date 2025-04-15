@@ -143,6 +143,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
+    if (!('MediaRecorder' in window)) {
+      alert('MediaRecorder non supporté sur cet appareil. Veuillez utiliser Android ou une version compatible.');
+      return;
+    }
+
     this.countdown = 3;
 
     const interval = setInterval(() => {
@@ -156,56 +161,54 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private startMediaRecorder() {
     try {
-      console.log("🔹 Initialisation MediaRecorder...");
-  
-      if (!this.stream) throw new Error("❌ Aucun stream disponible");
-  
-      if (!MediaRecorder) {
-        alert('MediaRecorder non supporté');
-        return;
+      console.log("🎥 Démarrage MediaRecorder");
+
+      if (!this.stream || this.stream.getTracks().length === 0) {
+        throw new Error("❌ Aucun flux vidéo disponible");
       }
-  
+
+      if (typeof MediaRecorder === 'undefined') {
+        throw new Error("❌ MediaRecorder non défini dans ce navigateur");
+      }
+
       if (!MediaRecorder.isTypeSupported('video/webm')) {
-        console.warn('⚠️ video/webm non supporté');
+        console.warn("⚠️ Format video/webm non supporté");
       }
-  
-      this.recordedChunks = [];
-  
-      console.log("🔹 Création du MediaRecorder...");
+
       try {
         this.mediaRecorder = new MediaRecorder(this.stream);
-      } catch (error) {
-        console.error("❌ Échec création MediaRecorder :", error);
-        alert("Impossible de démarrer l’enregistrement : " + (error as Error).message);
+      } catch (mediaErr) {
+        console.error("❌ Échec MediaRecorder :", mediaErr);
+        alert("Erreur MediaRecorder : " + (mediaErr instanceof Error ? mediaErr.message : mediaErr));
         return;
       }
-        
+
+      this.recordedChunks = [];
+
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         console.log("📦 Chunk reçu", e.data);
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
-  
+
       this.mediaRecorder.onstop = () => {
         console.log("✅ Enregistrement terminé.");
         const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
-        console.log("📹 Vidéo prête :", blob);
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
-  
-      console.log("▶️ Démarrage MediaRecorder...");
+
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
+
     } catch (err) {
-      console.error('❌ Recording error:', err);
+      console.error('❌ Erreur MediaRecorder :', err);
       alert('Erreur MediaRecorder : ' + (err instanceof Error ? err.message : err));
     }
   }
-  
 
   private startRecordingTimer() {
     this.recordingTime = 0;
