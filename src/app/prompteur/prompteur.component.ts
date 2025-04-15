@@ -6,7 +6,6 @@ import {
   OnInit,
   OnDestroy
 } from '@angular/core';
-import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,8 +13,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
+import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
+import { PaymentPopupComponent } from '../payment-popup/payment-popup.component';
+
+declare var VideoRecorder: any;
 
 @Component({
   selector: 'app-prompteur',
@@ -38,17 +40,16 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
-  isRecording: boolean = false;
+  isRecording = false;
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];
   stream: MediaStream | null = null;
-  vitesse: number = 20;
-  countdown: number = 0;
+  countdown = 0;
   isFullscreen = false;
+  isScrolling = true;
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-  isScrolling = true;
   private videoBlobUrl: string | null = null;
 
   constructor(
@@ -56,7 +57,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     private sessionService: SessionService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
     }
@@ -101,7 +102,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         video: {
           facingMode: 'user',
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 }
         },
         audio: true
       });
@@ -114,7 +116,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
       if (this.isIOS()) {
         const playVideo = () => {
-          video.play().catch(e => console.error('Play error:', e));
+          video.play().catch(e => console.error('iOS play error:', e));
           document.body.removeEventListener('click', playVideo);
         };
         document.body.addEventListener('click', playVideo, { once: true });
@@ -124,12 +126,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     } catch (err) {
       console.error('Camera error:', err);
-      alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
+      alert('Erreur caméra: ' + (err instanceof Error ? err.message : String(err)));
     }
-  }
-
-  public isIOS(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
   startRecording() {
@@ -138,18 +136,47 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
+    if (this.isIOS() && typeof VideoRecorder !== 'undefined') {
+      this.recordWithNativeAPI();
+    } else if ('MediaRecorder' in window) {
+      this.recordWithMediaRecorder();
+    } else {
+      alert("L'enregistrement vidéo n'est pas supporté sur cet appareil");
+    }
+  }
+
+  private async recordWithNativeAPI() {
+    try {
+      const result = await VideoRecorder.recordVideo({
+        quality: 'high',
+        duration: 0, // Durée illimitée
+        camera: 'front'
+      });
+
+      if (result?.path) {
+        const video = this.videoElement.nativeElement;
+        video.src = result.path;
+        video.setAttribute('controls', 'true');
+        await video.play();
+
+        // Conversion en Blob pour l'upload
+        const response = await fetch(result.path);
+        const blob = await response.blob();
+        await this.uploadVideo(blob);
+      }
+    } catch (err) {
+      console.error('Native recording error:', err);
+      alert("Erreur d'enregistrement natif: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  private recordWithMediaRecorder() {
     if (!this.stream) {
       alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
 
-    if (!('MediaRecorder' in window)) {
-      alert('MediaRecorder non supporté sur cet appareil. Veuillez utiliser Android ou une version compatible.');
-      return;
-    }
-
     this.countdown = 3;
-
     const interval = setInterval(() => {
       this.countdown--;
       if (this.countdown === 0) {
@@ -161,39 +188,20 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private startMediaRecorder() {
     try {
-      console.log("🎥 Démarrage MediaRecorder");
-
-      if (!this.stream || this.stream.getTracks().length === 0) {
-        throw new Error("❌ Aucun flux vidéo disponible");
-      }
-
-      if (typeof MediaRecorder === 'undefined') {
-        throw new Error("❌ MediaRecorder non défini dans ce navigateur");
-      }
-
-      if (!MediaRecorder.isTypeSupported('video/webm')) {
-        console.warn("⚠️ Format video/webm non supporté");
-      }
-
-      try {
-        this.mediaRecorder = new MediaRecorder(this.stream);
-      } catch (mediaErr) {
-        console.error("❌ Échec MediaRecorder :", mediaErr);
-        alert("Erreur MediaRecorder : " + (mediaErr instanceof Error ? mediaErr.message : mediaErr));
-        return;
-      }
-
       this.recordedChunks = [];
+      this.mediaRecorder = new MediaRecorder(this.stream!, {
+        mimeType: 'video/webm',
+        audioBitsPerSecond: 128000,
+        videoBitsPerSecond: 2500000
+      });
 
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
-        console.log("📦 Chunk reçu", e.data);
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
 
       this.mediaRecorder.onstop = () => {
-        console.log("✅ Enregistrement terminé.");
         const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
         this.previewRecording(blob);
         this.uploadVideo(blob);
@@ -205,16 +213,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.scrollTexte();
 
     } catch (err) {
-      console.error('❌ Erreur MediaRecorder :', err);
-      alert('Erreur MediaRecorder : ' + (err instanceof Error ? err.message : err));
+      console.error('MediaRecorder error:', err);
+      alert("Erreur d'enregistrement: " + (err instanceof Error ? err.message : String(err)));
     }
-  }
-
-  private startRecordingTimer() {
-    this.recordingTime = 0;
-    this.timerInterval = setInterval(() => {
-      this.recordingTime++;
-    }, 1000);
   }
 
   stopRecording() {
@@ -225,11 +226,21 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.isRecording = false;
   }
 
-  private uploadVideo(blob: Blob) {
-    this.videoService.uploadVideo(blob).subscribe({
-      next: () => alert('🎉 Enregistrement envoyé avec succès !'),
-      error: (err) => alert('Erreur lors de l\'envoi : ' + err.message)
-    });
+  private startRecordingTimer() {
+    this.recordingTime = 0;
+    this.timerInterval = setInterval(() => {
+      this.recordingTime++;
+    }, 1000);
+  }
+
+  private async uploadVideo(blob: Blob) {
+    try {
+      await this.videoService.uploadVideo(blob).toPromise();
+      alert('Vidéo enregistrée avec succès!');
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Erreur lors de l\'envoi de la vidéo');
+    }
   }
 
   toggleFullscreen(): void {
@@ -260,11 +271,19 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.videoBlobUrl = URL.createObjectURL(blob);
     const video = this.videoElement.nativeElement;
-
+    
     video.srcObject = null;
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
-
+    
     video.play().catch(e => console.error('Playback error:', e));
+  }
+
+  isMobile(): boolean {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
+
+  isIOS(): boolean {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 }
