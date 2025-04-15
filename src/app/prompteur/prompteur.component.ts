@@ -185,38 +185,35 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       }
     }, 1000);
   }
-
   private startMediaRecorder() {
     try {
       this.recordedChunks = [];
-      this.mediaRecorder = new MediaRecorder(this.stream!, {
-        mimeType: 'video/webm',
-        audioBitsPerSecond: 128000,
-        videoBitsPerSecond: 2500000
-      });
-
+  
+      this.mediaRecorder = new MediaRecorder(this.stream!);
+  
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
-
+  
       this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+        const blob = new Blob(this.recordedChunks, { type: this.mediaRecorder?.mimeType || 'video/mp4' });
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
-
-      this.mediaRecorder.start(100);
+  
+      this.mediaRecorder.start(100); // Start recording, emit data every 100ms
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
-
+  
     } catch (err) {
       console.error('MediaRecorder error:', err);
       alert("Erreur d'enregistrement: " + (err instanceof Error ? err.message : String(err)));
     }
   }
+  
 
   stopRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
