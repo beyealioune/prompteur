@@ -56,11 +56,17 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     private sessionService: SessionService
   ) {}
 
+
+    
   ngOnInit() {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
+    } else if (this.isIOS()) {
+      console.log('🔁 Appel auto du plugin iOS pour test...');
+      this.recordWithNativeAPI();
     }
   }
+  
 
   ngAfterViewInit() {
     this.scrollTexte();
