@@ -187,29 +187,46 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
   private startMediaRecorder() {
     try {
+      console.log('🎬 Initialisation du MediaRecorder...');
+  
       this.recordedChunks = [];
   
       this.mediaRecorder = new MediaRecorder(this.stream!);
   
+      console.log('✅ MediaRecorder créé avec succès');
+      console.log('🎥 MIME type détecté :', this.mediaRecorder.mimeType);
+  
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        console.log('📦 Donnée vidéo disponible - taille :', e.data.size, 'octets');
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
   
       this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.recordedChunks, { type: this.mediaRecorder?.mimeType || 'video/mp4' });
+        console.log('🛑 MediaRecorder arrêté');
+        console.log('🧩 Nombre de morceaux enregistrés :', this.recordedChunks.length);
+  
+        const blob = new Blob(this.recordedChunks); // pas de type forcé
+        console.log('🎞️ Blob vidéo généré - taille totale :', blob.size, 'octets');
+  
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
   
-      this.mediaRecorder.start(100); // Start recording, emit data every 100ms
+      this.mediaRecorder.onerror = (error) => {
+        console.error('❌ MediaRecorder a rencontré une erreur :', error);
+      };
+  
+      this.mediaRecorder.start(100);
+      console.log('▶️ Enregistrement démarré');
+  
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
   
     } catch (err) {
-      console.error('MediaRecorder error:', err);
+      console.error('🔥 Erreur lors du démarrage de l\'enregistrement :', err);
       alert("Erreur d'enregistrement: " + (err instanceof Error ? err.message : String(err)));
     }
   }
