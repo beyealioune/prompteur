@@ -116,8 +116,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
-
-      // Effet miroir (Snapchat style)
       video.classList.add('mirror');
 
       await video.play();
@@ -139,14 +137,41 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     if ('MediaRecorder' in window) {
+      if (!this.getSupportedMimeType()) {
+        alert("Aucun format vidéo supporté n'a été trouvé sur cet appareil");
+        return;
+      }
       this.recordWithMediaRecorder();
     } else {
       alert("L'enregistrement vidéo n'est pas supporté sur cet appareil");
     }
   }
 
+  private getSupportedMimeType(): string {
+    const types = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=h264,opus',
+      'video/mp4;codecs=h264,aac',
+      'video/webm',
+      'video/mp4'
+    ];
+
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+
+    return ''; // Let the browser decide
+  }
+
   private async recordWithNativeAPI() {
     try {
+      if (!VideoRecorder) {
+        throw new Error('Native video recorder not available');
+      }
+
       const result = await VideoRecorder.recordVideo({
         quality: 'high',
         duration: 0,
@@ -166,6 +191,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     } catch (err) {
       console.error('Erreur plugin natif :', err);
       alert("Erreur d'enregistrement natif: " + (err instanceof Error ? err.message : String(err)));
+      
+      // Fallback to MediaRecorder if available
+      if ('MediaRecorder' in window) {
+        this.recordWithMediaRecorder();
+      }
     }
   }
 
@@ -189,7 +219,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     try {
       this.recordedChunks = [];
 
-      this.mediaRecorder = new MediaRecorder(this.stream!);
+      const options = { mimeType: this.getSupportedMimeType() };
+      this.mediaRecorder = new MediaRecorder(this.stream!, options);
 
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
@@ -214,6 +245,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     } catch (err) {
       console.error('Exception MediaRecorder :', err);
       alert("Erreur d'enregistrement : " + (err instanceof Error ? err.message : String(err)));
+      
+      if (this.isIOS() && VideoRecorder) {
+        this.recordWithNativeAPI();
+      }
     }
   }
 
