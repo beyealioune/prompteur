@@ -16,8 +16,8 @@ import { CommonModule } from '@angular/common';
 import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
 import { PaymentPopupComponent } from '../payment-popup/payment-popup.component';
+declare const VideoRecorder: any;
 
-declare var VideoRecorder: any;
 
 @Component({
   selector: 'app-prompteur',
@@ -136,7 +136,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    if (this.isIOS() && typeof VideoRecorder !== 'undefined') {
+    if (this.isIOS() && VideoRecorder) {
+      console.log("✅ Using iOS native plugin");
       this.recordWithNativeAPI();
     } else if ('MediaRecorder' in window) {
       this.recordWithMediaRecorder();
@@ -149,7 +150,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     try {
       const result = await VideoRecorder.recordVideo({
         quality: 'high',
-        duration: 0, // Durée illimitée
+        duration: 0,
         camera: 'front'
       });
 
@@ -159,7 +160,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         video.setAttribute('controls', 'true');
         await video.play();
 
-        // Conversion en Blob pour l'upload
         const response = await fetch(result.path);
         const blob = await response.blob();
         await this.uploadVideo(blob);
@@ -271,11 +271,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.videoBlobUrl = URL.createObjectURL(blob);
     const video = this.videoElement.nativeElement;
-    
+
     video.srcObject = null;
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
-    
+
     video.play().catch(e => console.error('Playback error:', e));
   }
 
