@@ -18,7 +18,6 @@ import { SessionService } from '../services/session.service';
 import { PaymentPopupComponent } from '../payment-popup/payment-popup.component';
 declare const VideoRecorder: any;
 
-
 @Component({
   selector: 'app-prompteur',
   standalone: true,
@@ -137,7 +136,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     if (this.isIOS() && VideoRecorder) {
-      console.log("✅ Using iOS native plugin");
+      console.log("✅ Utilisation du plugin natif iOS");
       this.recordWithNativeAPI();
     } else if ('MediaRecorder' in window) {
       this.recordWithMediaRecorder();
@@ -165,7 +164,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         await this.uploadVideo(blob);
       }
     } catch (err) {
-      console.error('Native recording error:', err);
+      console.error('Erreur plugin natif :', err);
       alert("Erreur d'enregistrement natif: " + (err instanceof Error ? err.message : String(err)));
     }
   }
@@ -185,52 +184,72 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       }
     }, 1000);
   }
+
   private startMediaRecorder() {
     try {
-      console.log('🎬 Initialisation du MediaRecorder...');
-  
+      console.log('🎬 Démarrage de l’enregistrement avec MediaRecorder');
+
+      const preferredMimeTypes = [
+        'video/mp4',
+        'video/webm',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8'
+      ];
+
+      let supportedMimeType = '';
+
+      for (const type of preferredMimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          supportedMimeType = type;
+          console.log(`✅ Format supporté détecté : ${type}`);
+          break;
+        }
+      }
+
+      if (!supportedMimeType) {
+        console.error('❌ Aucun format vidéo supporté.');
+        alert('Votre appareil ne supporte pas les formats vidéo nécessaires.');
+        return;
+      }
+
       this.recordedChunks = [];
-  
-      this.mediaRecorder = new MediaRecorder(this.stream!);
-  
-      console.log('✅ MediaRecorder créé avec succès');
-      console.log('🎥 MIME type détecté :', this.mediaRecorder.mimeType);
-  
+
+      this.mediaRecorder = new MediaRecorder(this.stream!, {
+        mimeType: supportedMimeType
+      });
+
+      console.log('🎥 MediaRecorder initialisé avec :', supportedMimeType);
+
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
-        console.log('📦 Donnée vidéo disponible - taille :', e.data.size, 'octets');
+        console.log('📦 Chunk reçu :', e.data.size, 'octets');
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
-  
+
       this.mediaRecorder.onstop = () => {
-        console.log('🛑 MediaRecorder arrêté');
-        console.log('🧩 Nombre de morceaux enregistrés :', this.recordedChunks.length);
-  
-        const blob = new Blob(this.recordedChunks); // pas de type forcé
-        console.log('🎞️ Blob vidéo généré - taille totale :', blob.size, 'octets');
-  
+        console.log('🛑 Enregistrement terminé');
+        const blob = new Blob(this.recordedChunks, { type: supportedMimeType });
+        console.log('🎞️ Taille du blob :', blob.size, 'octets');
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
-  
+
       this.mediaRecorder.onerror = (error) => {
-        console.error('❌ MediaRecorder a rencontré une erreur :', error);
+        console.error('❌ Erreur MediaRecorder :', error);
       };
-  
+
       this.mediaRecorder.start(100);
-      console.log('▶️ Enregistrement démarré');
-  
+      console.log('▶️ Enregistrement lancé');
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
-  
+
     } catch (err) {
-      console.error('🔥 Erreur lors du démarrage de l\'enregistrement :', err);
-      alert("Erreur d'enregistrement: " + (err instanceof Error ? err.message : String(err)));
+      console.error('🔥 Exception MediaRecorder :', err);
+      alert("Erreur d'enregistrement : " + (err instanceof Error ? err.message : String(err)));
     }
   }
-  
 
   stopRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
@@ -250,16 +269,15 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private async uploadVideo(blob: Blob) {
     try {
       await this.videoService.uploadVideo(blob).toPromise();
-      alert('Vidéo enregistrée avec succès!');
+      alert('📤 Vidéo enregistrée avec succès!');
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error('❌ Erreur upload :', err);
       alert('Erreur lors de l\'envoi de la vidéo');
     }
   }
 
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
-
     if (!document.fullscreenElement) {
       videoContainer?.requestFullscreen()
         .then(() => this.isFullscreen = true)
@@ -285,11 +303,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.videoBlobUrl = URL.createObjectURL(blob);
     const video = this.videoElement.nativeElement;
-
     video.srcObject = null;
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
-
     video.play().catch(e => console.error('Playback error:', e));
   }
 
