@@ -31,6 +31,7 @@
     "cordova-plugin-video-recorder": "^0.0.35",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "video-recorder": "file:video-recorder",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
