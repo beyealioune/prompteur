@@ -6,12 +6,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // ✅ Enregistrement manuel du plugin
-        bridge?.registerPlugin(VideoRecorderPlugin.self)
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+      // ✅ Plus besoin d’enregistrement manuel si le plugin est bien dans le dossier plugins
+      return true
+  }
 
-        return true
-    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Gestion interruption temporaire (ex : appel entrant)
