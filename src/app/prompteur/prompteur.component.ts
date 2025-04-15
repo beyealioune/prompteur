@@ -129,7 +129,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  private isIOS(): boolean {
+  public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
