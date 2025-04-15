@@ -1,9 +1,7 @@
-import { CapacitorConfig } from "@capacitor/cli";
-
-const config: CapacitorConfig = {
+const config = {
   appId: 'com.aliapp.prompteur',
   appName: 'PrompteurApp',
-  webDir: 'dist/prompteur/browser',
+  webDir: 'dist/prompteur/browser', // ✅ c’est bien ici ton index.html
   plugins: {
     Camera: {
       cameraPermission: 'Cette application nécessite l\'accès à la caméra',
@@ -11,3 +9,5 @@ const config: CapacitorConfig = {
     }
   }
 };
+
+export default config;
