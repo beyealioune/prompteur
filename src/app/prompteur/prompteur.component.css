@@ -17,6 +17,10 @@
   position: relative;
   background-color: #000;
 }
+video.mirror {
+  transform: scaleX(-1);
+}
+
 
 .video-container {
   position: relative;
