@@ -1,14 +1,13 @@
-const config = {
+import { CapacitorConfig } from "@capacitor/cli";
+
+const config: CapacitorConfig = {
   appId: 'com.aliapp.prompteur',
   appName: 'PrompteurApp',
   webDir: 'dist/prompteur/browser',
-  bundledWebRuntime: false,
   plugins: {
     Camera: {
-      cameraPermission: "Cette application a besoin d'accéder à votre caméra",
-      microphonePermission: "Cette application a besoin d'accéder à votre micro"
+      cameraPermission: 'Cette application nécessite l\'accès à la caméra',
+      microphonePermission: 'Cette application nécessite l\'accès au micro'
     }
   }
 };
-
-export default config;

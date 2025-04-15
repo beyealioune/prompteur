@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Configuration de base -->
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
@@ -23,21 +24,17 @@
     <key>LSRequiresIPhoneOS</key>
     <true/>
     
-    <!-- Permissions Camera -->
+    <!-- Permissions -->
     <key>NSCameraUsageDescription</key>
     <string>Cette application nécessite l'accès à la caméra pour fonctionner comme prompteur vidéo</string>
-    
-    <!-- Permissions Microphone (même si vous ne l'utilisez pas actuellement) -->
     <key>NSMicrophoneUsageDescription</key>
     <string>Cette application nécessite l'accès au microphone pour l'enregistrement vidéo</string>
-    
-    <!-- Permissions Photo Library -->
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>Pour sauvegarder les vidéos enregistrées</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Pour accéder aux vidéos enregistrées</string>
     
-    <!-- Configuration d'affichage -->
+    <!-- Configuration UI -->
     <key>UIRequiresFullScreen</key>
     <false/>
     <key>UIViewControllerBasedStatusBarAppearance</key>
@@ -50,23 +47,16 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
     
-    <!-- Configuration spécifique pour la caméra en ligne -->
+    <!-- Configuration WebKit pour la vidéo inline -->
     <key>UIWebViewPreference</key>
     <string>inline-playback</string>
+    <key>WebKitMediaPlaybackAllowsInline</key>
+    <true/>
     <key>WebKitPreferences</key>
     <dict>
         <key>allowInlineMediaPlayback</key>
         <true/>
     </dict>
-    <key>WebKitMediaPlaybackAllowsInline</key>
-    <true/>
 </dict>
 </plist>

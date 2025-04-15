@@ -98,56 +98,34 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.stopCamera();
 
     try {
-      const image = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-        webUseInput: true
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
       });
 
-      if (!image.dataUrl) {
-        throw new Error('No data URL returned from camera');
-      }
-
       const video = this.videoElement.nativeElement;
-      video.src = image.dataUrl;
+      video.srcObject = this.stream;
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
-
-      // Créer un stream factice pour la compatibilité avec MediaRecorder
-      this.stream = await this.createDummyStream(video);
-
-      await video.play().catch(e => {
-        console.error('Playback error:', e);
-        // Solution de repli pour iOS
-        if (this.isIOS()) {
-          document.addEventListener('click', () => video.play(), { once: true });
-        }
-      });
+      
+      if (this.isIOS()) {
+        const playVideo = () => {
+          video.play().catch(e => console.error('Play error:', e));
+          document.body.removeEventListener('click', playVideo);
+        };
+        document.body.addEventListener('click', playVideo, { once: true });
+      } else {
+        await video.play();
+      }
 
     } catch (err) {
       console.error('Camera error:', err);
-      alert(`Camera error: ${err instanceof Error ? err.message : String(err)}`);
-    }
-  }
-
-  private async createDummyStream(videoElement: HTMLVideoElement): Promise<MediaStream> {
-    // Cette méthode crée un stream compatible avec MediaRecorder
-    try {
-      // Essayez d'abord de capturer le flux depuis l'élément vidéo
-      if ('captureStream' in videoElement) {
-        return (videoElement as any).captureStream();
-      }
-      // Fallback: utilisez getUserMedia si captureStream n'est pas disponible
-      return await navigator.mediaDevices.getUserMedia({ 
-        video: true,
-        audio: false
-      });
-    } catch (e) {
-      console.warn('Failed to create dummy stream:', e);
-      throw new Error('Could not create recording stream');
+      alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -180,7 +158,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private startMediaRecorder() {
     try {
       this.recordedChunks = [];
-      this.mediaRecorder = new MediaRecorder(this.stream!);
+      this.mediaRecorder = new MediaRecorder(this.stream!, { mimeType: 'video/webm' });
 
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
@@ -194,7 +172,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         this.uploadVideo(blob);
       };
 
-      this.mediaRecorder.start();
+      this.mediaRecorder.start(100); // Collecte des données toutes les 100ms
       this.startRecordingTimer();
       this.isRecording = true;
       this.scrollTexte();
@@ -222,14 +200,16 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private uploadVideo(blob: Blob) {
     this.videoService.uploadVideo(blob).subscribe({
-      next: (message) => console.log('Upload successful:', message),
-      error: (err) => console.error('Upload error:', err)
+      next: (message) => alert('Enregistrement envoyé avec succès!'),
+      error: (err) => alert('Erreur lors de l\'envoi: ' + err.message)
     });
   }
 
   toggleFullscreen(): void {
+    const videoContainer = this.videoElement.nativeElement.parentElement;
+
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen()
+      videoContainer?.requestFullscreen()
         .then(() => this.isFullscreen = true)
         .catch(console.error);
     } else {

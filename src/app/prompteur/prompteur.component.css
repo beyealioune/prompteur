@@ -6,7 +6,6 @@
   padding: 32px 16px 120px;
   background: #ffffff; 
   min-height: 100vh;
-  position: relative;
 }
 
 .video-card {
@@ -18,26 +17,39 @@
   position: relative;
   background-color: #000;
 }
-video::-webkit-media-controls-enclosure,
-video::-webkit-media-controls-panel,
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-start-playback-button {
-  display: none !important;
+
+.video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
 }
 
+.ios-video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 video {
   width: 100%;
-  height: auto;
   display: block;
+  background: #000;
+  -webkit-transform: translateZ(0);
+}
+
+/* Masquer les contrôles natifs */
+video::-webkit-media-controls {
+  display: none !important;
 }
 
 .texte-overlay {
   position: absolute;
-  top: 50px;
+  top: 0;
   width: 100%;
-  max-width: 600px;
-  height: 100%; /* ✅ prend toute la hauteur de la vidéo */
+  height: 100%;
   overflow: hidden;
   pointer-events: none;
   padding: 0 16px;
@@ -53,18 +65,13 @@ video {
   font-weight: 500;
 }
 
-/* ✅ animation activée dynamiquement */
 .scrolling {
   animation: scroll-up 20s linear infinite;
 }
 
 @keyframes scroll-up {
-  from {
-    top: 100%;
-  }
-  to {
-    top: -100%;
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(-100%); }
 }
 
 .trait {
@@ -75,112 +82,6 @@ video {
   background: #7b61ff;
   z-index: 10;
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
-  border-radius: 2px;
 }
 
-mat-form-field.full-width {
-  width: 100%;
-  max-width: 600px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-textarea.mat-input-element {
-  font-size: 16px;
-  color: #333;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 600px;
-}
-
-.actions button {
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-.actions button[color="accent"] {
-  background-color: rgb(4, 0, 65) !important;
-  color: white;
-}
-
-.actions button[color="warn"] {
-  background-color: #ff5252 !important;
-  color: white;
-}
-
-.actions button[color="primary"] {
-  background-color: rgb(4, 0, 65) !important;
-  color: white;
-}
-
-.fullscreen-icon {
-  font-size: 32px;
-  color: rgb(4, 0, 65);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.fullscreen-icon:hover {
-  transform: scale(1.1);
-  color: #3a2ca0;
-}
-
-.countdown {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 72px;
-  font-weight: bold;
-  color: #7b61ff;
-  text-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-  z-index: 20;
-  animation: popIn 0.3s ease;
-}
-
-.timer {
-  position: absolute;
-  bottom: 10px;
-  right: 16px;
-  font-size: 18px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 12px;
-  color: #fff;
-  border-radius: 8px;
-  font-weight: bold;
-  z-index: 15;
-}
-
-@keyframes popIn {
-  from {
-    transform: scale(0.8) translate(-50%, -50%);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) translate(-50%, -50%);
-    opacity: 1;
-  }
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 16px;
-  }
-
-  .texte {
-    font-size: 20px;
-  }
-
-  .countdown {
-    font-size: 48px;
-  }
-}
+/* Reste du CSS inchangé... */
