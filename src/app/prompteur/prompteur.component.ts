@@ -32,7 +32,7 @@ declare const VideoRecorder: any;
     PaymentPopupComponent
   ],
   templateUrl: './prompteur.component.html',
-  styleUrl: './prompteur.component.css',
+  styleUrl: './prompteur.component.css'
 })
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
@@ -98,12 +98,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30 }
-        },
+        video: { facingMode: 'user' },
         audio: true
       });
 
@@ -113,30 +108,12 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
 
-      if (this.isUsingFrontCamera()) {
-        video.classList.add('mirror');
-      } else {
-        video.classList.remove('mirror');
-      }
+      video.classList.add('mirror');
 
-      if (this.isIOS()) {
-        const playVideo = () => {
-          video.play().catch(e => console.error('iOS play error:', e));
-          document.body.removeEventListener('click', playVideo);
-        };
-        document.body.addEventListener('click', playVideo, { once: true });
-      } else {
-        await video.play();
-      }
-
+      await video.play();
     } catch (err) {
-      console.error('Camera error:', err);
-      alert('Erreur caméra: ' + (err instanceof Error ? err.message : String(err)));
+      alert("Erreur lors de l'accès à la caméra : " + (err instanceof Error ? err.message : String(err)));
     }
-  }
-
-  private isUsingFrontCamera(): boolean {
-    return this.stream?.getVideoTracks()[0]?.getSettings().facingMode === 'user';
   }
 
   startRecording() {
@@ -145,17 +122,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    if (this.isIOS()) {
-      if (typeof VideoRecorder !== 'undefined') {
-        console.log('✅ Plugin iOS détecté, utilisation du natif');
-        this.recordWithNativeAPI();
-      } else {
-        alert("❌ L'enregistrement natif iOS n'est pas disponible.");
-      }
-      return;
-    }
-
-    if ('MediaRecorder' in window) {
+    if (this.isIOS() && typeof VideoRecorder !== 'undefined') {
+      this.recordWithNativeAPI();
+    } else if ('MediaRecorder' in window) {
       this.recordWithMediaRecorder();
     } else {
       alert("L'enregistrement vidéo n'est pas supporté sur cet appareil");
@@ -176,8 +145,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         await this.uploadVideo(blob);
       }
     } catch (err) {
-      console.error('Erreur plugin natif :', err);
-      alert("Erreur d'enregistrement natif: " + (err instanceof Error ? err.message : String(err)));
+      alert("Erreur d'enregistrement natif : " + (err instanceof Error ? err.message : String(err)));
     }
   }
 
@@ -199,10 +167,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private startMediaRecorder() {
     const supportedTypes = [
-      'video/webm;codecs=vp9',
       'video/webm;codecs=vp8',
-      'video/webm',
-      'video/mp4'
+      'video/webm'
     ];
 
     let mimeType = '';
@@ -214,8 +180,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     if (!mimeType) {
-      console.error('❌ Aucun format supporté !');
-      alert("Format vidéo non supporté par cet appareil.");
+      alert("Aucun format vidéo supporté");
       return;
     }
 
@@ -230,10 +195,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       const blob = new Blob(this.recordedChunks, { type: mimeType });
       this.previewRecording(blob);
       this.uploadVideo(blob);
-    };
-
-    this.mediaRecorder.onerror = (err) => {
-      console.error('MediaRecorder erreur :', err);
     };
 
     this.mediaRecorder.start(100);
@@ -260,7 +221,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       await this.videoService.uploadVideo(blob).toPromise();
       alert('Vidéo envoyée avec succès !');
     } catch (err) {
-      console.error('Erreur upload vidéo :', err);
       alert("Erreur d'envoi de la vidéo");
     }
   }
@@ -272,20 +232,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.srcObject = null;
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
-    video.play().catch(e => console.error('Lecture vidéo échouée :', e));
-  }
-
-  toggleFullscreen(): void {
-    const videoContainer = this.videoElement.nativeElement.parentElement;
-    if (!document.fullscreenElement) {
-      videoContainer?.requestFullscreen()
-        .then(() => this.isFullscreen = true)
-        .catch(console.error);
-    } else {
-      document.exitFullscreen()
-        .then(() => this.isFullscreen = false)
-        .catch(console.error);
-    }
+    video.play().catch(e => console.error('Erreur lecture :', e));
   }
 
   scrollTexte() {

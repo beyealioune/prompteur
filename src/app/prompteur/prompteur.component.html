@@ -1,4 +1,3 @@
-<!-- prompteur.component.html -->
 <div class="container">
   <!-- Zone Vidéo -->
   <div class="video-card" [class.ios-video-container]="isIOS()">
@@ -8,7 +7,8 @@
            playsinline
            webkit-playsinline
            disablePictureInPicture
-           controlslist="nodownload nofullscreen">
+           controlslist="nodownload nofullscreen"
+           class="mirror">
     </video>
 
     <!-- Texte Prompteur -->

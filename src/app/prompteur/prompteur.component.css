@@ -4,7 +4,7 @@
   align-items: center;
   gap: 24px;
   padding: 32px 16px 120px;
-  background: #ffffff; 
+  background: #ffffff;
   min-height: 100vh;
 }
 
@@ -17,10 +17,10 @@
   position: relative;
   background-color: #000;
 }
+
 video.mirror {
   transform: scaleX(-1);
 }
-
 
 .video-container {
   position: relative;
@@ -44,7 +44,6 @@ video {
   -webkit-transform: translateZ(0);
 }
 
-/* Masquer les contrôles natifs */
 video::-webkit-media-controls {
   display: none !important;
 }
@@ -87,5 +86,3 @@ video::-webkit-media-controls {
   z-index: 10;
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
-
-/* Reste du CSS inchangé... */
