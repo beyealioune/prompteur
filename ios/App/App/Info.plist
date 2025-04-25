@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>PrompteurApp</string>
+	<string>PrompteurApp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+
+	<!-- ✅ Permissions obligatoires pour la caméra et le micro -->
+	<key>NSCameraUsageDescription</key>
+	<string>Cette application nécessite l'accès à la caméra pour enregistrer des vidéos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Cette application nécessite l'accès au micro pour enregistrer l'audio des vidéos.</string>
 </dict>
 </plist>

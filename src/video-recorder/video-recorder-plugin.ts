@@ -14,4 +14,5 @@ export interface VideoRecorderPlugin {
   recordVideo(options: RecordVideoOptions): Promise<RecordVideoResult>;
 }
 
-export const VideoRecorder = registerPlugin<VideoRecorderPlugin>('VideoRecorder');
+
+export const VideoRecorder = registerPlugin('VideoRecorderPlugin'); // 👈 correspond à @objc(VideoRecorderPlugin)
