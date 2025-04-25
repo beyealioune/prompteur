@@ -26,10 +26,14 @@ export class VideoService {
     return `${this.pathService}/stream/${fileName}`;
   }
 
-  uploadVideo(blob: Blob): Observable<string> {
+  uploadVideo(blob: Blob, fileExtension: string = '.webm'): Observable<string> {
     const formData = new FormData();
-    const file = new File([blob], 'video.webm', { type: 'video/webm' });
+    const fileName = `video${fileExtension}`;
+    const mimeType = fileExtension === '.mp4' ? 'video/mp4' : 'video/webm';
+    
+    const file = new File([blob], fileName, { type: mimeType });
     formData.append('file', file);
+    
     return this.http.post(`${this.pathService}/upload`, formData, { responseType: 'text' });
   }
 
@@ -37,7 +41,6 @@ export class VideoService {
     return this.http.get<any[]>(`${this.pathService}/all`);
   }
 
-  
   downloadVideo(fileName: string): Observable<Blob> {
     return this.http.get(`${this.pathService}/download/${fileName}`, { responseType: 'blob' });
   }
