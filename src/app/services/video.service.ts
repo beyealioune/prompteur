@@ -41,6 +41,11 @@ export class VideoService {
     return this.http.get<any[]>(`${this.pathService}/all`);
   }
 
+  // Dans votre VideoService
+  downloadVideoUrl(fileName: string): string {
+    return `${environment.apiUrl}/api/videos/download/${fileName}`;
+  }
+
   downloadVideo(fileName: string): Observable<Blob> {
     return this.http.get(`${this.pathService}/download/${fileName}`, { responseType: 'blob' });
   }

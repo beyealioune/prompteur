@@ -6,8 +6,18 @@
           <mat-card-title>{{ video.fileName }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <video *ngIf="videoUrls[video.fileName]" [src]="videoUrls[video.fileName]" controls width="100%"></video>
-        </mat-card-content>
+          <video *ngIf="videoUrls[video.fileName]" 
+       #videoPlayer
+       [src]="videoUrls[video.fileName]" 
+       controls 
+       playsinline
+       webkit-playsinline
+       width="100%"
+       preload="metadata"
+       (loadedmetadata)="setupVideoForIOS(videoPlayer)">
+  <p>Votre navigateer ne supporte pas la lecture de vidéos HTML5.</p>
+  <a [href]="videoService.downloadVideoUrl(video.fileName)">Télécharger la vidéo</a>
+</video>        </mat-card-content>
         <mat-card-actions>
           <button mat-raised-button color="primary" (click)="download(video.fileName)">
             ⬇️ Télécharger
