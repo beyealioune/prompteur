@@ -16,7 +16,6 @@ import { CommonModule } from '@angular/common';
 import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
 import { PaymentPopupComponent } from '../payment-popup/payment-popup.component';
-import { CameratestComponent } from '../cameratest/cameratest.component';
 declare const VideoRecorder: any;
 
 @Component({
@@ -31,7 +30,7 @@ declare const VideoRecorder: any;
     MatIconModule,
     CommonModule,
     PaymentPopupComponent,
-    CameratestComponent
+    
 ],
   templateUrl: './prompteur.component.html',
   styleUrl: './prompteur.component.css'
