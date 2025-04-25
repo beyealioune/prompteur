@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
 import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
 import { PaymentPopupComponent } from '../payment-popup/payment-popup.component';
-import { CameratestComponent } from "../cameratest/cameratest.component";
+import { CameratestComponent } from '../cameratest/cameratest.component';
 declare const VideoRecorder: any;
 
 @Component({
