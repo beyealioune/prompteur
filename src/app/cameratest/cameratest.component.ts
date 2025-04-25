@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { VideoRecorder } from '../../../video-recorder/ios/Sources/VideoRecorderPlugin/video-recorder-plugin';
+import { VideoRecorder } from '../../video-recorder/video-recorder-plugin';
 
 @Component({
   selector: 'app-cameratest',
