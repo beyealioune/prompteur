@@ -227,6 +227,23 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  @ViewChild('fullscreenContainer') fullscreenContainer!: ElementRef;
+
+toggleFullscreen(): void {
+  const elem = this.fullscreenContainer.nativeElement;
+
+  if (!document.fullscreenElement) {
+    elem.requestFullscreen()
+      .then(() => this.isFullscreen = true)
+      .catch(console.error);
+  } else {
+    document.exitFullscreen()
+      .then(() => this.isFullscreen = false)
+      .catch(console.error);
+  }
+}
+
+
   private previewRecording(blob: Blob) {
     if (this.videoBlobUrl) URL.revokeObjectURL(this.videoBlobUrl);
     this.videoBlobUrl = URL.createObjectURL(blob);

@@ -18,8 +18,11 @@
   background-color: #000;
 }
 
-video.mirror {
-  transform: scaleX(-1);
+.video-section:fullscreen {
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .video-container {
@@ -41,7 +44,6 @@ video {
   width: 100%;
   display: block;
   background: #000;
-  -webkit-transform: translateZ(0);
 }
 
 video::-webkit-media-controls {
@@ -85,4 +87,23 @@ video::-webkit-media-controls {
   background: #7b61ff;
   z-index: 10;
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
+}
+
+.actions-column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 16px;
+}
+
+.actions-column button {
+  width: 100%;
+}
+
+mat-icon {
+  font-size: 28px;
+  color: #555;
 }
