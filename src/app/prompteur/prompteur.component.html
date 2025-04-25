@@ -1,32 +1,28 @@
 <div class="container mat-elevation-z4">
-  <!-- Zone qui passe en plein écran -->
-  <div class="video-section" #fullscreenContainer>
-    <mat-card class="video-card">
-      <div class="video-container" [class.ios-video-container]="isIOS()">
-        <video #videoElement
-               autoplay
-               muted
-               playsinline
-               webkit-playsinline
-               disablePictureInPicture
-               controlslist="nodownload nofullscreen">
-        </video>
-
-        <div class="texte-overlay">
-          <div class="trait"></div>
-          <div class="texte" #texteElement [class.scrolling]="isScrolling">
-            {{ texte }}
-          </div>
-        </div>
-
-        <div *ngIf="isRecording" class="timer">
-          ⏱️ {{ recordingTime }}s
+  <mat-card class="video-card">
+    <div class="video-container" [class.ios-video-container]="isIOS()">
+      <video #videoElement
+             autoplay
+             muted
+             playsinline
+             webkit-playsinline
+             disablePictureInPicture
+             controlslist="nodownload nofullscreen">
+      </video>
+      
+      <div class="texte-overlay">
+        <div class="trait"></div>
+        <div class="texte" #texteElement [class.scrolling]="isScrolling">
+          {{ texte }}
         </div>
       </div>
-    </mat-card>
-  </div>
 
-  <!-- Zone des boutons (reste visible même en plein écran) -->
+      <div *ngIf="isRecording" class="timer">
+        ⏱️ {{ recordingTime }}s
+      </div>
+    </div>
+  </mat-card>
+
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Texte du prompteur</mat-label>
     <textarea
@@ -39,7 +35,7 @@
   </mat-form-field>
 
   <div class="actions-column">
-    <button mat-raised-button color="primary" (click)="startCamera()">
+    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
       📷 Démarrer caméra
     </button>
 
@@ -48,22 +44,26 @@
     <button mat-raised-button 
             color="accent" 
             (click)="startRecording()" 
-            [disabled]="isRecording || !stream">
+            [disabled]="isRecording || !stream"
+            style="width: 100%;">
       🎬 Démarrer enregistrement
     </button>
 
     <button mat-raised-button 
             color="warn" 
             (click)="stopRecording()" 
-            [disabled]="!isRecording">
+            [disabled]="!isRecording"
+            style="width: 100%;">
       🛑 Arrêter
     </button>
 
-    <button mat-icon-button (click)="toggleFullscreen()" aria-label="Plein écran">
-      <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
-    </button>
+    <mat-icon class="fullscreen-icon" 
+              (click)="toggleFullscreen()"
+              matTooltip="Plein écran">
+      {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+    </mat-icon>
   </div>
 </div>
 
-<!-- Popup désactivée temporairement -->
+<!-- Popup désactivée pour test -->
 <!-- <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> -->

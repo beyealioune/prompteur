@@ -18,11 +18,8 @@
   background-color: #000;
 }
 
-.video-section:fullscreen {
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+video.mirror {
+  transform: scaleX(-1);
 }
 
 .video-container {
@@ -44,6 +41,7 @@ video {
   width: 100%;
   display: block;
   background: #000;
+  -webkit-transform: translateZ(0);
 }
 
 video::-webkit-media-controls {
@@ -99,11 +97,17 @@ video::-webkit-media-controls {
   margin-top: 16px;
 }
 
-.actions-column button {
-  width: 100%;
-}
-
-mat-icon {
+.fullscreen-icon {
+  align-self: center;
   font-size: 28px;
   color: #555;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.countdown {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #7b61ff;
 }
