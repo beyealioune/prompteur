@@ -60,28 +60,47 @@ export class VideoListComponent implements OnInit {
     }
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
-
   async download(fileName: string): Promise<void> {
     try {
+      // 1. Récupérer le blob
       const blob = await this.videoService.downloadVideo(fileName).toPromise();
-
+      
       if (!blob) {
-        console.error('Blob undefined, téléchargement échoué');
-        alert('Le téléchargement a échoué. Veuillez réessayer.');
-        return;
+        throw new Error('Le fichier à télécharger est vide');
       }
-
-      if (this.isIOS() || this.isAndroid()) {
-        await this.downloadForMobile(blob, fileName);
-      } else {
-        this.downloadForDesktop(blob, fileName);
-      }
+  
+      // 2. Créer un URL objet
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // 3. Créer un lien invisible
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = blobUrl;
+      a.download = fileName;
+      
+      // 4. Ajouter au DOM et cliquer
+      document.body.appendChild(a);
+      a.click();
+      
+      // 5. Nettoyer après un délai
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        
+        // Solution alternative pour iOS si le téléchargement ne démarre pas
+        if (this.isIOS() && !navigator.userAgent.includes('Safari')) {
+          window.open(this.videoService.downloadVideoUrl(fileName), '_blank');
+        }
+      }, 200);
+      
     } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
-      alert('Le téléchargement a échoué. Veuillez réessayer.');
+      console.error('Échec du téléchargement:', error);
+      alert('Impossible de télécharger le fichier. Essayez avec un autre navigateur.');
+      
+      // Fallback ultime - ouvrir dans un nouvel onglet
+      window.open(this.videoService.downloadVideoUrl(fileName), '_blank');
     }
   }
-
   private downloadForDesktop(blob: Blob, fileName: string): void {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -97,36 +116,39 @@ export class VideoListComponent implements OnInit {
   }
 
   private async downloadForMobile(blob: Blob, fileName: string): Promise<void> {
-    if (typeof (window as any).cordova !== 'undefined') {
-      // Cas spécifique si tu utilises Cordova/Capacitor
-      const filePath = (window as any).cordova.file.externalRootDirectory + fileName;
-      const fileEntry = await (window as any).resolveLocalFileSystemURL(filePath);
-
-      fileEntry.createWriter(async (fileWriter: any) => {
-        fileWriter.onwriteend = () => {
-          alert('Téléchargement terminé! Fichier enregistré dans: ' + filePath);
-        };
-
-        fileWriter.onerror = (e: any) => {
-          console.error('Erreur d\'écriture:', e);
-          alert('Erreur lors de l\'enregistrement du fichier');
-        };
-
-        await fileWriter.write(blob);
-      });
-    } else {
-      // Pour navigateur mobile
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-
-      setTimeout(() => {
-        a.dispatchEvent(new MouseEvent('click'));
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 200);
+    // Solution universelle pour mobile (sans Cordova)
+    const url = URL.createObjectURL(blob);
+    
+    // Créer un lien temporaire
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    
+    // Nécessaire pour iOS
+    document.body.appendChild(a);
+    
+    // Simuler le clic
+    const clickEvent = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    a.dispatchEvent(clickEvent);
+    
+    // Nettoyage
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 200);
+    
+    // Alternative pour iOS si le téléchargement ne démarre pas
+    if (this.isIOS()) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const safariUrl = reader.result as string;
+        window.open(safariUrl, '_blank');
+      };
+      reader.readAsDataURL(blob);
     }
   }
 
