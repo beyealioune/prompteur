@@ -60,29 +60,7 @@ export class VideoListComponent implements OnInit {
     }
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
-  async download(fileName: string): Promise<void> {
-    try {
-      // 1. Télécharger le blob vidéo
-      const blob = await this.videoService.downloadVideo(fileName).toPromise();
-      
-      if (!blob) {
-        throw new Error('Aucune donnée vidéo reçue');
-      }
   
-      // 2. Solution optimale pour iOS
-      if (this.isIOS()) {
-        await this.downloadForIOS(blob);
-        return;
-      }
-  
-      // 3. Solution pour les autres plateformes
-      this.downloadForOtherPlatforms(blob, fileName);
-  
-    } catch (error) {
-      console.error('Échec du téléchargement:', error);
-      this.showDownloadError(fileName);
-    }
-  }
   
   private async downloadForIOS(blob: Blob): Promise<void> {
     // Solution 1: Utilisation de FileReader + window.open
@@ -181,4 +159,29 @@ export class VideoListComponent implements OnInit {
   isAndroid(): boolean {
     return /Android/.test(navigator.userAgent);
   }
+
+  download(fileName: string): void {
+    const downloadUrl = this.videoService.downloadVideoUrl(fileName);
+  
+    if (this.isIOS()) {
+      // Pour iOS ➔ Ouvre directement le lien vers l'API (pas de Blob !)
+      window.open(downloadUrl, '_blank');
+      return;
+    }
+  
+    // Pour Android ou Desktop ➔ Télécharger via Blob
+    this.videoService.downloadVideo(fileName).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 200);
+    });
+  }
+  
 }
