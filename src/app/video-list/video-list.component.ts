@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoService } from '../services/video.service';
 import { CommonModule } from '@angular/common';
@@ -103,6 +103,4 @@ download(fileName: string): void {
   }
 }}
 
-function ViewChild(arg0: string): (target: VideoListComponent, propertyKey: "videoPlayer") => void {
-  throw new Error('Function not implemented.');
-}
+
