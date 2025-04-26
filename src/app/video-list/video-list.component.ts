@@ -73,29 +73,35 @@ getSafeUrl(fileName: string): SafeResourceUrl {
 public isIOS(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
+
 download(fileName: string): void {
   if (this.isIOS()) {
-    // Pour iOS, utilisez directement l'URL de téléchargement
+    // Pour iOS, on utilise une nouvelle fenêtre avec l'URL de téléchargement
     const downloadUrl = this.videoService.downloadVideoUrl(fileName);
-    window.open(downloadUrl, '_blank');
-    return;
+    const newWindow = window.open(downloadUrl, '_blank');
+    
+    // Si la fenêtre est bloquée, on montre un message
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      alert('Le téléchargement a été bloqué. Veuillez autoriser les popups pour ce site.');
+      // Alternative : ouvrir l'URL dans le même onglet
+      window.location.href = downloadUrl;
+    }
+  } else {
+    // Approche standard pour les autres plateformes
+    this.videoService.downloadVideo(fileName).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    });
   }
-
-  // Approche standard pour les autres plateformes
-  this.videoService.downloadVideo(fileName).subscribe(blob => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }, 100);
-  });
-}
-}
+}}
 
 function ViewChild(arg0: string): (target: VideoListComponent, propertyKey: "videoPlayer") => void {
   throw new Error('Function not implemented.');

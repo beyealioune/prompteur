@@ -2,13 +2,14 @@
   <mat-card class="video-card">
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
-             autoplay
-             muted
-             playsinline
-             webkit-playsinline
-             disablePictureInPicture
-             controlslist="nodownload nofullscreen">
-      </video>
+      class="mirror"
+      autoplay
+      muted
+      playsinline
+      webkit-playsinline
+      disablePictureInPicture
+      controlslist="nodownload nofullscreen">
+</video>
       
       <div class="texte-overlay">
         <div class="trait"></div>
