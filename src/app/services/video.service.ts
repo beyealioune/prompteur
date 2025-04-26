@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
@@ -46,7 +46,18 @@ export class VideoService {
     return `${environment.apiUrl}/api/videos/download/${fileName}`;
   }
 
-  downloadVideo(fileName: string): Observable<Blob> {
-    return this.http.get(`${this.pathService}/download/${fileName}`, { responseType: 'blob' });
-  }
+
+
+downloadVideo(fileName: string): Observable<Blob> {
+  return this.http.get(`${this.pathService}/download/${fileName}`, {
+    responseType: 'blob',
+    headers: new HttpHeaders({
+      // Important pour iOS
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    })
+  });
+}
 }

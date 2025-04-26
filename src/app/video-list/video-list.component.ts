@@ -69,38 +69,90 @@ getSafeUrl(fileName: string): SafeResourceUrl {
   return this.sanitizer.bypassSecurityTrustResourceUrl(url);
 }
 
-// Ajoutez cette méthode pour détecter iOS
-public isIOS(): boolean {
+
+async download(fileName: string): Promise<void> {
+  try {
+    const blob = await this.videoService.downloadVideo(fileName).toPromise();
+    
+    if (this.isIOS() || this.isAndroid()) {
+      // Méthode spécifique pour mobile
+      if (blob) {
+        await this.downloadForMobile(blob, fileName);
+      } else {
+        console.error('Blob is undefined. Cannot proceed with download.');
+        alert('Le téléchargement a échoué. Veuillez réessayer.');
+      }
+    } else {
+      // Méthode standard pour desktop
+      if (blob) {
+        this.downloadForDesktop(blob, fileName);
+      } else {
+        console.error('Blob is undefined. Cannot proceed with download.');
+        alert('Le téléchargement a échoué. Veuillez réessayer.');
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors du téléchargement:', error);
+    alert('Le téléchargement a échoué. Veuillez réessayer.');
+  }
+}
+
+private downloadForDesktop(blob: Blob, fileName: string): void {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 100);
+}
+
+private async downloadForMobile(blob: Blob, fileName: string): Promise<void> {
+  if (typeof (window as any).cordova !== 'undefined') {
+    // Solution pour Cordova/PhoneGap/Capacitor
+    const filePath = (window as any).cordova.file.externalRootDirectory + fileName;
+    const fileEntry = await (window as any).resolveLocalFileSystemURL(filePath);
+    
+    fileEntry.createWriter(async (fileWriter: { onwriteend: () => void; onerror: (e: any) => void; write: (arg0: Blob) => any; }) => {
+      fileWriter.onwriteend = () => {
+        alert('Téléchargement terminé! Fichier enregistré dans: ' + filePath);
+      };
+      
+      fileWriter.onerror = (e) => {
+        console.error('Erreur d\'écriture:', e);
+        alert('Erreur lors de l\'enregistrement du fichier');
+      };
+      
+      await fileWriter.write(blob);
+    });
+  } else {
+    // Solution pour les navigateurs mobiles
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    
+    // Nécessaire pour iOS
+    document.body.appendChild(a);
+    a.click();
+    
+    // Petite temporisation pour iOS
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 200);
+  }
+}
+
+isIOS(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
-download(fileName: string): void {
-  if (this.isIOS()) {
-    // Pour iOS, on utilise une nouvelle fenêtre avec l'URL de téléchargement
-    const downloadUrl = this.videoService.downloadVideoUrl(fileName);
-    const newWindow = window.open(downloadUrl, '_blank');
-    
-    // Si la fenêtre est bloquée, on montre un message
-    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-      alert('Le téléchargement a été bloqué. Veuillez autoriser les popups pour ce site.');
-      // Alternative : ouvrir l'URL dans le même onglet
-      window.location.href = downloadUrl;
-    }
-  } else {
-    // Approche standard pour les autres plateformes
-    this.videoService.downloadVideo(fileName).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 100);
-    });
-  }
-}}
-
+isAndroid(): boolean {
+  return /Android/.test(navigator.userAgent);
+}
+}
 
