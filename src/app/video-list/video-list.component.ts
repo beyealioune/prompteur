@@ -62,59 +62,81 @@ export class VideoListComponent implements OnInit {
   }
   async download(fileName: string): Promise<void> {
     try {
-      // 1. Récupérer le blob
+      // 1. Télécharger le blob vidéo
       const blob = await this.videoService.downloadVideo(fileName).toPromise();
       
       if (!blob) {
-        throw new Error('Le fichier à télécharger est vide');
+        throw new Error('Aucune donnée vidéo reçue');
       }
   
-      // 2. Créer un URL objet
-      const blobUrl = URL.createObjectURL(blob);
-      
-      // 3. Créer un lien invisible
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = blobUrl;
-      a.download = fileName;
-      
-      // 4. Ajouter au DOM et cliquer
-      document.body.appendChild(a);
-      a.click();
-      
-      // 5. Nettoyer après un délai
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-        
-        // Solution alternative pour iOS si le téléchargement ne démarre pas
-        if (this.isIOS() && !navigator.userAgent.includes('Safari')) {
-          window.open(this.videoService.downloadVideoUrl(fileName), '_blank');
-        }
-      }, 200);
-      
+      // 2. Solution optimale pour iOS
+      if (this.isIOS()) {
+        await this.downloadForIOS(blob);
+        return;
+      }
+  
+      // 3. Solution pour les autres plateformes
+      this.downloadForOtherPlatforms(blob, fileName);
+  
     } catch (error) {
       console.error('Échec du téléchargement:', error);
-      alert('Impossible de télécharger le fichier. Essayez avec un autre navigateur.');
-      
-      // Fallback ultime - ouvrir dans un nouvel onglet
-      window.open(this.videoService.downloadVideoUrl(fileName), '_blank');
+      this.showDownloadError(fileName);
     }
   }
-  private downloadForDesktop(blob: Blob, fileName: string): void {
-    const url = window.URL.createObjectURL(blob);
+  
+  private async downloadForIOS(blob: Blob): Promise<void> {
+    // Solution 1: Utilisation de FileReader + window.open
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const newWindow = window.open('', '_blank');
+      
+      if (newWindow) {
+        newWindow.location.href = dataUrl;
+      } else {
+        // Fallback si popup bloquée
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => document.body.removeChild(link), 1000);
+      }
+    };
+    
+    reader.readAsDataURL(blob);
+  
+    // Solution alternative avec création d'iframe
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = URL.createObjectURL(blob);
+    document.body.appendChild(iframe);
+    setTimeout(() => document.body.removeChild(iframe), 5000);
+  }
+  
+  private downloadForOtherPlatforms(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
     document.body.appendChild(a);
-
+    a.click();
+    
     setTimeout(() => {
-      a.dispatchEvent(new MouseEvent('click'));
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    }, 0);
+    }, 200);
   }
-
+  
+  private showDownloadError(fileName: string): void {
+    // Solution de dernier recours
+    const confirmDownload = confirm('Le téléchargement automatique a échoué. Voulez-vous ouvrir la vidéo dans un nouvel onglet ?');
+    if (confirmDownload) {
+      window.open(this.videoService.downloadVideoUrl(fileName), '_blank');
+    }
+  }
   private async downloadForMobile(blob: Blob, fileName: string): Promise<void> {
     // Solution universelle pour mobile (sans Cordova)
     const url = URL.createObjectURL(blob);
