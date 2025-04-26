@@ -43,7 +43,7 @@ export class VideoService {
 
   // Dans votre VideoService
   downloadVideoUrl(fileName: string): string {
-    return `${environment.apiUrl}/api/videos/download/${fileName}`;
+    return `${environment.apiUrl}/videos/download/${fileName}`;
   }
 
 
