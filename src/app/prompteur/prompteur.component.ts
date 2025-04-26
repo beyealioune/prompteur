@@ -58,9 +58,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Désactivation temporaire du paiement pour tests
-    // if (!this.sessionService.hasAccess()) {
-    //   this.showPaymentPopup = true;
-    // }
+     if (!this.sessionService.hasAccess()) {
+     this.showPaymentPopup = true;
+     }
   }
 
   ngAfterViewInit() {
