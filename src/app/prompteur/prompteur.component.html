@@ -13,7 +13,7 @@
       
       <div class="texte-overlay">
         <div class="trait"></div>
-        <div class="texte" #texteElement>
+        <div class="texte" #texteElement [class.scrolling]="isScrolling">
           {{ texte }}
         </div>
       </div>
@@ -40,7 +40,7 @@
       <button mat-raised-button color="primary" (click)="increaseSpeed()">➕ Accélérer</button>
       <button mat-raised-button color="warn" (click)="decreaseSpeed()">➖ Ralentir</button>
       <div class="vitesse-info">
-        Vitesse prompteur: {{ vitesse }}s
+        Vitesse prompteur : {{ vitesse }}s
       </div>
       
     </div>
@@ -77,4 +77,3 @@
 
 <!-- Popup désactivée pour test -->
  <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
-  
