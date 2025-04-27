@@ -4,8 +4,7 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy,
-  HostListener
+  OnDestroy
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -38,35 +37,34 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
 
-  texte: string = 'Bienvenue sur notre application prompteur.';
+  texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording: boolean = false;
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];
   stream: MediaStream | null = null;
+  vitesse: number = 20;
   countdown: number = 0;
   isFullscreen = false;
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-  isScrolling = false;
-  isFastSpeed = false;
+  isScrolling = true;
   private videoBlobUrl: string | null = null;
-  private scrollInterval: any;
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService,
-    private elementRef: ElementRef
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
-    if (!this.sessionService.hasAccess()) {
-      this.showPaymentPopup = true;
-    }
+    // Désactivation temporaire du paiement pour tests
+     if (!this.sessionService.hasAccess()) {
+     this.showPaymentPopup = true;
+     }
   }
 
   ngAfterViewInit() {
-    this.resetScroll();
+    this.scrollTexte();
   }
 
   ngOnDestroy() {
@@ -79,7 +77,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     if (this.videoBlobUrl) {
       URL.revokeObjectURL(this.videoBlobUrl);
     }
-    this.stopScrolling();
   }
 
   stopCamera() {
@@ -102,7 +99,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
-        audio: true
+        audio: true // Activation de l'audio pour iOS
       });
 
       const video = this.videoElement.nativeElement;
@@ -112,6 +109,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('webkit-playsinline', 'true');
 
       if (this.isIOS()) {
+        // Solution spécifique iOS pour l'autoplay
         const playVideo = () => {
           video.play().catch(e => console.error('Play error:', e));
           document.body.removeEventListener('click', playVideo);
@@ -141,6 +139,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
+    // Vérification des formats supportés
     const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
     if (!this.isTypeSupported(preferredMimeType)) {
       alert(`Le format ${preferredMimeType} n'est pas supporté sur votre appareil`);
@@ -154,7 +153,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       if (this.countdown === 0) {
         clearInterval(interval);
         this.startMediaRecorder();
-        this.startScrolling();
       }
     }, 1000);
   }
@@ -163,11 +161,13 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     try {
       this.recordedChunks = [];
       
+      // Options pour iOS/Safari
       const options = {
         mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
         videoBitsPerSecond: 2500000
       };
 
+      // Création du MediaRecorder avec fallback
       try {
         this.mediaRecorder = new MediaRecorder(this.stream!, options);
       } catch (e) {
@@ -187,12 +187,12 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         });
         this.previewRecording(blob);
         this.uploadVideo(blob);
-        this.stopScrolling();
       };
 
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
+      this.scrollTexte();
 
     } catch (err) {
       console.error('Recording error:', err);
@@ -213,7 +213,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
     clearInterval(this.timerInterval);
     this.isRecording = false;
-    this.stopScrolling();
   }
 
   private uploadVideo(blob: Blob) {
@@ -226,96 +225,23 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
-    const hostElement = this.elementRef.nativeElement;
-  
+
     if (!document.fullscreenElement) {
       videoContainer?.requestFullscreen()
-        .then(() => {
-          this.isFullscreen = true;
-          hostElement.classList.add('fullscreen');
-          this.adjustTextSize();
-        })
+        .then(() => this.isFullscreen = true)
         .catch(console.error);
     } else {
       document.exitFullscreen()
-        .then(() => {
-          this.isFullscreen = false;
-          hostElement.classList.remove('fullscreen');
-          this.adjustTextSize();
-        })
+        .then(() => this.isFullscreen = false)
         .catch(console.error);
     }
   }
 
-  @HostListener('document:fullscreenchange')
-  onFullscreenChange() {
-    this.isFullscreen = !!document.fullscreenElement;
-    this.adjustTextSize();
-  }
-
-  private adjustTextSize() {
-    setTimeout(() => {
-      const texteEl = this.texteElement.nativeElement;
-      if (this.isFullscreen) {
-        texteEl.style.fontSize = '3vw';
-      } else {
-        texteEl.style.fontSize = '24px';
-      }
-    }, 100);
-  }
-
-  toggleSpeed() {
-    this.isFastSpeed = !this.isFastSpeed;
-    if (this.isScrolling) {
-      this.stopScrolling();
-      this.startScrolling();
-    }
-  }
-
-  resetScroll() {
-    const texteEl = this.texteElement.nativeElement;
-    texteEl.style.transition = 'none';
-    texteEl.style.transform = 'translateY(100%)';
-    // Force le recalcul du layout
-    void texteEl.offsetHeight;
-  }
-
-  startScrolling() {
-    this.stopScrolling();
-    this.resetScroll();
-    
-    const texteEl = this.texteElement.nativeElement;
-    const containerHeight = this.videoElement.nativeElement.offsetHeight;
-    const textHeight = texteEl.scrollHeight;
-    const totalDistance = containerHeight + textHeight;
-    
-    // Durée ajustée en fonction de la vitesse
-    const duration = this.isFastSpeed ? (totalDistance / 100) : (totalDistance / 50);
-    
-    // Forcer le recalcul du style avant l'animation
-    setTimeout(() => {
-      texteEl.style.transition = `transform ${duration}s linear`;
-      texteEl.style.transform = `translateY(-${textHeight}px)`;
-    }, 50);
-    
-    this.isScrolling = true;
-    
-    // Boucle le défilement
-    this.scrollInterval = setInterval(() => {
-      this.resetScroll();
-      setTimeout(() => {
-        texteEl.style.transition = `transform ${duration}s linear`;
-        texteEl.style.transform = `translateY(-${textHeight}px)`;
-      }, 50);
-    }, duration * 1000);
-  }
-
-  stopScrolling() {
-    if (this.scrollInterval) {
-      clearTimeout(this.scrollInterval);
-      this.scrollInterval = null;
-    }
+  scrollTexte() {
     this.isScrolling = false;
+    setTimeout(() => {
+      this.isScrolling = true;
+    }, 10);
   }
 
   private previewRecording(blob: Blob) {
@@ -332,4 +258,22 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
     video.play().catch(e => console.error('Playback error:', e));
   }
-}
+
+  increaseSpeed() {
+    this.vitesse = Math.max(5, this.vitesse - 5); // Plus rapide (diminue le temps)
+    this.updateScrollSpeed();
+  }
+  
+  decreaseSpeed() {
+    this.vitesse += 5; // Plus lent (augmente le temps)
+    this.updateScrollSpeed();
+  }
+  
+  updateScrollSpeed() {
+    if (this.texteElement) {
+      this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
+      this.scrollTexte();
+    }
+  }
+  
+} 

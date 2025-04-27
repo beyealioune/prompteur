@@ -9,11 +9,11 @@
       webkit-playsinline
       disablePictureInPicture
       controlslist="nodownload nofullscreen">
-      </video>
+</video>
       
       <div class="texte-overlay">
         <div class="trait"></div>
-        <div class="texte" #texteElement [class.scrolling]="isScrolling" [class.scrolling-fast]="isFastSpeed">
+        <div class="texte" #texteElement [class.scrolling]="isScrolling">
           {{ texte }}
         </div>
       </div>
@@ -29,13 +29,18 @@
     <textarea
       matInput
       [(ngModel)]="texte"
-      (ngModelChange)="resetScroll()"
+      (ngModelChange)="scrollTexte()"
       placeholder="Entrez votre texte ici..."
       rows="4">
     </textarea>
   </mat-form-field>
 
   <div class="actions-column">
+    <div class="speed-buttons">
+      <button mat-raised-button color="primary" (click)="increaseSpeed()">➕ Accélérer</button>
+      <button mat-raised-button color="warn" (click)="decreaseSpeed()">➖ Ralentir</button>
+    </div>
+    
     <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
       📷 Démarrer caméra
     </button>
@@ -58,14 +63,6 @@
       🛑 Arrêter
     </button>
 
-    <div class="speed-controls">
-      <button mat-raised-button 
-              (click)="toggleSpeed()"
-              [color]="isFastSpeed ? 'primary' : ''">
-        Vitesse: {{ isFastSpeed ? 'x2' : 'Normale' }}
-      </button>
-    </div>
-
     <mat-icon class="fullscreen-icon" 
               (click)="toggleFullscreen()"
               matTooltip="Plein écran">
@@ -74,4 +71,6 @@
   </div>
 </div>
 
-<app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" />
+<!-- Popup désactivée pour test -->
+ <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
+  
