@@ -64,8 +64,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.scrollTexte();
+    this.updateScrollSpeed();
   }
+  
 
   ngOnDestroy() {
     this.cleanupResources();
@@ -272,8 +273,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   updateScrollSpeed() {
     if (this.texteElement) {
       this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
-      this.scrollTexte();
+      this.isScrolling = true;
     }
   }
+  
   
 } 
