@@ -223,26 +223,19 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       videoContainer?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
-          // Force un recalcul de l'animation
-          this.texteElement.nativeElement.style.animation = 'none';
-          setTimeout(() => {
-            this.updateScrollSpeed();
-          }, 10);
+          this.updateScrollSpeed(); // IMPORTANT pour garder la vitesse
         })
         .catch(console.error);
     } else {
       document.exitFullscreen()
         .then(() => {
           this.isFullscreen = false;
-          // Force un recalcul de l'animation
-          this.texteElement.nativeElement.style.animation = 'none';
-          setTimeout(() => {
-            this.updateScrollSpeed();
-          }, 10);
+          this.updateScrollSpeed();
         })
         .catch(console.error);
     }
   }
+
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }

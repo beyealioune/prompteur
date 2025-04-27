@@ -7,7 +7,10 @@
   background: #ffffff;
   min-height: 100vh;
 }
-
+video.mirror {
+  transform: scaleX(-1) !important;
+  -webkit-transform: scaleX(-1) !important;
+}
 .video-card {
   width: 100%;
   max-width: 600px;
@@ -24,11 +27,24 @@
   aspect-ratio: 16/9;
 }
 
-video, .ios-video-container video {
+.ios-video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+video {
+  width: 100%;
+  display: block;
   background: #000;
+  -webkit-transform: translateZ(0);
+}
+
+video::-webkit-media-controls {
+  display: none !important;
 }
 
 .texte-overlay {
@@ -38,29 +54,29 @@ video, .ios-video-container video {
   width: 100%;
   overflow: hidden;
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  padding: 0 16px;
 }
 
+
 .texte {
+  position: absolute;
+  bottom: -100%;
   white-space: pre-line;
   font-size: 24px;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 0 10px rgba(60, 0, 120, 0.7);
   line-height: 1.6;
   font-weight: 500;
-  min-height: 200%;
-  animation: scroll-up var(--scroll-speed, 20s) linear infinite;
+}
+
+
+.scrolling {
+  animation: scroll-up 20s linear infinite;
 }
 
 @keyframes scroll-up {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(-100%); }
 }
 
 .trait {
@@ -83,17 +99,6 @@ video, .ios-video-container video {
   margin-top: 16px;
 }
 
-.speed-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.speed-buttons button {
-  flex: 1;
-}
-
 .fullscreen-icon {
   align-self: center;
   font-size: 28px;
@@ -109,8 +114,13 @@ video, .ios-video-container video {
   color: #7b61ff;
 }
 
-.vitesse-info {
-  text-align: center;
-  margin-top: 8px;
-  color: #555;
+.speed-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
 }
+.speed-buttons button {
+  flex: 1;
+}
+
