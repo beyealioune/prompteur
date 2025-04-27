@@ -50,37 +50,16 @@ video, .ios-video-container video {
   text-shadow: 0 0 10px rgba(60, 0, 120, 0.7);
   line-height: 1.6;
   font-weight: 500;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0 20px;
-  box-sizing: border-box;
-  will-change: transform;
-  backface-visibility: hidden;
+  min-height: 200%;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
 
 @keyframes scroll-up {
   0% {
-    transform: translate3d(0, 100vh, 0);
+    transform: translateY(100%);
   }
   100% {
-    transform: translate3d(0, -100%, 0);
-  }
-}
-
-:-webkit-full-screen .texte {
-  position: fixed;
-  animation: scroll-up-ios var(--scroll-speed, 20s) linear infinite;
-}
-
-@keyframes scroll-up-ios {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, -100%, 0);
+    transform: translateY(-100%);
   }
 }
 

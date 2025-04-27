@@ -9,7 +9,7 @@
       webkit-playsinline
       disablePictureInPicture
       controlslist="nodownload nofullscreen">
-      </video>
+</video>
       
       <div class="texte-overlay">
         <div class="trait"></div>
@@ -40,8 +40,9 @@
       <button mat-raised-button color="primary" (click)="increaseSpeed()">➕ Accélérer</button>
       <button mat-raised-button color="warn" (click)="decreaseSpeed()">➖ Ralentir</button>
       <div class="vitesse-info">
-        Vitesse prompteur : {{ vitesse }}s
+        Vitesse prompteur: {{ vitesse }}s
       </div>
+      
     </div>
     
     <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
@@ -74,4 +75,6 @@
   </div>
 </div>
 
-<app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" />
+<!-- Popup désactivée pour test -->
+ <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
+  

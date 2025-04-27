@@ -64,7 +64,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.updateScrollSpeed();
-    this.setupIOSFullscreenListeners();
   }
 
   ngOnDestroy(): void {
@@ -81,10 +80,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   updateScrollSpeed() {
     if (this.texteElement) {
-      const element = this.texteElement.nativeElement;
-      element.style.animation = 'none';
-      void element.offsetHeight; // Trigger reflow
-      element.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
+      this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
     }
   }
 
@@ -220,72 +216,33 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
-  async toggleFullscreen(): Promise<void> {
+
+  toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
-    
     if (!document.fullscreenElement) {
-      try {
-        if (this.isIOS()) {
-          const videoElement = this.videoElement.nativeElement;
-          await videoElement.requestFullscreen();
-          (videoElement as any).webkitEnterFullscreen(); // 👈 Correction ici
-        } else {
-          await videoContainer?.requestFullscreen();
-        }
-        
-        this.isFullscreen = true;
-        this.forceScrollUpdate();
-      } catch (err) {
-        console.error('Fullscreen error:', err);
-      }
+      videoContainer?.requestFullscreen()
+        .then(() => {
+          this.isFullscreen = true;
+          // Force un recalcul de l'animation
+          this.texteElement.nativeElement.style.animation = 'none';
+          setTimeout(() => {
+            this.updateScrollSpeed();
+          }, 10);
+        })
+        .catch(console.error);
     } else {
-      try {
-        await document.exitFullscreen();
-        this.isFullscreen = false;
-        this.forceScrollUpdate();
-      } catch (err) {
-        console.error('Exit fullscreen error:', err);
-      }
+      document.exitFullscreen()
+        .then(() => {
+          this.isFullscreen = false;
+          // Force un recalcul de l'animation
+          this.texteElement.nativeElement.style.animation = 'none';
+          setTimeout(() => {
+            this.updateScrollSpeed();
+          }, 10);
+        })
+        .catch(console.error);
     }
   }
-  
-  private forceScrollUpdate() {
-    if (!this.texteElement) return;
-    
-    const element = this.texteElement.nativeElement;
-    element.style.animation = 'none';
-    void element.offsetHeight;
-    element.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
-    
-    if (this.isIOS()) {
-      setTimeout(() => {
-        element.style.animation = 'none';
-        void element.offsetHeight;
-        element.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
-      }, 100);
-    }
-  }
-
-  private setupIOSFullscreenListeners() {
-    if (!this.isIOS()) return;
-  
-    document.addEventListener('webkitfullscreenchange', () => {
-      this.isFullscreen = !!(document as any).webkitFullscreenElement;
-      this.forceScrollUpdate();
-    });
-  
-    const video = this.videoElement.nativeElement;
-    video.addEventListener('webkitbeginfullscreen', () => {
-      this.isFullscreen = true;
-      this.forceScrollUpdate();
-    });
-  
-    video.addEventListener('webkitendfullscreen', () => {
-      this.isFullscreen = false;
-      this.forceScrollUpdate();
-    });
-  }
-
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
