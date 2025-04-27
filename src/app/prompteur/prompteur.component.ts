@@ -220,7 +220,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
-
   async toggleFullscreen(): Promise<void> {
     const videoContainer = this.videoElement.nativeElement.parentElement;
     
@@ -229,7 +228,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         if (this.isIOS()) {
           const videoElement = this.videoElement.nativeElement;
           await videoElement.requestFullscreen();
-          videoElement.webkitEnterFullscreen();
+          (videoElement as any).webkitEnterFullscreen(); // 👈 Correction ici
         } else {
           await videoContainer?.requestFullscreen();
         }
