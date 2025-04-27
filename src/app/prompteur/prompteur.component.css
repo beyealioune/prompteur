@@ -31,8 +31,9 @@ video.mirror {
 video {
   width: 100%;
   height: 100%;
-  background: #000;
+  object-fit: cover;
 }
+
 
 video::-webkit-media-controls {
   display: none !important;
@@ -59,7 +60,9 @@ video::-webkit-media-controls {
   text-shadow: 0 0 10px rgba(60, 0, 120, 0.7);
   line-height: 1.6;
   font-weight: 500;
+  min-height: 200%; /* 🚀 Important : donner de la hauteur pour scroller sur tout l'écran */
 }
+
 
 .scrolling {
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
