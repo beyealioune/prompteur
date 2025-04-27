@@ -64,6 +64,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.updateScrollSpeed();
+    this.restartScrolling();
   }
 
   ngOnDestroy(): void {
@@ -84,14 +85,25 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  restartScrolling() {
+    if (this.texteElement) {
+      const el = this.texteElement.nativeElement;
+      el.style.animation = 'none';
+      el.offsetHeight; // Force reflow
+      el.style.animation = '';
+    }
+  }
+
   increaseSpeed() {
     this.vitesse = Math.max(5, this.vitesse - 5);
     this.updateScrollSpeed();
+    this.restartScrolling();
   }
 
   decreaseSpeed() {
     this.vitesse += 5;
     this.updateScrollSpeed();
+    this.restartScrolling();
   }
 
   async startCamera() {
@@ -176,6 +188,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.startRecordingTimer();
       this.isRecording = true;
       this.updateScrollSpeed();
+      this.restartScrolling();
     } catch (err) {
       console.error('Recording error:', err);
       alert('Erreur lors de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
@@ -223,7 +236,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       videoContainer?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
-          this.updateScrollSpeed(); // IMPORTANT pour garder la vitesse
+          this.updateScrollSpeed();
+          this.restartScrolling();
         })
         .catch(console.error);
     } else {
@@ -231,6 +245,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         .then(() => {
           this.isFullscreen = false;
           this.updateScrollSpeed();
+          this.restartScrolling();
         })
         .catch(console.error);
     }

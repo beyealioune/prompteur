@@ -31,6 +31,10 @@ video, .ios-video-container video {
   background: #000;
 }
 
+.mirror {
+  transform: scaleX(-1);
+}
+
 .texte-overlay {
   position: absolute;
   top: 0;
