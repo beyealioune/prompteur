@@ -33,6 +33,11 @@
       placeholder="Entrez votre texte ici..."
       rows="4">
     </textarea>
+    <div class="speed-buttons">
+      <button mat-stroked-button color="primary" (click)="setVitesse(1)">Vitesse Normale</button>
+      <button mat-stroked-button color="accent" (click)="setVitesse(2)">Vitesse x2</button>
+    </div>
+    
   </mat-form-field>
 
   <div class="actions-column">

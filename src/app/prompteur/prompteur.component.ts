@@ -238,11 +238,29 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   scrollTexte() {
+    const texteDiv = this.texteElement.nativeElement;
+  
+    // Reset position tout en bas
+    texteDiv.style.transform = 'translateY(100%)';
+    texteDiv.style.transition = 'none';
+  
     this.isScrolling = false;
+  
     setTimeout(() => {
       this.isScrolling = true;
+  
+      // Calcul de la durée en fonction de la vitesse choisie
+      const scrollDuration = this.vitesse === 2 ? 10 : 20; // secondes
+  
+      texteDiv.style.transition = `transform ${scrollDuration}s linear`;
+      texteDiv.style.transform = 'translateY(-100%)';
     }, 10);
   }
+  setVitesse(facteur: number) {
+    this.vitesse = facteur;
+    this.scrollTexte();
+  }
+  
 
   private previewRecording(blob: Blob) {
     if (this.videoBlobUrl) {

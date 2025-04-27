@@ -26,6 +26,12 @@ video.mirror {
   width: 100%;
   aspect-ratio: 16/9;
 }
+.speed-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 12px;
+}
 
 .ios-video-container video {
   position: absolute;
