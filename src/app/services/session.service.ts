@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../models/user';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ export class SessionService {
   private isLoggedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public user: User | undefined;
 
-  constructor() {
-  }
+  constructor(private authService: AuthService) {}
+
 
   // Getter basé sur la présence du token
   public get isLogged(): boolean {
@@ -21,6 +22,13 @@ export class SessionService {
   // Observable pour écouter les changements
   public $isLogged(): Observable<boolean> {
     return this.isLoggedSubject.asObservable();
+  }
+  public refreshUser(): Observable<User> {
+    return this.authService.me().pipe(
+      tap((user: User) => {
+        this.user = user; // ✅ On met à jour ici
+      })
+    );
   }
 
   // Connexion (stocke le token + met à jour l'état)

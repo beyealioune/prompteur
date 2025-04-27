@@ -16,6 +16,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
+import { App } from '@capacitor/app';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-prompteur',
@@ -53,14 +55,45 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private snackBar: MatSnackBar 
+
   ) {}
 
   ngOnInit(): void {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
     }
+
+    App.addListener('appStateChange', (state) => {
+      if (state.isActive) {
+        this.refreshUserStatus();
+      }
+    });
   }
+
+  private refreshUserStatus() {
+    this.sessionService.refreshUser().subscribe((user) => {
+      if (user.isPremium || (user.trialEnd && new Date(user.trialEnd) > new Date())) {
+        if (this.showPaymentPopup) {
+          this.showPaymentPopup = false;
+  
+          this.snackBar.open('✅ Paiement validé ! Merci beaucoup.', 'Fermer', {
+            duration: 5000, // 5 secondes
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'] // on peut custom les couleurs si tu veux
+          });
+        }
+      }
+    }, (error) => {
+      console.error('Erreur lors du rafraîchissement utilisateur', error);
+    });
+  }
+  
+
+  
+
 
   ngAfterViewInit(): void {
     this.updateScrollSpeed();

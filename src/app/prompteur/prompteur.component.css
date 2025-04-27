@@ -76,6 +76,13 @@ video, .ios-video-container video {
   z-index: 10;
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
+.snackbar-success {
+  background-color: #4caf50; /* vert succès */
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
 
 .actions-column {
   display: flex;

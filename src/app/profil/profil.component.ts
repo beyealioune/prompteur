@@ -35,7 +35,15 @@ export class ProfilComponent {
     console.log("coucou");
     
   }
-
+  isTrialActive(): boolean {
+    if (!this.user || !this.user.trialEnd) {
+      return false;
+    }
+    const now = new Date();
+    const trialEndDate = new Date(this.user.trialEnd);
+    return trialEndDate > now;
+  }
+  
  onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }

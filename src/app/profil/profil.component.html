@@ -36,8 +36,14 @@
 <div class="form-group mb-3 text-center">
   <label class="form-label">Mon abonnement :</label>
   <p [ngClass]="{'text-success': user.isPremium, 'text-danger': !user.isPremium}">
-    {{ user.isPremium ? 'En cours' : 'Inactif' }}
+    <ng-container *ngIf="isTrialActive(); else abonnementStatus">
+      📅 Période gratuite en cours
+    </ng-container>
+    <ng-template #abonnementStatus>
+      {{ user.isPremium ? 'En cours' : 'Inactif' }}
+    </ng-template>
   </p>
+  
   <button 
     class="btn btn-outline-danger"
     *ngIf="user.isPremium"
