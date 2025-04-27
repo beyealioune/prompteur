@@ -226,11 +226,13 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
-
+    const hostElement = this.elementRef.nativeElement;
+  
     if (!document.fullscreenElement) {
       videoContainer?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
+          hostElement.classList.add('fullscreen');
           this.adjustTextSize();
         })
         .catch(console.error);
@@ -238,6 +240,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       document.exitFullscreen()
         .then(() => {
           this.isFullscreen = false;
+          hostElement.classList.remove('fullscreen');
           this.adjustTextSize();
         })
         .catch(console.error);
@@ -271,8 +274,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   resetScroll() {
     const texteEl = this.texteElement.nativeElement;
-    texteEl.style.transform = 'translateY(100%)';
     texteEl.style.transition = 'none';
+    texteEl.style.transform = 'translateY(100%)';
+    // Force le recalcul du layout
+    void texteEl.offsetHeight;
   }
 
   startScrolling() {
@@ -280,20 +285,27 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.resetScroll();
     
     const texteEl = this.texteElement.nativeElement;
-    const duration = this.isFastSpeed ? (texteEl.scrollHeight / 100 * 5) : (texteEl.scrollHeight / 100 * 10);
+    const containerHeight = this.videoElement.nativeElement.offsetHeight;
+    const textHeight = texteEl.scrollHeight;
+    const totalDistance = containerHeight + textHeight;
     
+    // Durée ajustée en fonction de la vitesse
+    const duration = this.isFastSpeed ? (totalDistance / 100) : (totalDistance / 50);
+    
+    // Forcer le recalcul du style avant l'animation
     setTimeout(() => {
       texteEl.style.transition = `transform ${duration}s linear`;
-      texteEl.style.transform = 'translateY(-100%)';
+      texteEl.style.transform = `translateY(-${textHeight}px)`;
     }, 50);
     
     this.isScrolling = true;
     
-    this.scrollInterval = setTimeout(() => {
+    // Boucle le défilement
+    this.scrollInterval = setInterval(() => {
       this.resetScroll();
       setTimeout(() => {
         texteEl.style.transition = `transform ${duration}s linear`;
-        texteEl.style.transform = 'translateY(-100%)';
+        texteEl.style.transform = `translateY(-${textHeight}px)`;
       }, 50);
     }, duration * 1000);
   }
