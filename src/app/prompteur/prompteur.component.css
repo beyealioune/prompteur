@@ -126,4 +126,51 @@ video, .ios-video-container video {
   margin-top: 8px;
   color: #555;
 }
+/* Popup succès (même style que celle de paiement) */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.popup-card {
+  background-color: #ffffff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.popup-card h2 {
+  margin-bottom: 12px;
+  font-size: 22px;
+  color: #4CAF50; /* Vert succès */
+}
+
+.popup-card p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.btn-custom {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
 

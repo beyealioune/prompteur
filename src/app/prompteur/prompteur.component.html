@@ -77,3 +77,11 @@
 
 <!-- Popup désactivée pour test -->
  <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
+<!-- Popup de confirmation paiement -->
+<div class="popup-overlay" *ngIf="showSuccessPopup">
+  <div class="popup-card">
+    <h2>✅ Paiement validé !</h2>
+    <p>Merci beaucoup pour votre soutien 🎉</p>
+    <button class="btn btn-primary btn-custom" (click)="closeSuccessPopup()">Fermer</button>
+  </div>
+</div>

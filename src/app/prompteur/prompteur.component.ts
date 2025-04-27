@@ -50,6 +50,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
+  showSuccessPopup = false;
+
   isScrolling = true;
   private videoBlobUrl: string | null = null;
 
@@ -76,14 +78,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.sessionService.refreshUser().subscribe((user) => {
       if (user.isPremium || (user.trialEnd && new Date(user.trialEnd) > new Date())) {
         if (this.showPaymentPopup) {
-          this.showPaymentPopup = false;
-  
-          this.snackBar.open('✅ Paiement validé ! Merci beaucoup.', 'Fermer', {
-            duration: 5000, // 5 secondes
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'] // on peut custom les couleurs si tu veux
-          });
+          this.showPaymentPopup = false; // ❌ On ferme l'ancienne popup de paiement
+          this.showSuccessPopup = true;  // ✅ On ouvre la popup succès !
         }
       }
     }, (error) => {
@@ -91,7 +87,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
   
-
+  
+  closeSuccessPopup() {
+    this.showSuccessPopup = false;
+  }
+  
   
 
 
