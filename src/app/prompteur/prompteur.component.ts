@@ -48,7 +48,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-  isScrolling = true;
   private videoBlobUrl: string | null = null;
 
   constructor(
@@ -80,7 +79,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   updateScrollSpeed() {
     if (this.texteElement) {
-      this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
+      const el = this.texteElement.nativeElement;
+      el.style.animation = 'none';
+      void el.offsetHeight; // Force reflow
+      el.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
     }
   }
 
@@ -129,12 +131,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
-    if (!this.isTypeSupported(preferredMimeType)) {
-      alert(`Le format ${preferredMimeType} n'est pas supporté`);
-      return;
-    }
-
     this.countdown = 3;
     const interval = setInterval(() => {
       this.countdown--;
@@ -148,16 +144,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private startMediaRecorder() {
     try {
       this.recordedChunks = [];
-      const options = {
-        mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
-        videoBitsPerSecond: 2500000
-      };
-      try {
-        this.mediaRecorder = new MediaRecorder(this.stream!, options);
-      } catch {
-        this.mediaRecorder = new MediaRecorder(this.stream!);
-      }
-
+      this.mediaRecorder = new MediaRecorder(this.stream!);
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
@@ -165,9 +152,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       };
 
       this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.recordedChunks, {
-          type: this.mediaRecorder?.mimeType || 'video/mp4'
-        });
+        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
@@ -178,7 +163,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.updateScrollSpeed();
     } catch (err) {
       console.error('Recording error:', err);
-      alert('Erreur lors de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
     }
   }
 
@@ -210,20 +194,19 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private uploadVideo(blob: Blob) {
-    const extension = blob.type.includes('mp4') ? '.mp4' : '.webm';
-    this.videoService.uploadVideo(blob, extension).subscribe({
+    this.videoService.uploadVideo(blob, '.webm').subscribe({
       next: () => alert('Vidéo envoyée avec succès!'),
       error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
 
   toggleFullscreen(): void {
-    const videoContainer = this.videoElement.nativeElement.parentElement;
+    const container = this.videoElement.nativeElement.parentElement;
     if (!document.fullscreenElement) {
-      videoContainer?.requestFullscreen()
+      container?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
-          this.updateScrollSpeed(); // IMPORTANT pour garder la vitesse
+          this.updateScrollSpeed();
         })
         .catch(console.error);
     } else {
