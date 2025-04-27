@@ -50,13 +50,15 @@ video, .ios-video-container video {
   text-shadow: 0 0 10px rgba(60, 0, 120, 0.7);
   line-height: 1.6;
   font-weight: 500;
-  min-height: 200%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
 
 @keyframes scroll-up {
   0% {
-    transform: translateY(100%);
+    transform: translateY(0);
   }
   100% {
     transform: translateY(-100%);
