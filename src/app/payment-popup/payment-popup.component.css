@@ -32,27 +32,21 @@
     font-size: 15px;
   }
   
-  .btn-custom {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    background-color: #00124d;
+  .btn-unified {
+    background-color: #333;
     color: white;
-    border: none;
-    border-radius: 6px;
+    padding: 12px 24px;
     font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
     cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
   }
   
-  .btn-secondary {
-    background-color: transparent;
-    border: 1px solid #00124d;
-    color: #00124d;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #00124d;
-    color: white;
+  .btn-unified:hover {
+    background-color: #222;
   }
   
   .btn-close {
