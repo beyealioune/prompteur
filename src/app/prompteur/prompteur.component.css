@@ -2,12 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
-  padding: 24px 14px 90px;
+  gap: 24px;
+  padding: calc(env(safe-area-inset-top, 24px) + 16px) 12px 100px;
   background: #ffffff;
   min-height: 100vh;
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
-  box-sizing: border-box;
 }
 
 .top-buttons {
@@ -15,7 +14,6 @@
   gap: 12px;
   width: 100%;
   max-width: 600px;
-  margin-top: 10px;
 }
 
 .btn {
@@ -49,15 +47,14 @@
 }
 
 .video-box {
-  width: calc(100% - 20px);
+  width: 100%;
   max-width: 600px;
   aspect-ratio: 16/9;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background-color: #000;
   position: relative;
-  margin: 10px 0;
 }
 
 .video {
@@ -84,12 +81,12 @@
 
 .texte {
   white-space: pre-line;
-  font-size: 21px;
+  font-size: 22px;
   color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-  line-height: 1.45;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+  line-height: 1.5;
   font-weight: 600;
-  padding: 15px;
+  padding: 16px;
   min-height: 200%;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
@@ -115,11 +112,11 @@
 
 .timer {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 8px;
+  left: 8px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 5px 10px;
+  padding: 4px 8px;
   border-radius: 6px;
   font-size: 14px;
   font-weight: bold;
@@ -131,22 +128,21 @@
   font-weight: bold;
   font-size: 16px;
   color: #333;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .prompt-speed {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  width: calc(100% - 20px);
+  gap: 20px;
+  width: 100%;
   max-width: 600px;
-  margin: 10px 0;
 }
 
 .circle {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: #f2f4f8;
   border: none;
@@ -161,21 +157,20 @@
 .speed-display {
   font-size: 16px;
   font-weight: bold;
-  min-width: 58px;
+  min-width: 60px;
   text-align: center;
 }
 
 .input-text {
-  width: calc(100% - 20px);
+  width: 100%;
   max-width: 600px;
-  height: 95px;
+  height: 100px;
   background-color: #f2f4f8;
   border-radius: 10px;
-  padding: 15px;
-  font-size: 15px;
+  padding: 16px;
+  font-size: 16px;
   border: 1px solid #ddd;
   resize: none;
-  margin: 10px 0;
 }
 
 .input-text::placeholder {
@@ -185,9 +180,8 @@
 .btn.stop {
   background-color: #ff6b6b;
   color: white;
-  width: calc(100% - 20px);
+  width: 100%;
   max-width: 600px;
-  margin: 10px 0;
 }
 
 .countdown {
@@ -200,8 +194,8 @@
 
 .fullscreen-toggle {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   background: rgba(255, 255, 255, 0.85);
   border: none;
   border-radius: 8px;
@@ -213,7 +207,7 @@
 }
 
 .fullscreen-toggle mat-icon {
-  font-size: 22px;
+  font-size: 24px;
   color: #333;
 }
 
@@ -232,7 +226,7 @@
 
 .popup-card {
   background-color: #ffffff;
-  padding: 24px 20px;
+  padding: 25px 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   width: 90%;
@@ -241,7 +235,7 @@
 }
 
 .popup-card h2 {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   font-size: 22px;
   color: #4CAF50;
 }
@@ -263,61 +257,20 @@
   width: 100%;
 }
 
-/* Media query optimisée pour iPhone */
 @media (max-width: 375px) {
-  .teleprompteur-wrapper {
-    padding: 22px 12px 80px;
-    gap: 18px;
+  .btn,
+  .video-box,
+  .prompt-speed,
+  .input-text,
+  .btn.stop {
+    max-width: 100%;
   }
-  
-  .top-buttons {
-    margin-top: 12px;
-    gap: 10px;
-  }
-  
-  .btn {
-    padding: 11px;
-    font-size: 15px;
-  }
-  
-  .video-box {
-    width: calc(100% - 16px);
-    border-radius: 16px;
-    margin: 12px 0;
-  }
-  
-  .texte {
-    font-size: 20px;
-    padding: 14px;
-    line-height: 1.4;
-  }
-  
-  .prompt-speed {
-    gap: 16px;
-  }
-  
-  .circle {
-    width: 40px;
-    height: 40px;
-    font-size: 19px;
-  }
-  
+
   .speed-display {
-    font-size: 15px;
+    font-size: 14px;
   }
-  
-  .input-text {
-    height: 90px;
-    font-size: 15px;
-    padding: 14px;
-  }
-  
-  .fullscreen-toggle {
-    top: 10px;
-    right: 10px;
-  }
-  
-  .fullscreen-toggle mat-icon {
+
+  .texte {
     font-size: 20px;
   }
 }
