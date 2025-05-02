@@ -20,12 +20,19 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Cette application nécessite l'accès à la caméra pour enregistrer des vidéos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Cette application nécessite l'accès au micro pour enregistrer l'audio des vidéos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cette application nécessite l’accès à la photothèque pour enregistrer et importer des vidéos.
+Cette application nécessite l’accès à la photothèque pour enregistrer et importer des vidéos.
+Cette application nécessite l’accès à la photothèque pour enregistrer et importer des vidéos.
+Cette applicattion nécessite l'accès à la phototéque pour enregistrer et importer des vidéos</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
