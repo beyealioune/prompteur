@@ -14,18 +14,21 @@ mat-form-field {
   width: 100%;
 }
 
-.send-button {
-  background-color: rgb(4, 0, 65);
+.btn-unified {
+  background-color: #333;
   color: white;
-  padding: 10px 24px;
-  font-size: 15px;
-  align-self: center;
-  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
   transition: background-color 0.3s ease;
 }
 
-.send-button:hover {
-  background-color: #2d2d6d;
+.btn-unified:hover {
+  background-color: #222;
 }
 
 @media (max-width: 600px) {

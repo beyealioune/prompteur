@@ -19,7 +19,7 @@
           <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
         </div>
   
-        <button class="btn btn-primary w-100" type="button" (click)="updateProfile()">Sauvegarder</button>
+        <button class="btn-unified w-100" type="button" (click)="updateProfile()">Sauvegarder</button>
       </form>
   
       <hr class="my-4 w-100" />
@@ -29,7 +29,7 @@
           <label class="form-label">Nouveau mot de passe</label>
           <input type="password" class="form-control" [(ngModel)]="newPassword" name="password" />
         </div>
-        <button class="btn btn-danger w-100" type="button" (click)="updatePassword()">Changer le mot de passe</button>
+        <button class="btn-unified w-100" type="button" (click)="updatePassword()">Changer le mot de passe</button>
       </form>
       <hr class="my-4 w-100" />
 
@@ -45,7 +45,7 @@
   </p>
   
   <button 
-    class="btn btn-outline-danger"
+    class="btn-unified"
     *ngIf="user.isPremium"
     (click)="cancelSubscription()"
   >
