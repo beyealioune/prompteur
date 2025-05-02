@@ -1,6 +1,5 @@
 /* CSS pour le composant teleprompteur avec design modern 2025 */
-
-.container {
+.teleprompteur-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,7 +10,7 @@
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
 }
 
-.video-card {
+.video-box {
   width: 100%;
   max-width: 600px;
   border-radius: 20px;
@@ -20,15 +19,7 @@
   background-color: #000;
 }
 
-.video-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-video, .ios-video-container video {
+.video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -63,6 +54,10 @@ video, .ios-video-container video {
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
 
+.texte.scrolling {
+  animation-play-state: running;
+}
+
 @keyframes scroll-up {
   0% { transform: translateY(100%); }
   100% { transform: translateY(-100%); }
@@ -89,49 +84,92 @@ video, .ios-video-container video {
   font-weight: 500;
 }
 
-.full-width textarea {
-  background-color: #f2f4f8;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 16px;
-}
-
-.actions-column {
+.top-buttons {
   display: flex;
-  flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 400px;
-  align-items: stretch;
+  max-width: 600px;
 }
 
-.speed-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.vitesse-info {
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-  flex: 1;
-  color: #444;
-}
-
-button[mat-raised-button] {
+.btn {
   padding: 12px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
 }
 
-.fullscreen-icon {
-  font-size: 28px;
-  color: #555;
-  text-align: center;
+.btn.red {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.btn.dark {
+  background-color: #333;
+  color: white;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.prompt-speed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f2f4f8;
+  border: none;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+}
+
+.speed-display {
+  font-size: 18px;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+}
+
+.input-text {
+  width: 100%;
+  max-width: 600px;
+  height: 120px;
+  background-color: #f2f4f8;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  resize: none;
+}
+
+.input-text::placeholder {
+  color: #999;
+}
+
+.btn.stop {
+  background-color: #ff6b6b;
+  color: white;
+  width: 100%;
+  max-width: 600px;
 }
 
 .countdown {
@@ -139,6 +177,7 @@ button[mat-raised-button] {
   text-align: center;
   font-weight: bold;
   color: #7b61ff;
+  width: 100%;
 }
 
 .popup-overlay {
