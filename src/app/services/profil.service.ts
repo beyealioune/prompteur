@@ -21,9 +21,10 @@ export class ProfilService {
   updatePassword(password: string): Observable<any> {
     return this.http.put(`${this.baseUrl}users/auth/password`, { password });
   }
-  deleteAccount(userId: number) {
-    return this.http.delete(`${environment.apiUrl}user/${userId}`);
+  deleteAccount(userId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}auth/delete-account/${userId}`);
   }
+  
   
   uploadPhoto(userId: number, file: File): Observable<any> {
     const formData = new FormData();
