@@ -1,25 +1,32 @@
-/* CSS pour le composant teleprompteur avec design modern 2025 */
-.teleprompteur-wrapper {
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 32px 16px 120px;
+  padding: 32px 16px;
   background: #ffffff;
   min-height: 100vh;
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
 }
 
-.video-box {
+.video-card {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background-color: #000;
 }
 
-.video {
+.video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+video, .ios-video-container video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -34,42 +41,38 @@
 .texte-overlay {
   position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   pointer-events: none;
+  padding: 20%;
+  box-sizing: border-box;
 }
 
 .texte {
   white-space: pre-line;
-  font-size: 22px;
+  font-size: 2.5vw;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
   line-height: 1.5;
   font-weight: 600;
-  padding: 16px;
-  min-height: 200%;
+  text-align: center;
+  width: 100%;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
-}
-
-.texte.scrolling {
-  animation-play-state: running;
-}
-
-@keyframes scroll-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(-100%); }
 }
 
 .trait {
   position: absolute;
   top: 50%;
-  width: 100%;
+  left: 0;
+  right: 0;
   height: 2px;
   background: #7b61ff;
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.5);
+  z-index: 10;
 }
 
 .timer {
@@ -84,92 +87,32 @@
   font-weight: 500;
 }
 
-.top-buttons {
+.full-width {
+  width: 100%;
+  max-width: 800px;
+}
+
+.actions-column {
   display: flex;
+  flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
 }
 
-.btn {
-  padding: 12px;
-  border-radius: 12px;
+.speed-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.vitesse-info {
   font-size: 16px;
-  font-weight: bold;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn.red {
-  background-color: #ff4d4d;
-  color: white;
-}
-
-.btn.dark {
-  background-color: #333;
-  color: white;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.prompt-speed {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  max-width: 600px;
-}
-
-.circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f2f4f8;
-  border: none;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.speed-display {
-  font-size: 18px;
-  font-weight: bold;
-  min-width: 60px;
+  font-weight: 600;
   text-align: center;
-}
-
-.input-text {
-  width: 100%;
-  max-width: 600px;
-  height: 120px;
-  background-color: #f2f4f8;
-  border-radius: 10px;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  resize: none;
-}
-
-.input-text::placeholder {
-  color: #999;
-}
-
-.btn.stop {
-  background-color: #ff6b6b;
-  color: white;
-  width: 100%;
-  max-width: 600px;
+  flex: 1;
+  color: #444;
 }
 
 .countdown {
@@ -177,7 +120,14 @@
   text-align: center;
   font-weight: bold;
   color: #7b61ff;
-  width: 100%;
+}
+
+.fullscreen-icon {
+  font-size: 28px;
+  color: #555;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 8px;
 }
 
 .popup-overlay {
@@ -224,4 +174,9 @@
   font-size: 16px;
   cursor: pointer;
   width: 100%;
+}
+
+@keyframes scroll-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
 }
