@@ -123,6 +123,15 @@
   font-weight: bold;
   z-index: 3;
 }
+/* Ajouté */
+.prompt-label {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin-top: 20px;
+}
+
 
 .prompt-speed {
   display: flex;
@@ -154,17 +163,6 @@
   text-align: center;
 }
 
-.input-text {
-  width: 100%;
-  max-width: 600px;
-  height: 120px;
-  background-color: #f2f4f8;
-  border-radius: 10px;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  resize: none;
-}
 
 .input-text::placeholder {
   color: #999;
