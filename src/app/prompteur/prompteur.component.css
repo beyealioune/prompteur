@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 32px 16px 120px;
+  padding: 24px 12px 100px;
   background: #ffffff;
   min-height: 100vh;
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
@@ -12,15 +12,15 @@
 
 .top-buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
   max-width: 600px;
 }
 
 .btn {
-  padding: 16px;
+  padding: 12px;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   flex: 1;
   display: flex;
@@ -123,15 +123,14 @@
   font-weight: bold;
   z-index: 3;
 }
-/* Ajouté */
+
 .prompt-label {
   text-align: center;
   font-weight: bold;
   font-size: 16px;
   color: #333;
-  margin-top: 20px;
+  margin-top: 16px;
 }
-
 
 .prompt-speed {
   display: flex;
@@ -143,12 +142,12 @@
 }
 
 .circle {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: #f2f4f8;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -157,12 +156,23 @@
 }
 
 .speed-display {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   min-width: 60px;
   text-align: center;
 }
 
+.input-text {
+  width: 100%;
+  max-width: 600px;
+  height: 100px;
+  background-color: #f2f4f8;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  resize: none;
+}
 
 .input-text::placeholder {
   color: #999;
@@ -183,12 +193,23 @@
   width: 100%;
 }
 
-.fullscreen-icon {
-  font-size: 32px;
-  color: #555;
+.fullscreen-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 18px;
   cursor: pointer;
-  margin-top: 8px;
-  align-self: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 20;
+}
+
+.fullscreen-toggle mat-icon {
+  font-size: 24px;
+  color: #333;
 }
 
 .popup-overlay {
@@ -236,33 +257,22 @@
   cursor: pointer;
   width: 100%;
 }
-.fullscreen-toggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255, 255, 255, 0.85);
-  border: none;
-  border-radius: 8px;
-  padding: 6px;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  z-index: 20;
-}
 
-.fullscreen-toggle mat-icon {
-  font-size: 24px;
-  color: #333;
-}
+/* ✅ Media query pour iPhone ou petits écrans */
+@media (max-width: 375px) {
+  .btn,
+  .video-box,
+  .prompt-speed,
+  .input-text,
+  .btn.stop {
+    max-width: 100%;
+  }
 
-.input-text {
-  width: 100%;
-  max-width: 600px; /* ← identique au bouton stop */
-  height: 120px;
-  background-color: #f2f4f8;
-  border-radius: 10px;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  resize: none;
+  .speed-display {
+    font-size: 14px;
+  }
+
+  .texte {
+    font-size: 20px;
+  }
 }

@@ -9,10 +9,18 @@
 
 .video-list h2 {
   text-align: center;
+  margin-top: 40px; /* ✅ espacement en haut */
   margin-bottom: 20px;
   font-weight: 600;
   font-size: 24px;
   color: #333;
+}
+
+@media (max-width: 375px) {
+  .video-list h2 {
+    margin-top: 60px; /* encore plus d'espace sur iPhone petit écran */
+    font-size: 22px;
+  }
 }
 
 .video-card mat-card {
