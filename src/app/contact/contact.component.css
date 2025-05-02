@@ -1,41 +1,40 @@
 .contact-form {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(4, 0, 65, 0.15);
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(4, 0, 65, 0.15);
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.send-button {
+  background-color: rgb(4, 0, 65);
+  color: white;
+  padding: 10px 24px;
+  font-size: 15px;
+  align-self: center;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+  background-color: #2d2d6d;
+}
+
+@media (max-width: 600px) {
+  .contact-form {
+    padding: 20px;
+    gap: 16px;
   }
-  
-  mat-form-field {
+
+  .send-button {
     width: 100%;
   }
-  
-  .send-button {
-    background-color: rgb(4, 0, 65);
-    color: white;
-    padding: 10px 24px;
-    font-size: 15px;
-    align-self: center;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .send-button:hover {
-    background-color: #2d2d6d;
-  }
-  
-  @media (max-width: 600px) {
-    .contact-form {
-      padding: 20px;
-      gap: 16px;
-    }
-  
-    .send-button {
-      width: 100%;
-    }
-  }
-  
+}
