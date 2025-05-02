@@ -8,6 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
+import { SessionService } from '../services/session.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profil',
@@ -24,7 +26,7 @@ export class ProfilComponent {
   selectedFile: File | null = null;
   newPassword: string = '';
 
-  constructor(private http: HttpClient,    private authService: AuthService,    private profilService: ProfilService,
+  constructor(private http: HttpClient,    private authService: AuthService,    private profilService: ProfilService,private sessionService : SessionService, private router : Router
   
   ) {}
 
@@ -43,7 +45,24 @@ export class ProfilComponent {
     const trialEndDate = new Date(this.user.trialEnd);
     return trialEndDate > now;
   }
-  
+  showDeletePopup = false;
+
+confirmDelete(): void {
+  this.showDeletePopup = true;
+}
+
+deleteAccount(): void {
+  this.profilService.deleteAccount(this.user.id).subscribe({
+    next: () => {
+      this.sessionService.logOut(); // déconnecte
+      this.router.navigate(['/connexion']);
+    },
+    error: () => {
+      alert("Une erreur est survenue lors de la suppression.");
+    }
+  });
+}
+
  onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }

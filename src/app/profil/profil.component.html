@@ -51,6 +51,21 @@
   >
     Désactiver mon abonnement
   </button>
+  
+</div>
+<!-- Bouton Supprimer mon compte -->
+<div class="form-group mb-3 text-center">
+  <button class="btn-unified danger" (click)="confirmDelete()">🗑 Supprimer mon compte</button>
+</div>
+
+<!-- Popup de confirmation suppression -->
+<div *ngIf="showDeletePopup" class="popup-overlay">
+  <div class="popup-card">
+    <h2>Êtes-vous sûr ?</h2>
+    <p>Cette action est irréversible.</p>
+    <button class="btn-unified danger" (click)="deleteAccount()">Oui, supprimer</button>
+    <button class="btn-unified btn-cancel" (click)="showDeletePopup = false">Annuler</button>
+  </div>
 </div>
 
     </div>
