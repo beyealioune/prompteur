@@ -3,10 +3,11 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: calc(env(safe-area-inset-top, 24px) + 16px) 12px 100px;
+  padding: calc(24px + env(safe-area-inset-top)) 12px 100px 12px; /* Ajustement pour la safe area */
   background: #ffffff;
   min-height: 100vh;
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
+  box-sizing: border-box;
 }
 
 .top-buttons {
@@ -14,6 +15,7 @@
   gap: 12px;
   width: 100%;
   max-width: 600px;
+  margin-top: env(safe-area-inset-top); /* Espace pour la barre de statut */
 }
 
 .btn {
@@ -257,7 +259,18 @@
   width: 100%;
 }
 
+/* ✅ Media query optimisée pour iPhone */
 @media (max-width: 375px) {
+  .teleprompteur-wrapper {
+    padding-top: calc(20px + env(safe-area-inset-top));
+    gap: 20px;
+  }
+  
+  .top-buttons {
+    margin-top: env(safe-area-inset-top);
+    padding-top: 8px;
+  }
+  
   .btn,
   .video-box,
   .prompt-speed,
@@ -266,11 +279,25 @@
     max-width: 100%;
   }
 
+  .btn {
+    padding: 12px 8px;
+  }
+
   .speed-display {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .texte {
     font-size: 20px;
+    padding: 14px;
+  }
+  
+  .video-box {
+    border-radius: 16px;
+  }
+  
+  .fullscreen-toggle {
+    top: 8px;
+    right: 8px;
   }
 }
