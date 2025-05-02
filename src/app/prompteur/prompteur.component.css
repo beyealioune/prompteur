@@ -1,37 +1,68 @@
-.container {
+/* CSS modernisé pour composant prompteur version mobile 2025 */
+.teleprompteur-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 32px 16px;
+  padding: 32px 16px 120px;
   background: #ffffff;
   min-height: 100vh;
   font-family: 'Arial Rounded MT Bold', 'Comic Neue', sans-serif;
 }
 
-.video-card {
+.top-buttons {
+  display: flex;
+  gap: 16px;
   width: 100%;
-  max-width: 800px;
+  max-width: 600px;
+}
+
+.btn {
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn.red {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.btn.dark {
+  background-color: #333;
+  color: white;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.video-box {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 16/9;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background-color: #000;
-}
-
-.video-container {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 16px;
-  overflow: hidden;
 }
 
-video, .ios-video-container video {
+.video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   background: #000;
-  border-radius: 16px;
 }
 
 .mirror {
@@ -41,78 +72,109 @@ video, .ios-video-container video {
 .texte-overlay {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
   bottom: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   pointer-events: none;
-  padding: 20%;
-  box-sizing: border-box;
 }
 
 .texte {
   white-space: pre-line;
-  font-size: 2.5vw;
+  font-size: 22px;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
   line-height: 1.5;
   font-weight: 600;
-  text-align: center;
-  width: 100%;
+  padding: 16px;
+  min-height: 200%;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
+}
+
+.texte.scrolling {
+  animation-play-state: running;
+}
+
+@keyframes scroll-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
 }
 
 .trait {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
+  width: 100%;
+  height: 3px;
   background: #7b61ff;
-  box-shadow: 0 0 8px rgba(123, 97, 255, 0.5);
-  z-index: 10;
+  z-index: 2;
+  box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
 
 .timer {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 8px;
+  left: 8px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
+  z-index: 3;
 }
 
-.full-width {
-  width: 100%;
-  max-width: 800px;
-}
-
-.actions-column {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 800px;
-}
-
-.speed-buttons {
+.prompt-speed {
   display: flex;
   align-items: center;
-  gap: 12px;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
 }
 
-.vitesse-info {
-  font-size: 16px;
-  font-weight: 600;
+.circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #f2f4f8;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.speed-display {
+  font-size: 18px;
+  font-weight: bold;
+  min-width: 60px;
   text-align: center;
-  flex: 1;
-  color: #444;
+}
+
+.input-text {
+  width: 100%;
+  max-width: 600px;
+  height: 120px;
+  background-color: #f2f4f8;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  resize: none;
+}
+
+.input-text::placeholder {
+  color: #999;
+}
+
+.btn.stop {
+  background-color: #ff6b6b;
+  color: white;
+  width: 100%;
+  max-width: 600px;
 }
 
 .countdown {
@@ -120,14 +182,15 @@ video, .ios-video-container video {
   text-align: center;
   font-weight: bold;
   color: #7b61ff;
+  width: 100%;
 }
 
 .fullscreen-icon {
-  font-size: 28px;
+  font-size: 32px;
   color: #555;
-  text-align: center;
   cursor: pointer;
   margin-top: 8px;
+  align-self: center;
 }
 
 .popup-overlay {
@@ -175,8 +238,33 @@ video, .ios-video-container video {
   cursor: pointer;
   width: 100%;
 }
+.fullscreen-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 20;
+}
 
-@keyframes scroll-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(-100%); }
+.fullscreen-toggle mat-icon {
+  font-size: 24px;
+  color: #333;
+}
+
+.input-text {
+  width: 100%;
+  max-width: 600px; /* ← identique au bouton stop */
+  height: 120px;
+  background-color: #f2f4f8;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  resize: none;
 }
