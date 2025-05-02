@@ -17,6 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { App } from '@capacitor/app';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -28,6 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
+    MatTooltipModule,
     MatIconModule,
     CommonModule,
     PaymentPopupComponent
