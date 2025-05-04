@@ -31,6 +31,8 @@
     "capacitor": "^0.5.6",
     "cordova-plugin-purchase": "^13.12.1",
     "cordova-plugin-video-recorder": "^0.0.35",
+    "install": "^0.13.0",
+    "npm": "^11.3.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "video-recorder": "file:video-recorder",
