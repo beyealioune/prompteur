@@ -1,18 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-declare var store: any; // ⚠️ nécessaire pour cordova-plugin-purchase
-
+import { Platform } from '@angular/cdk/platform';
+declare var store: any;
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentService {
-
+  private http = inject(HttpClient);
+  private platform = inject(Platform);
   private baseUrl = environment.apiUrl + 'payment';
-
-  constructor(private http: HttpClient) {}
 
   // 🌍 Pour Android/Web : créer une session Stripe pour essai gratuit
   createTrialSession(): Observable<{ url: string }> {
@@ -25,41 +23,47 @@ export class PaymentService {
   }
 
   startApplePurchase(productId: string): void {
-    if (typeof store === 'undefined' || typeof store.register !== 'function') {
-      alert('⚠️ Le système d’achat Apple n’est pas prêt. Vérifiez que vous êtes bien dans l’application native.');
+    if (!this.platform.IOS) {
+      alert('⚠️ Les achats in-app ne sont disponibles que sur iOS');
       return;
     }
-  
-    store.verbosity = store.DEBUG;
-  
-    // Vérifie si le produit est déjà enregistré
-    if (!store.get(productId)) {
-      store.register({
-        id: productId,
-        type: store.PAID_SUBSCRIPTION,
-      });
+
+    if (typeof store === 'undefined') {
+      alert('⚠️ Le système d\'achat n\'est pas disponible');
+      return;
     }
-  
-    // Récupère les événements
+
+    store.verbosity = store.DEBUG;
+
+    store.register({
+      id: productId,
+      type: store.PAID_SUBSCRIPTION,
+    });
+
     store.when(productId).approved((order: any) => {
       order.finish();
       alert("✅ Achat validé !");
     });
-  
+
     store.error((err: any) => {
+      console.error('IAP Error:', err);
       alert('❌ Erreur achat Apple : ' + err.message);
     });
-  
-    // ⚠️ Attendre que tout soit prêt avant de commander
+
     store.ready(() => {
-      store.refresh();
-      store.order(productId);
+      const product = store.get(productId);
+      if (product) {
+        store.order(productId);
+      } else {
+        alert('Produit non trouvé');
+        store.refresh();
+      }
     });
+
+    store.refresh();
   }
-  
-  
-  // Optionnel : appeler ton backend pour activer un essai sur iOS
+
   activateIosTrial(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/ios-trial`, {}); // À créer dans ton backend si besoin
+    return this.http.post(`${this.baseUrl}/ios-trial`, {});
   }
 }

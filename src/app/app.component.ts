@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./navbar/navbar.component";
 import { PingService } from './ping.service';
@@ -7,7 +7,8 @@ import { SessionService } from './services/session.service';
 import { HttpClient } from '@angular/common/http';
 import { User } from './models/user';
 import { App } from '@capacitor/app';
-
+import { Platform } from '@angular/cdk/platform';
+declare var store: any;
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -20,13 +21,16 @@ export class AppComponent implements OnInit {
   message = '';
   isLogged = false;
   isLoadingSession = true;
+  private platform = inject(Platform);
 
   constructor(
     private pingService: PingService,
     private sessionService: SessionService,
     private http: HttpClient,
     private router: Router
-  ) {}
+  ) {
+    this.initializeIAP();
+  }
 
   ngOnInit(): void {
     // ✅ Intercepter les redirections Stripe dans Capacitor
@@ -70,5 +74,19 @@ export class AppComponent implements OnInit {
       next: (res) => this.message = res,
       error: (err) => this.message = 'Erreur : ' + err.status
     });
+  }
+
+  private initializeIAP() {
+    if (this.platform.IOS && typeof store !== 'undefined') {
+      console.log('Initializing in-app purchases');
+      store.verbosity = store.DEBUG;
+      
+      store.register({
+        id: 'prompteur_199',
+        type: store.PAID_SUBSCRIPTION
+      });
+
+      store.refresh();
+    }
   }
 }

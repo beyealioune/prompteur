@@ -1,17 +1,19 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
+import { Platform } from '@angular/cdk/platform';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './payment-popup.component.html',
   styleUrl: './payment-popup.component.css'
 })
 export class PaymentPopupComponent {
   @Output() close = new EventEmitter<void>();
-
-  constructor(private paymentService: PaymentService) {}
+  private paymentService = inject(PaymentService);
+  private platform = inject(Platform);
 
   onTryFree(): void {
     if (this.isIOS()) {
@@ -38,12 +40,11 @@ export class PaymentPopupComponent {
     }
   }
 
-
   onClose(): void {
     this.close.emit();
   }
 
   private isIOS(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    return this.platform.IOS || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
