@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { PaymentService } from '../services/payment.service';
 
 @Component({
@@ -15,20 +14,36 @@ export class PaymentPopupComponent {
   constructor(private paymentService: PaymentService) {}
 
   onTryFree(): void {
-    this.paymentService.createTrialSession().subscribe({
-      next: (res) => window.location.href = res.url,
-      error: (err) => alert('Erreur lors de la création de la session : ' + err.message)
-    });
+    if (this.isIOS()) {
+      this.paymentService.activateIosTrial().subscribe({
+        next: () => alert("Essai gratuit iOS activé !"),
+        error: (err) => alert("Erreur activation iOS trial : " + err.message)
+      });
+    } else {
+      this.paymentService.createTrialSession().subscribe({
+        next: (res) => window.location.href = res.url,
+        error: (err) => alert('Erreur : ' + err.message)
+      });
+    }
   }
+  
 
   onPayNow(): void {
-    this.paymentService.createImmediateSession().subscribe({
-      next: (res) => window.location.href = res.url,
-      error: (err) => alert('Erreur lors du paiement : ' + err.message)
-    });
+    if (this.isIOS()) {
+      this.paymentService.startApplePurchase('prompteur_199');
+    } else {
+      this.paymentService.createImmediateSession().subscribe({
+        next: (res) => window.location.href = res.url,
+        error: (err) => alert('Erreur lors du paiement : ' + err.message)
+      });
+    }
   }
 
   onClose(): void {
     this.close.emit();
+  }
+
+  private isIOS(): boolean {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
