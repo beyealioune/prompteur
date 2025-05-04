@@ -1,12 +1,7 @@
-<div class="popup-overlay">
-    <div class="popup-card">
-      <h2>Profitez de 3 jours gratuits</h2>
-      <p>
-        L'application est gratuite pendant 3 jours. Ensuite, payez <strong>1,99 €</strong> pour continuer à enregistrer des vidéos sans limite.
-      </p>
-      <button class="btn-unified btn-custom" (click)="onTryFree()">Continuer l’essai gratuit</button>
-      <button class="btn-unified btn-custom" (click)="onPayNow()">Payer 1,99 € maintenant</button>
-      <button class="btn-close" (click)="onClose()">Fermer</button>
-    </div>
-  </div>
-  
+<div *ngIf="isIOS()" style="margin-top: 15px; font-size: 14px; background: #f9f9f9; padding: 10px; border: 1px solid #ccc;">
+  <strong>🛠️ Debug IAP</strong><br>
+  Store prêt : <span [style.color]="isStoreReady ? 'green' : 'red'">{{ isStoreReady }}</span><br>
+  Produit chargé : <span [style.color]="productLoaded ? 'green' : 'red'">{{ productLoaded }}</span><br>
+  <button (click)="refreshStore()">🔄 Refresh</button>
+  <button (click)="logStore()">📋 Console</button>
+</div>
