@@ -24,32 +24,40 @@ export class PaymentService {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
   }
 
-  // 🍏 Pour iOS : déclencher un achat In-App (StoreKit via cordova-plugin-purchase)
   startApplePurchase(productId: string): void {
+    if (typeof store === 'undefined' || typeof store.register !== 'function') {
+      alert('⚠️ Le système d’achat Apple n’est pas prêt. Vérifiez que vous êtes bien dans l’application native.');
+      return;
+    }
+  
     store.verbosity = store.DEBUG;
-
-    store.register({
-      id: productId,
-      type: store.PAID_SUBSCRIPTION
-    });    
-
+  
+    // Vérifie si le produit est déjà enregistré
+    if (!store.get(productId)) {
+      store.register({
+        id: productId,
+        type: store.PAID_SUBSCRIPTION,
+      });
+    }
+  
+    // Récupère les événements
     store.when(productId).approved((order: any) => {
       order.finish();
       alert("✅ Achat validé !");
-      // Optionnel : appeler ton backend ici pour activer premium
     });
-
+  
     store.error((err: any) => {
-      alert('❌ Erreur paiement Apple : ' + err.message);
+      alert('❌ Erreur achat Apple : ' + err.message);
     });
-
+  
+    // ⚠️ Attendre que tout soit prêt avant de commander
     store.ready(() => {
+      store.refresh();
       store.order(productId);
     });
-
-    store.refresh();
   }
-
+  
+  
   // Optionnel : appeler ton backend pour activer un essai sur iOS
   activateIosTrial(): Observable<any> {
     return this.http.post(`${this.baseUrl}/ios-trial`, {}); // À créer dans ton backend si besoin

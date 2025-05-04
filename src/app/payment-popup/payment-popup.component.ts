@@ -16,17 +16,16 @@ export class PaymentPopupComponent {
   onTryFree(): void {
     if (this.isIOS()) {
       this.paymentService.activateIosTrial().subscribe({
-        next: () => alert("Essai gratuit iOS activé !"),
+        next: () => alert("✅ Essai gratuit activé (iOS) !"),
         error: (err) => alert("Erreur activation iOS trial : " + err.message)
       });
     } else {
       this.paymentService.createTrialSession().subscribe({
         next: (res) => window.location.href = res.url,
-        error: (err) => alert('Erreur : ' + err.message)
+        error: (err) => alert('Erreur Stripe : ' + err.message)
       });
     }
   }
-  
 
   onPayNow(): void {
     if (this.isIOS()) {
@@ -34,10 +33,11 @@ export class PaymentPopupComponent {
     } else {
       this.paymentService.createImmediateSession().subscribe({
         next: (res) => window.location.href = res.url,
-        error: (err) => alert('Erreur lors du paiement : ' + err.message)
+        error: (err) => alert('Erreur Stripe : ' + err.message)
       });
     }
   }
+
 
   onClose(): void {
     this.close.emit();
