@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 
 @Component({
@@ -10,23 +11,22 @@ import { PaymentService } from '../services/payment.service';
 })
 export class PaymentPopupComponent {
   @Output() close = new EventEmitter<void>();
-
-  constructor(private paymentService: PaymentService) {}
+  private paymentService = inject(PaymentService);
+  private platform = inject(Platform);
 
   onTryFree(): void {
     if (this.isIOS()) {
       this.paymentService.activateIosTrial().subscribe({
-        next: () => alert("Essai gratuit iOS activé !"),
+        next: () => alert("✅ Essai gratuit activé (iOS) !"),
         error: (err) => alert("Erreur activation iOS trial : " + err.message)
       });
     } else {
       this.paymentService.createTrialSession().subscribe({
         next: (res) => window.location.href = res.url,
-        error: (err) => alert('Erreur : ' + err.message)
+        error: (err) => alert('Erreur Stripe : ' + err.message)
       });
     }
   }
-  
 
   onPayNow(): void {
     if (this.isIOS()) {
@@ -34,7 +34,7 @@ export class PaymentPopupComponent {
     } else {
       this.paymentService.createImmediateSession().subscribe({
         next: (res) => window.location.href = res.url,
-        error: (err) => alert('Erreur lors du paiement : ' + err.message)
+        error: (err) => alert('Erreur Stripe : ' + err.message)
       });
     }
   }
@@ -44,6 +44,8 @@ export class PaymentPopupComponent {
   }
 
   private isIOS(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
+
+

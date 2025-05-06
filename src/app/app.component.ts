@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { NavbarComponent } from "./navbar/navbar.component";
+import { NavbarComponent } from './navbar/navbar.component';
 import { PingService } from './ping.service';
 import { CommonModule } from '@angular/common';
 import { SessionService } from './services/session.service';
 import { HttpClient } from '@angular/common/http';
 import { User } from './models/user';
 import { App } from '@capacitor/app';
+import { Platform } from '@angular/cdk/platform';
+
+declare var store: any;
 
 @Component({
   selector: 'app-root',
@@ -20,6 +23,7 @@ export class AppComponent implements OnInit {
   message = '';
   isLogged = false;
   isLoadingSession = true;
+  private platform = inject(Platform);
 
   constructor(
     private pingService: PingService,
@@ -29,7 +33,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Intercepter les redirections Stripe dans Capacitor
+    // ✅ Redirection Stripe
     App.addListener('appUrlOpen', (event: any) => {
       const url = event.url;
       if (url?.startsWith('capacitor://localhost/stripe-success')) {
@@ -38,9 +42,8 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // ✅ Charger la session utilisateur si un token existe
+    // ✅ Chargement session utilisateur
     const token = this.sessionService.getToken();
-
     if (token && !this.sessionService.user) {
       this.http.get<User>('https://prompteur-render.onrender.com/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
@@ -60,15 +63,30 @@ export class AppComponent implements OnInit {
       this.isLoadingSession = false;
     }
 
-    // ✅ Écoute les changements de login
+    // ✅ Suivi de l'état de login
     this.sessionService.$isLogged().subscribe(logged => {
       this.isLogged = logged;
     });
 
-    // ✅ Test de connectivité
+    // ✅ Ping pour test de connectivité
     this.pingService.ping().subscribe({
       next: (res) => this.message = res,
       error: (err) => this.message = 'Erreur : ' + err.status
     });
+
+    // ✅ Vérification si iOS natif
+    if (this.isIosNative() && typeof store !== 'undefined') {
+      store.ready(() => {
+        console.log('✅ store.ready appelé dans AppComponent');
+      });
+    }
   }
+
+  private isIosNative(): boolean {
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isNotOldIE = !(window as any).MSStream;
+    return isIOS && isNotOldIE;
+  }
+  
 }

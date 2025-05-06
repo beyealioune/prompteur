@@ -1,57 +1,91 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { Platform } from "@ionic/angular";
+import { Observable } from "rxjs";
+import { environment } from "../../environments/environment";
 
-declare var store: any; // ⚠️ nécessaire pour cordova-plugin-purchase
+// Ne jamais importer directement store comme un module
+declare var store: any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentService {
-
   private baseUrl = environment.apiUrl + 'payment';
+  private http = inject(HttpClient);
+  private platform = inject(Platform);
+  private isStoreReady = false;
 
-  constructor(private http: HttpClient) {}
+  constructor() {
+    this.initializeIAP();
+  }
 
-  // 🌍 Pour Android/Web : créer une session Stripe pour essai gratuit
+  private initializeIAP(): void {
+    if (!this.platform.is('ios') || typeof store === 'undefined') {
+      console.warn('⚠️ IAP non disponible (non-iOS ou store manquant)');
+      return;
+    }
+
+    try {
+      store.verbosity = store.DEBUG;
+
+      store.register({
+        id: 'prompteur_199',
+        type: store.PAID_SUBSCRIPTION
+      });
+
+      store.when('prompteur_199').approved((order: any) => {
+        order.finish();
+        alert('✅ Abonnement validé via Apple !');
+        // Tu peux appeler ton backend ici
+      });
+
+      store.error((err: any) => {
+        console.error('❌ Erreur IAP :', err);
+        alert('❌ Erreur achat : ' + err.message);
+      });
+
+      store.ready(() => {
+        this.isStoreReady = true;
+        console.log('✅ store.ready appelé avec succès');
+        store.refresh();
+      });
+
+    } catch (e) {
+      console.error('❌ Exception dans initializeIAP :', e);
+    }
+  }
+
+  startApplePurchase(productId: string): void {
+    if (!this.platform.is('ios')) {
+      alert('⚠️ Fonctionnement réservé à iOS');
+      return;
+    }
+
+    if (!this.isStoreReady || typeof store === 'undefined') {
+      alert('⚠️ Système de paiement Apple non prêt');
+      return;
+    }
+
+    const product = store.get(productId);
+    if (!product || !product.loaded) {
+      alert('⚠️ Produit non disponible ou non chargé');
+      store.refresh();
+      return;
+    }
+
+    store.order(productId);
+  }
+
+  activateIosTrial(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/ios-trial`, {});
+  }
+
   createTrialSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/trial`);
   }
 
-  // 🌍 Pour Android/Web : créer une session Stripe pour achat immédiat
   createImmediateSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
-  }
-
-  // 🍏 Pour iOS : déclencher un achat In-App (StoreKit via cordova-plugin-purchase)
-  startApplePurchase(productId: string): void {
-    store.verbosity = store.DEBUG;
-
-    store.register({
-      id: productId,
-      type: store.PAID_SUBSCRIPTION
-    });    
-
-    store.when(productId).approved((order: any) => {
-      order.finish();
-      alert("✅ Achat validé !");
-      // Optionnel : appeler ton backend ici pour activer premium
-    });
-
-    store.error((err: any) => {
-      alert('❌ Erreur paiement Apple : ' + err.message);
-    });
-
-    store.ready(() => {
-      store.order(productId);
-    });
-
-    store.refresh();
-  }
-
-  // Optionnel : appeler ton backend pour activer un essai sur iOS
-  activateIosTrial(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/ios-trial`, {}); // À créer dans ton backend si besoin
   }
 }
