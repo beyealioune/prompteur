@@ -46,7 +46,7 @@ export class PaymentPopupComponent {
     this.close.emit();
   }
 
-  private isIOS(): boolean {
+  public isIOS(): boolean {
     return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
