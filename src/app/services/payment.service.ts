@@ -1,8 +1,4 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable, inject } from "@angular/core";
-import { Platform } from "@ionic/angular";
-import { Observable } from "rxjs";
-import { environment } from "../../environments/environment";
+
 import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Platform } from "@ionic/angular";
