@@ -63,7 +63,7 @@ export class PaymentService {
     }
 
     if (!this.isStoreReady || typeof store === 'undefined') {
-      alert('⚠️ Système de paiement Apple non prêt');
+      console.log("paiement pas pret sur apple ");
       return;
     }
 
