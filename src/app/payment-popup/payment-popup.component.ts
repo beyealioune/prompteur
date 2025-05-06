@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
-import { Platform } from '@angular/cdk/platform';
 import { CommonModule } from '@angular/common';
 
 declare var store: any;
@@ -16,13 +16,6 @@ export class PaymentPopupComponent {
   @Output() close = new EventEmitter<void>();
   private paymentService = inject(PaymentService);
   private platform = inject(Platform);
-
-  isStoreReady = false;
-  productLoaded = false;
-
-  constructor() {
-    this.setupStoreDebug();
-  }
 
   onTryFree(): void {
     if (this.isIOS()) {
@@ -53,30 +46,9 @@ export class PaymentPopupComponent {
     this.close.emit();
   }
 
-  public isIOS(): boolean {
-    return this.platform.IOS || /iPad|iPhone|iPod/.test(navigator.userAgent);
-  }
-
-  private setupStoreDebug(): void {
-    if (this.isIOS() && typeof store !== 'undefined') {
-      store.ready(() => {
-        this.isStoreReady = true;
-        const product = store.get('prompteur_199');
-        this.productLoaded = !!product && product.loaded;
-      });
-    }
-  }
-
-  refreshStore(): void {
-    if (typeof store !== 'undefined') {
-      store.refresh();
-      alert('🔄 store.refresh() lancé');
-    }
-  }
-
-  logStore(): void {
-    if (typeof store !== 'undefined') {
-      console.log('🧾 store.get("prompteur_199") =', store.get('prompteur_199'));
-    }
+  private isIOS(): boolean {
+    return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
+
+
