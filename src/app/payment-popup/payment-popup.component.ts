@@ -22,7 +22,7 @@ export class PaymentPopupComponent {
       this.paymentService.activateIosTrial().subscribe({
         next: () => alert("✅ Essai gratuit activé (iOS) !"),
         error: (err) => alert("Erreur activation iOS trial : " + err.message)
-      });
+      })
     } else {
       this.paymentService.createTrialSession().subscribe({
         next: (res) => window.location.href = res.url,
@@ -33,7 +33,7 @@ export class PaymentPopupComponent {
 
   onPayNow(): void {
     if (this.isIOS()) {
-      this.paymentService.startApplePurchase('prompteur_199');
+      this.paymentService.startApplePurchase('prompteur_19');
     } else {
       this.paymentService.createImmediateSession().subscribe({
         next: (res) => window.location.href = res.url,
