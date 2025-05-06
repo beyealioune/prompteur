@@ -17,6 +17,27 @@ export class PaymentPopupComponent {
   private paymentService = inject(PaymentService);
   private platform = inject(Platform);
 
+  public isStoreReady = true;
+  public productLoaded = true;
+
+  public isIOS(): boolean {
+    return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
+
+  public refreshStore(): void {
+    if (typeof store !== 'undefined') {
+      store.refresh();
+      alert('🔄 Store rafraîchi');
+    }
+  }
+
+  public logStore(): void {
+    if (typeof store !== 'undefined') {
+      console.log('📋 store:', store);
+      alert('📋 Voir la console');
+    }
+  }
+
   onTryFree(): void {
     if (this.isIOS()) {
       this.paymentService.activateIosTrial().subscribe({
@@ -44,10 +65,6 @@ export class PaymentPopupComponent {
 
   onClose(): void {
     this.close.emit();
-  }
-
-  public isIOS(): boolean {
-    return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 }
 
