@@ -30,11 +30,11 @@ export class PaymentService {
       store.verbosity = store.DEBUG;
 
       store.register({
-        id: 'prompteur_199',
+        id: 'prompteur_19',
         type: store.PAID_SUBSCRIPTION
       });
 
-      store.when('prompteur_199').approved((order: any) => {
+      store.when('prompteur_19').approved((order: any) => {
         order.finish();
         alert('✅ Abonnement validé via Apple !');
         // Tu peux appeler ton backend ici
