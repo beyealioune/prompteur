@@ -70,7 +70,7 @@ export class PaymentService {
 
     const product = store.get(productId);
     if (!product || !product.loaded) {
-      alert@HttpClient('⚠️ Produit non disponible ou non chargé');
+      alert('⚠️ Produit non disponible ou non chargé');
       store.refresh();
       return;
     }
