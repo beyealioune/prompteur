@@ -1,12 +1,15 @@
 <div class="popup-overlay">
-    <div class="popup-card">
-      <h2>Profitez de 3 jours gratuits</h2>
-      <p>
-        L'application est gratuite pendant 3 jours. Ensuite, payez <strong>1,99 €</strong> pour continuer à enregistrer des vidéos sans limite.
-      </p>
-      <button class="btn-unified btn-custom" (click)="onTryFree()">Continuer l’essai gratuit</button>
-      <button class="btn-unified btn-custom" (click)="onPayNow()">Payer 1,99 € maintenant</button>
-      <button class="btn-close" (click)="onClose()">Fermer</button>
-    </div>
+  <div class="popup-card">
+    <h2>Abonnement PromptCam Premium</h2>
+    <p>
+      Bénéficiez de <strong>3 jours gratuits</strong>, puis l'abonnement se renouvelle automatiquement à <strong>1,99 € / mois</strong> pour enregistrer des vidéos sans limite.
+    </p>
+    <button class="btn-unified btn-custom" (click)="onPayNow()">S'abonner</button>
+    <button class="btn-close" (click)="onClose()">Fermer</button>
+
+    <p style="font-size: 12px; text-align: center; margin-top: 10px;">
+      <a routerLink="/politique-confidentialite" target="_blank">Politique de confidentialité</a> |
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Conditions d'utilisation</a>
+    </p>
   </div>
-  
+</div>
