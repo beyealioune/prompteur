@@ -1,8 +1,15 @@
-<div *ngIf="isIOS()" style="margin-top: 15px; font-size: 14px; background: #f9f9f9; padding: 10px; border: 1px solid #ccc;">
-  <strong>🛠️ Debug IAP</strong><br>
-  Store prêt : <span [style.color]="isStoreReady ? 'green' : 'red'">{{ isStoreReady }}</span><br>
-  Produit chargé : <span [style.color]="productLoaded ? 'green' : 'red'">{{ productLoaded }}</span><br>
-  <button (click)="refreshStore()">🔄 Refresh</button>
-  <button (click)="logStore()">📋 Console</button>
+<div class="popup-overlay">
+  <div class="popup-card">
+    <h2>Abonnement PromptCam Premium</h2>
+    <p>
+      Bénéficiez de <strong>3 jours gratuits</strong>, puis l'abonnement se renouvelle automatiquement à <strong>1,99 € / mois</strong> pour enregistrer des vidéos sans limite.
+    </p>
+    <button class="btn-unified btn-custom" (click)="onPayNow()">S'abonner</button>
+    <button class="btn-close" (click)="onClose()">Fermer</button>
+
+    <p style="font-size: 12px; text-align: center; margin-top: 10px;">
+      <a routerLink="/politique-confidentialite" target="_blank">Politique de confidentialité</a> |
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Conditions d'utilisation</a>
+    </p>
+  </div>
 </div>
- 
