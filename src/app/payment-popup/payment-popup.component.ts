@@ -3,8 +3,6 @@ import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
 
-declare var store: any;
-
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
@@ -17,25 +15,24 @@ export class PaymentPopupComponent {
   private paymentService = inject(PaymentService);
   private platform = inject(Platform);
 
-  public isStoreReady = true;
-  public productLoaded = true;
+  public get isStoreReady(): boolean {
+    return this.paymentService.isStoreReady;
+  }
+
+  public get productLoaded(): boolean {
+    return this.paymentService.productLoaded;
+  }
 
   public isIOS(): boolean {
     return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
   public refreshStore(): void {
-    if (typeof store !== 'undefined') {
-      store.refresh();
-      alert('🔄 Store rafraîchi');
-    }
+    this.paymentService.refreshStore();
   }
 
   public logStore(): void {
-    if (typeof store !== 'undefined') {
-      console.log('📋 store:', store);
-      alert('📋 Voir la console');
-    }
+    this.paymentService.logStore();
   }
 
   onTryFree(): void {
@@ -43,7 +40,7 @@ export class PaymentPopupComponent {
       this.paymentService.activateIosTrial().subscribe({
         next: () => alert("✅ Essai gratuit activé (iOS) !"),
         error: (err) => alert("Erreur activation iOS trial : " + err.message)
-      })
+      });
     } else {
       this.paymentService.createTrialSession().subscribe({
         next: (res) => window.location.href = res.url,
@@ -67,5 +64,3 @@ export class PaymentPopupComponent {
     this.close.emit();
   }
 }
-
-
