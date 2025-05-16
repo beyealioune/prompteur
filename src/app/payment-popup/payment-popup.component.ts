@@ -51,7 +51,7 @@ export class PaymentPopupComponent {
 
   onPayNow(): void {
     if (this.isIOS()) {
-      this.paymentService.startApplePurchase('prompteur_19');
+      this.paymentService.startApplePurchase('prompteur_1_9');
     } else {
       this.paymentService.createImmediateSession().subscribe({
         next: (res) => window.location.href = res.url,

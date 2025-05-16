@@ -31,11 +31,11 @@ export class PaymentService {
       store.verbosity = store.DEBUG;
 
       store.register({
-        id: 'prompteur_19',
+        id: 'prompteur_1_9',
         type: store.PAID_SUBSCRIPTION
       });
 
-      store.when('prompteur_19').approved((order: any) => {
+      store.when('prompteur_1_9').approved((order: any) => {
         const receipt = order.transaction && order.transaction.appStoreReceipt;
 
         if (receipt) {
@@ -56,7 +56,7 @@ export class PaymentService {
       store.ready(() => {
         this.isStoreReady = true;
 
-        const product = store.get('prompteur_19');
+        const product = store.get('prompteur_1_9');
         this.productLoaded = !!product && product.loaded;
 
         console.log('✅ store.ready appelé');
