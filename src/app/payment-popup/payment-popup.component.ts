@@ -2,11 +2,12 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './payment-popup.component.html',
   styleUrl: './payment-popup.component.css'
 })
