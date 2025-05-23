@@ -4,16 +4,15 @@ import { Platform } from "@ionic/angular";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
+import 'cordova-plugin-purchase';
 
 declare global {
   interface Window {
-    store: any;
+    CdvPurchase: any;
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PaymentService {
   private baseUrl = environment.apiUrl + 'payment';
   private http = inject(HttpClient);
@@ -22,7 +21,7 @@ export class PaymentService {
 
   public isStoreReady = false;
   public productLoaded = false;
-  private iapInitialized = false;
+  private store: any;
 
   constructor() {
     if (this.platform.is('ios')) {
@@ -30,126 +29,78 @@ export class PaymentService {
     }
   }
 
-  // Fonction utilitaire pour gérer toutes les erreurs typescript-safe
-  private getErrorMessage(err: any): string {
-    if (err && typeof err === 'object') {
-      if ('message' in err) {
-        return (err as any).message;
-      }
-      return JSON.stringify(err);
-    }
-    return String(err);
-  }
-
   private initializeIAP(): void {
-    if (this.iapInitialized) return;
-    this.iapInitialized = true;
-
-    if (typeof window.store === 'undefined') {
-      alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) n’est PAS actif. Aucun achat Apple possible !');
+    const CdvPurchase = window.CdvPurchase;
+    if (!CdvPurchase) {
+      alert('❌ CdvPurchase indisponible');
       return;
     }
 
-    try {
-      window.store.verbosity = window.store.DEBUG;
+    this.store = CdvPurchase.store;
 
-      window.store.register({
-        id: 'prompteur_1_9',
-        type: window.store.PAID_SUBSCRIPTION, // ou "paid subscription" selon la version
-        platform: 'ios'
+    this.store.register({
+      id: 'prompteur_1_9',
+      type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+      platform: CdvPurchase.Platform.APPLE_APPSTORE
+    });
+
+    this.store.when()
+      .productUpdated((product: any) => {
+        if (product.id === 'prompteur_1_9') {
+          this.productLoaded = product.loaded;
+          this.isStoreReady = true;
+        }
+      })
+      .approved((transaction: any) => {
+        transaction.verify();
+      })
+      .verified((receipt: any) => {
+        this.handleApprovedOrder(receipt);
+        receipt.finish();
+      })
+      .error((err: any) => {
+        alert('❌ Erreur achat : ' + err.message);
+        console.error('❌ IAP Error:', err);
       });
 
-      window.store.when('prompteur_1_9').approved((order: any) => {
-        this.handleApprovedOrder(order);
-      });
-
-      window.store.ready(() => {
-        this.isStoreReady = true;
-        const product = window.store.get('prompteur_1_9');
-        this.productLoaded = !!product && product.loaded;
-        console.log('✅ Store prêt');
-        window.store.refresh();
-      });
-
-      window.store.error((err: any) => {
-        console.error('❌ Erreur IAP :', err);
-        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
-      });
-
-      if (typeof window.store.init === 'function') {
-        window.store.init([
-          { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
-        ]);
-      }
-    } catch (e) {
-      alert('❌ Exception dans initializeIAP : ' + this.getErrorMessage(e));
-      console.error('❌ Exception JS dans initializeIAP :', e);
-    }
+    this.store.initialize([
+      { platform: CdvPurchase.Platform.APPLE_APPSTORE }
+    ]);
   }
 
-  private handleApprovedOrder(order: any): void {
-    const receipt = order?.transaction?.appStoreReceipt;
-    if (!receipt) {
-      alert('❌ Aucun reçu Apple détecté');
+  private handleApprovedOrder(receipt: any): void {
+    const receiptData = receipt.transaction?.appStoreReceipt || receipt.receipt;
+    const userEmail = this.authService.getCurrentUserEmail();
+
+    if (!receiptData || !userEmail) {
+      alert('❌ Infos insuffisantes pour valider l\'achat');
       return;
     }
 
-    const userEmail = this.authService.getCurrentUserEmail?.();
-    if (!userEmail) {
-      alert('❌ Email utilisateur non trouvé');
-      return;
-    }
-
-    this.sendReceiptToBackend(receipt, userEmail).subscribe({
-      next: () => {
-        order.finish();
-        alert('✅ Abonnement validé et enregistré !');
-      },
-      error: (err) => {
-        alert('❌ Erreur backend : ' + this.getErrorMessage(err));
-      }
+    this.sendReceiptToBackend(receiptData, userEmail).subscribe({
+      next: () => alert('✅ Abonnement validé et enregistré !'),
+      error: (err) => alert('❌ Erreur backend : ' + err.message)
     });
   }
 
-  startApplePurchase(productId: string): void {
-    alert('🟢 Tentative d’achat Apple');
-
-    if (!this.platform.is('ios')) {
-      alert('⚠️ Fonctionnement réservé à iOS');
+  startApplePurchase(): void {
+    if (!this.isStoreReady || !this.store) {
+      alert('⚠️ Store non initialisé');
       return;
     }
 
-    if (!this.isStoreReady || typeof window.store === 'undefined') {
-      alert('⚠️ Système de paiement Apple non prêt');
+    const product = this.store.get('prompteur_1_9');
+    if (!product?.loaded) {
+      alert('⚠️ Produit non chargé');
+      this.store.refresh();
       return;
     }
 
-    const product = window.store.get(productId);
-    if (!product || !product.loaded) {
-      alert('⚠️ Produit non disponible ou non chargé');
-      window.store.refresh();
-      return;
-    }
-
-    window.store.order(productId);
+    product.getOffer()?.order();
   }
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
-  }
-
-  refreshStore(): void {
-    if (typeof window.store !== 'undefined') {
-      window.store.refresh();
-      alert('🔄 Store rafraîchi');
-    }
-  }
-
-  logStore(): void {
-    if (typeof window.store !== 'undefined') {
-      console.log('📋 store:', window.store);
-      alert('📋 Voir la console');
-    }
   }
 
   activateIosTrial(): Observable<any> {
@@ -162,5 +113,15 @@ export class PaymentService {
 
   createImmediateSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
+  }
+
+  refreshStore(): void {
+    this.store?.refresh();
+    alert('🔄 Store rafraîchi');
+  }
+
+  logStore(): void {
+    console.log('📋 store:', this.store);
+    alert('📋 Voir la console');
   }
 }
