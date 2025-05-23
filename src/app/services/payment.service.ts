@@ -121,7 +121,7 @@ export class PaymentService {
   }
 
   logStore(): void {
-    console.log('📋 store:', this.store);
+    console.log('📋 store:', this.store)
     alert('📋 Voir la console');
   }
 }
