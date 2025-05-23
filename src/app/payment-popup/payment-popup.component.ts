@@ -3,6 +3,7 @@ import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import 'cordova-plugin-purchase';
 
 @Component({
   selector: 'app-payment-popup',
