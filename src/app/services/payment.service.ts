@@ -29,48 +29,59 @@ export class PaymentService {
 
   private initStore(): void {
     if (!this.platform.is('ios')) {
+      console.warn('IAP only available on iOS');
       return;
     }
-
+    console.log('➡️ Tentative d\'init IAP...');
+  
     document.addEventListener('deviceready', () => {
+      console.log('📱 Device ready!');
       if (!window.store) {
         alert('❌ Store plugin not available');
+        console.error('❌ Store plugin not available');
         return;
       }
-
+  
+      console.log('✅ window.store existe !');
+  
       window.store.verbosity = window.store.DEBUG;
-
+  
       window.store.register({
         id: 'prompteur_1_9',
         type: window.store.PAID_SUBSCRIPTION,
         platform: 'ios'
       });
-
+  
       window.store.when('prompteur_1_9').updated((product: any) => {
+        console.log('📦 Product updated:', product);
         this.productLoaded$.next(product && product.loaded);
       });
-
+  
       window.store.when('prompteur_1_9').approved((order: any) => {
+        console.log('🛒 Order approved:', order);
         this.handleApprovedOrder(order);
       });
-
+  
       window.store.ready(() => {
+        console.log('✅ Store ready');
         this.isStoreReady$.next(true);
         window.store.refresh();
       });
-
+  
       window.store.error((error: any) => {
-        console.error('Store error:', error);
+        console.error('❌ Store error:', error);
         alert('Erreur Store : ' + (error && error.message));
       });
-
+  
       window.store.init([{
         id: 'prompteur_1_9',
         type: window.store.PAID_SUBSCRIPTION
       }]);
+  
+      console.log('➡️ window.store.init called');
     }, false);
   }
-
+  
   private handleApprovedOrder(order: any): void {
     const receipt = order?.transaction?.appStoreReceipt;
     if (!receipt) {
