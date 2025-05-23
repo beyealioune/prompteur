@@ -2,8 +2,8 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-payment-popup',
