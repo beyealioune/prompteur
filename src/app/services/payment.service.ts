@@ -1,175 +1,157 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Platform } from "@ionic/angular";
-import { Observable, BehaviorSubject } from "rxjs";
+import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
 
-declare var store: any;
 declare global {
   interface Window {
-    store: any; // ou un type plus précis si tu veux, mais any suffit ici
+    store: any;
   }
 }
 
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class PaymentService {
   private baseUrl = environment.apiUrl + 'payment';
   private http = inject(HttpClient);
   private platform = inject(Platform);
   private authService = inject(AuthService);
 
-  public isStoreReady$ = new BehaviorSubject<boolean>(false);
-  public productLoaded$ = new BehaviorSubject<boolean>(false);
+  public isStoreReady = false;
+  public productLoaded = false;
+  private iapInitialized = false;
 
   constructor() {
-    this.initStore();
+    if (this.platform.is('ios')) {
+      document.addEventListener('deviceready', () => this.initializeIAP(), false);
+    }
   }
 
-  private initStore(): void {
-    if (!this.platform.is('ios')) {
-      console.warn('IAP only available on iOS');
+  // Fonction utilitaire pour gérer toutes les erreurs typescript-safe
+  private getErrorMessage(err: any): string {
+    if (err && typeof err === 'object') {
+      if ('message' in err) {
+        return (err as any).message;
+      }
+      return JSON.stringify(err);
+    }
+    return String(err);
+  }
+
+  private initializeIAP(): void {
+    if (this.iapInitialized) return;
+    this.iapInitialized = true;
+
+    if (typeof window.store === 'undefined') {
+      alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) n’est PAS actif. Aucun achat Apple possible !');
       return;
     }
-    console.log('➡️ Tentative d\'init IAP...');
-  
-    document.addEventListener('deviceready', () => {
-      console.log('📱 Device ready!');
-      if (!window.store) {
-        alert('❌ Store plugin not available');
-        console.error('❌ Store plugin not available');
-        return;
+
+    try {
+      window.store.verbosity = window.store.DEBUG;
+
+      window.store.register({
+        id: 'prompteur_1_9',
+        type: window.store.PAID_SUBSCRIPTION, // ou "paid subscription" selon la version
+        platform: 'ios'
+      });
+
+      window.store.when('prompteur_1_9').approved((order: any) => {
+        this.handleApprovedOrder(order);
+      });
+
+      window.store.ready(() => {
+        this.isStoreReady = true;
+        const product = window.store.get('prompteur_1_9');
+        this.productLoaded = !!product && product.loaded;
+        console.log('✅ Store prêt');
+        window.store.refresh();
+      });
+
+      window.store.error((err: any) => {
+        console.error('❌ Erreur IAP :', err);
+        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
+      });
+
+      if (typeof window.store.init === 'function') {
+        window.store.init([
+          { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
+        ]);
       }
-    
-      console.log('✅ window.store existe !');
-    
-      try {
-        window.store.verbosity = window.store.DEBUG;
-        console.log('Store verbosity set');
-      } catch (e) {
-        console.error('Erreur lors de store.verbosity', e);
-        return;
-      }
-    
-      try {
-        window.store.register({
-          id: 'prompteur_1_9',
-          type: window.store.PAID_SUBSCRIPTION,
-          platform: 'ios'
-        });
-        console.log('store.register called');
-      } catch (e) {
-        console.error('Erreur lors de store.register', e);
-        return;
-      }
-    
-      try {
-        window.store.when('prompteur_1_9').updated((product: any) => {
-          console.log('📦 Product updated:', product);
-          this.productLoaded$.next(product && product.loaded);
-        });
-        console.log('store.when().updated set');
-      } catch (e) {
-        console.error('Erreur lors de store.when(...).updated', e);
-        return;
-      }
-    
-      try {
-        window.store.when('prompteur_1_9').approved((order: any) => {
-          console.log('🛒 Order approved:', order);
-          this.handleApprovedOrder(order);
-        });
-        console.log('store.when().approved set');
-      } catch (e) {
-        console.error('Erreur lors de store.when(...).approved', e);
-        return;
-      }
-    
-      try {
-        window.store.ready(() => {
-          console.log('✅ Store ready');
-          this.isStoreReady$.next(true);
-          window.store.refresh();
-        });
-        console.log('store.ready set');
-      } catch (e) {
-        console.error('Erreur lors de store.ready', e);
-        return;
-      }
-    
-      try {
-        window.store.error((error: any) => {
-          console.error('❌ Store error:', error);
-          alert('Erreur Store : ' + (error && error.message));
-        });
-        console.log('store.error set');
-      } catch (e) {
-        console.error('Erreur lors de store.error', e);
-        return;
-      }
-    
-      try {
-        window.store.init([{
-          id: 'prompteur_1_9',
-          type: window.store.PAID_SUBSCRIPTION
-        }]);
-        console.log('➡️ window.store.init called');
-      } catch (e) {
-        console.error('Erreur lors de store.init', e);
-        return;
-      }
-    }, false);
-    
+    } catch (e) {
+      alert('❌ Exception dans initializeIAP : ' + this.getErrorMessage(e));
+      console.error('❌ Exception JS dans initializeIAP :', e);
+    }
   }
-  
+
   private handleApprovedOrder(order: any): void {
     const receipt = order?.transaction?.appStoreReceipt;
     if (!receipt) {
-      alert('❌ Reçu non trouvé');
+      alert('❌ Aucun reçu Apple détecté');
       return;
     }
-    const userEmail = this.authService.getCurrentUserEmail();
+
+    const userEmail = this.authService.getCurrentUserEmail?.();
     if (!userEmail) {
-      alert('❌ Email utilisateur manquant');
+      alert('❌ Email utilisateur non trouvé');
       return;
     }
 
     this.sendReceiptToBackend(receipt, userEmail).subscribe({
       next: () => {
-        alert("✅ Abonnement validé !");
         order.finish();
+        alert('✅ Abonnement validé et enregistré !');
       },
       error: (err) => {
-        alert('Erreur validation reçu: ' + err.message);
+        alert('❌ Erreur backend : ' + this.getErrorMessage(err));
       }
     });
   }
 
   startApplePurchase(productId: string): void {
-    alert('Tentative achat Apple');
-    if (!this.isStoreReady$.getValue() || !window.store) {
-      alert('Système de paiement Apple non prêt');
+    alert('🟢 Tentative d’achat Apple');
+
+    if (!this.platform.is('ios')) {
+      alert('⚠️ Fonctionnement réservé à iOS');
       return;
     }
-    alert('store prêt');
+
+    if (!this.isStoreReady || typeof window.store === 'undefined') {
+      alert('⚠️ Système de paiement Apple non prêt');
+      return;
+    }
+
     const product = window.store.get(productId);
-    alert('Produit récupéré: ' + JSON.stringify(product));
     if (!product || !product.loaded) {
-      alert('Produit non chargé');
+      alert('⚠️ Produit non disponible ou non chargé');
       window.store.refresh();
       return;
     }
-    alert('Lancement de la commande !');
+
     window.store.order(productId);
   }
-  
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
   }
 
-  // Stripe / web
+  refreshStore(): void {
+    if (typeof window.store !== 'undefined') {
+      window.store.refresh();
+      alert('🔄 Store rafraîchi');
+    }
+  }
+
+  logStore(): void {
+    if (typeof window.store !== 'undefined') {
+      console.log('📋 store:', window.store);
+      alert('📋 Voir la console');
+    }
+  }
+
   activateIosTrial(): Observable<any> {
     return this.http.post(`${this.baseUrl}/ios-trial`, {});
   }
@@ -180,19 +162,5 @@ export class PaymentService {
 
   createImmediateSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
-  }
-
-  // Outils de debug
-  refreshStore(): void {
-    if (window.store) {
-      window.store.refresh();
-      alert('🔄 Store rafraîchi');
-    }
-  }
-  logStore(): void {
-    if (window.store) {
-      alert('Voir la console pour store');
-      console.log('store:', window.store);
-    }
   }
 }
