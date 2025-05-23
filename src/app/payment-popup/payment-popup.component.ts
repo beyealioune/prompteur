@@ -35,13 +35,23 @@ export class PaymentPopupComponent {
     }
   }
 
-  onPayNow(): void {
+  async onPayNow(): Promise<void> {
     if (this.isIOS()) {
-      this.paymentService.startApplePurchase();
+      try {
+        // Vérification que le store est prêt
+        if (!this.paymentService.isStoreReady) {
+          alert('Le système de paiement se prépare, veuillez réessayer dans quelques secondes');
+          return;
+        }
+        
+        this.paymentService.startApplePurchase('prompteur_1_9');
+      } catch (e) {
+        alert('Erreur lors de l\'achat: ' + (e as Error).message);
+      }
     } else {
       this.paymentService.createImmediateSession().subscribe({
         next: (res) => window.location.href = res.url,
-        error: (err) => alert('Erreur Stripe : ' + err.message)
+        error: (err) => alert('Erreur Stripe: ' + err.message)
       });
     }
   }
