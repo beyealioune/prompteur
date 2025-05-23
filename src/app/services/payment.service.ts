@@ -39,6 +39,18 @@ export class PaymentService {
           console.error('Store plugin not available');
           return;
         }
+        if (typeof window.store === 'undefined') {
+          alert('❌ window.store undefined');
+          return;
+        } else {
+          alert('✅ window.store detected! Keys: ' + Object.keys(window.store).join(', '));
+          for (const key in window.store) {
+            if (typeof window.store[key] === 'function') {
+              alert(`window.store.${key} is a function`);
+            }
+          }
+        }
+        
   
         // Configuration du store
         window.store.verbosity = window.store.DEBUG;
