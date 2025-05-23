@@ -30,7 +30,7 @@ export class PaymentService {
     }
   }
 
-  // Fonction utilitaire pour gérer toutes les erreurs typescript-safe
+  // Fonction utilitaire pour avoir un message d'erreur typescript-safe
   private getErrorMessage(err: any): string {
     if (err && typeof err === 'object') {
       if ('message' in err) {
@@ -53,14 +53,14 @@ export class PaymentService {
     try {
       window.store.verbosity = window.store.DEBUG;
 
-      window.store.register({
-        id: 'prompteur_1_9',
-        type: window.store.PAID_SUBSCRIPTION, // ou "paid subscription" selon la version
-        platform: 'ios'
-      });
-
+      // Ajoute le listener d'achat
       window.store.when('prompteur_1_9').approved((order: any) => {
         this.handleApprovedOrder(order);
+      });
+
+      window.store.error((err: any) => {
+        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
+        console.error('❌ Erreur IAP :', err);
       });
 
       window.store.ready(() => {
@@ -68,19 +68,14 @@ export class PaymentService {
         const product = window.store.get('prompteur_1_9');
         this.productLoaded = !!product && product.loaded;
         console.log('✅ Store prêt');
-        window.store.refresh();
+        alert('✅ Store prêt');
+        // Affiche tous les produits pour debug (à retirer après)
+        alert(JSON.stringify(window.store.products));
       });
 
-      window.store.error((err: any) => {
-        console.error('❌ Erreur IAP :', err);
-        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
-      });
+      // Lance la découverte des produits App Store Connect
+      window.store.refresh();
 
-      if (typeof window.store.init === 'function') {
-        window.store.init([
-          { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
-        ]);
-      }
     } catch (e) {
       alert('❌ Exception dans initializeIAP : ' + this.getErrorMessage(e));
       console.error('❌ Exception JS dans initializeIAP :', e);
