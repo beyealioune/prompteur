@@ -40,51 +40,76 @@ export class PaymentService {
     }
     return String(err);
   }
-
   private initializeIAP(): void {
-    if (this.iapInitialized) return;
-    
-    // Attendre que le store soit disponible
-    const checkStore = () => {
-      if (typeof window.store !== 'undefined' && typeof window.store.when === 'function') {
-        this.setupStore();
+    if (this.iapInitialized) {
+      console.log('IAP déjà initialisé');
+      return;
+    }
+  
+    // Vérification de la plateforme
+    if (!this.platform.is('ios')) {
+      console.warn('IAP uniquement disponible sur iOS');
+      return;
+    }
+  
+    // Attente que le store soit disponible
+    const initAttempt = () => {
+      if (typeof window.store === 'undefined') {
+        console.warn('Store non détecté, nouvel essai dans 1s...');
+        setTimeout(initAttempt, 1000);
+        return;
+      }
+  
+      try {
+        // Configuration du store
+        window.store.verbosity = window.store.DEBUG;
+  
+        // Enregistrement des produits
+        window.store.register([{
+          id: "prompteur_1_9",
+          type: window.store.PAID_SUBSCRIPTION,
+          alias: ["premium_subscription"]
+        }]);
+  
+        // Gestion des approbations
+        window.store.when("prompteur_1_9").approved((order: any) => {
+          console.log('Achat approuvé:', order);
+          this.handleApprovedOrder(order);
+        });
+  
+        // Gestion des erreurs
+        window.store.error((err: any) => {
+          console.error('Erreur Store:', err);
+          alert(`Erreur paiement: ${this.getErrorMessage(err)}`);
+        });
+  
+        // Callback de readiness
+        window.store.ready(() => {
+          console.log('Store prêt');
+          this.isStoreReady = true;
+          
+          const product = window.store.get("prompteur_1_9");
+          if (!product) {
+            console.error('Produit non trouvé');
+            return;
+          }
+          
+          this.productLoaded = product.loaded;
+          console.log('Produit chargé:', product);
+        });
+  
+        // Rafraîchissement initial
+        window.store.refresh();
         this.iapInitialized = true;
-      } else {
-        setTimeout(checkStore, 500);
+  
+      } catch (e) {
+        console.error('Erreur initialisation IAP:', e);
+        alert(`Erreur initialisation: ${this.getErrorMessage(e)}`);
       }
     };
-    
-    checkStore();
-  }
   
-  private setupStore(): void {
-    try {
-      window.store.verbosity = window.store.DEBUG;
-  
-      // Configurer les produits
-      window.store.register({
-        id: "prompteur_1_9",
-        type: window.store.PAID_SUBSCRIPTION
-      });
-  
-      // Configurer les handlers
-      window.store.when("prompteur_1_9").approved((order: any) => {
-        this.handleApprovedOrder(order);
-      });
-  
-      window.store.error((err: any) => {
-        console.error('Erreur IAP:', err);
-      });
-  
-      window.store.ready(() => {
-        this.isStoreReady = true;
-        console.log('Store prêt');
-      });
-  
-      window.store.refresh();
-    } catch (e) {
-      console.error('Erreur lors de la configuration du store:', e);
-    }
+    // Premier essai avec délai pour Cordova
+    setTimeout(initAttempt, 500);
   }
 
   private handleApprovedOrder(order: any): void {
