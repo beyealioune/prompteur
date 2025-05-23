@@ -2,9 +2,20 @@
   <div class="popup-card">
     <h2>Abonnement PromptCam Premium</h2>
     <p>
-      Bénéficiez de <strong>3 jours gratuits</strong>, puis l'abonnement se renouvelle automatiquement à <strong>1,99 € / mois</strong> pour enregistrer des vidéos sans limite.
+      Profitez de <strong>3 jours gratuits</strong>, puis <strong>1,99 € / mois</strong> pour enregistrer des vidéos sans limite.
     </p>
-    <button class="btn-unified btn-custom" (click)="onPayNow()">S'abonner</button>
+
+    <button class="btn-unified btn-custom"
+            (click)="onPayNow()"
+            [disabled]="!(isStoreReady$ | async) || !(productLoaded$ | async)">
+      S'abonner (Apple)
+    </button>
+    <button class="btn-unified btn-outline"
+            (click)="onTryFree()"
+            [disabled]="!(isStoreReady$ | async)">
+      Essai gratuit 3 jours (Apple)
+    </button>
+
     <button class="btn-close" (click)="onClose()">Fermer</button>
 
     <p style="font-size: 12px; text-align: center; margin-top: 10px;">

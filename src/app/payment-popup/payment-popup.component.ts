@@ -3,11 +3,12 @@ import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './payment-popup.component.html',
   styleUrl: './payment-popup.component.css'
 })
@@ -16,23 +17,18 @@ export class PaymentPopupComponent {
   private paymentService = inject(PaymentService);
   private platform = inject(Platform);
 
-  public get isStoreReady(): boolean {
-    return this.paymentService.isStoreReady;
-  }
+  isStoreReady$: Observable<boolean> = this.paymentService.isStoreReady$;
+  productLoaded$: Observable<boolean> = this.paymentService.productLoaded$;
 
-  public get productLoaded(): boolean {
-    return this.paymentService.productLoaded;
-  }
-
-  public isIOS(): boolean {
+  isIOS(): boolean {
     return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
-  public refreshStore(): void {
+  refreshStore(): void {
     this.paymentService.refreshStore();
   }
 
-  public logStore(): void {
+  logStore(): void {
     this.paymentService.logStore();
   }
 
