@@ -95,25 +95,23 @@ export class PaymentService {
   }
 
   startApplePurchase(productId: string): void {
-    if (!this.platform.is('ios')) {
-      alert('⚠️ Fonctionnement réservé à iOS');
-      return;
-    }
-
+    alert('Tentative achat Apple');
     if (!this.isStoreReady$.getValue() || !window.store) {
-      alert('⚠️ Système de paiement Apple non prêt');
+      alert('Système de paiement Apple non prêt');
       return;
     }
-
+    alert('store prêt');
     const product = window.store.get(productId);
+    alert('Produit récupéré: ' + JSON.stringify(product));
     if (!product || !product.loaded) {
-      alert('⚠️ Produit non disponible ou non chargé');
+      alert('Produit non chargé');
       window.store.refresh();
       return;
     }
-
+    alert('Lancement de la commande !');
     window.store.order(productId);
   }
+  
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
