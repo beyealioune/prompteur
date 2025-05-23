@@ -28,6 +28,8 @@
 	<string>Cette application nécessite l'accès à la caméra pour enregistrer des vidéos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Cette application nécessite l'accès au micro pour enregistrer l'audio des vidéos.</string>
+	<key>NSAppleMusicUsageDescription</key>
+<string>Required for in-app purchases</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cette application nécessite l’accès à la photothèque pour enregistrer et importer des vidéos.
 Cette application nécessite l’accès à la photothèque pour enregistrer et importer des vidéos.
