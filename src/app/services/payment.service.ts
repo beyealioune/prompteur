@@ -6,6 +6,11 @@ import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
 
 declare var store: any;
+declare global {
+  interface Window {
+    store: any;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -22,85 +27,74 @@ export class PaymentService {
   constructor() {
     this.initializeIAP();
   }
-
   private initializeIAP(): void {
-    console.log('typeof store :', typeof store);
-
-if (typeof store === 'undefined') {
-  alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) N’EST PAS actif. Aucun achat Apple possible !');
-} else {
-  alert('✅ Plugin In-App Purchase détecté !');
-}
-
-    // Vérification de la plateforme et du plugin natif
     if (!this.platform.is('ios')) {
-      console.warn('⚠️ IAP non disponible (non-iOS)');
-      return;
-    }
-    if (typeof store === 'undefined') {
-      alert("❌ Le plugin d'achat in-app (cordova-plugin-purchase) n'est pas disponible. Installe-le et fais un npx cap sync !");
-      console.error('❌ typeof store:', typeof store);
+      console.warn('IAP only available on iOS');
       return;
     }
   
-    try {
-      store.verbosity = store.DEBUG;
-  
-      // Enregistre le produit d'abonnement
-      store.register({
-        id: 'prompteur_1_9',
-        type: store.PAID_SUBSCRIPTION
-      });
-  
-      // Handler lors de la validation de l'achat par Apple
-      store.when('prompteur_1_9').approved((order: any) => {
-        const receipt = order.transaction && order.transaction.appStoreReceipt;
-  
-        if (receipt) {
-          // Récupère l'email utilisateur connecté (via AuthService)
-          const userEmail = this.authService.getCurrentUserEmail();
-          if (!userEmail) {
-            alert('❌ Impossible de valider l\'achat : email utilisateur non trouvé');
-            return;
-          }
-  
-          // Envoie le reçu + email au backend
-          this.sendReceiptToBackend(receipt, userEmail).subscribe({
-            next: () => {
-              order.finish();
-              alert('✅ Abonnement validé et enregistré !');
-            },
-            error: (err) => {
-              alert('❌ Erreur backend : ' + err.message);
-            }
-          });
-        } else {
-          alert('❌ Aucun reçu Apple détecté');
+    // Attendre que le device soit prêt
+    document.addEventListener('deviceready', () => {
+      try {
+        if (typeof window.store === 'undefined') {
+          console.error('Store plugin not available');
+          return;
         }
-      });
   
-      // Initialisation du store
-      store.ready(() => {
-        this.isStoreReady = true;
+        // Configuration du store
+        window.store.verbosity = window.store.DEBUG;
   
-        const product = store.get('prompteur_1_9');
-        this.productLoaded = !!product && product.loaded;
+        // Enregistrement du produit
+        window.store.register({
+          id: 'prompteur_1_9',
+          type: window.store.PAID_SUBSCRIPTION,
+          platform: 'apple'
+        });
   
-        console.log('✅ store.ready appelé');
-        console.log('📦 Produit :', product);
-        store.refresh();
-      });
+        // Gestion des événements
+        window.store.when('prompteur_1_9').approved((order: any) => {
+          this.handleApprovedOrder(order);
+        });
   
-      store.error((err: any) => {
-        console.error('❌ Erreur IAP :', err);
-        alert('❌ Erreur achat : ' + err.message);
-      });
+        window.store.ready(() => {
+          console.log('Store ready');
+          this.isStoreReady = true;
+          window.store.refresh();
+        });
   
-    } catch (e) {
-      console.error('❌ Exception dans initializeIAP :', e);
-    }
+        window.store.error((error: any) => {
+          console.error('Store error', error);
+        });
+  
+        // Initialisation
+        window.store.init([
+          { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
+        ]);
+  
+      } catch (error) {
+        console.error('IAP initialization error', error);
+      }
+    }, false);
   }
   
+  private handleApprovedOrder(order: any): void {
+    const receipt = order?.transaction?.appStoreReceipt;
+    if (!receipt) {
+      console.error('No receipt found');
+      return;
+    }
+  
+    const userEmail = this.authService.getCurrentUserEmail();
+    if (!userEmail) {
+      console.error('No user email');
+      return;
+    }
+  
+    this.sendReceiptToBackend(receipt, userEmail).subscribe({
+      next: () => order.finish(),
+      error: (err) => console.error('Receipt validation failed', err)
+    });
+  }
 
   startApplePurchase(productId: string): void {
     alert('🟢 Tentative d’achat Apple');
