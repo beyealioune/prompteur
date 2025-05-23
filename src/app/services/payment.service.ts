@@ -41,45 +41,86 @@ export class PaymentService {
         console.error('❌ Store plugin not available');
         return;
       }
-  
+    
       console.log('✅ window.store existe !');
-  
-      window.store.verbosity = window.store.DEBUG;
-  
-      window.store.register({
-        id: 'prompteur_1_9',
-        type: window.store.PAID_SUBSCRIPTION,
-        platform: 'ios'
-      });
-  
-      window.store.when('prompteur_1_9').updated((product: any) => {
-        console.log('📦 Product updated:', product);
-        this.productLoaded$.next(product && product.loaded);
-      });
-  
-      window.store.when('prompteur_1_9').approved((order: any) => {
-        console.log('🛒 Order approved:', order);
-        this.handleApprovedOrder(order);
-      });
-  
-      window.store.ready(() => {
-        console.log('✅ Store ready');
-        this.isStoreReady$.next(true);
-        window.store.refresh();
-      });
-  
-      window.store.error((error: any) => {
-        console.error('❌ Store error:', error);
-        alert('Erreur Store : ' + (error && error.message));
-      });
-  
-      window.store.init([{
-        id: 'prompteur_1_9',
-        type: window.store.PAID_SUBSCRIPTION
-      }]);
-  
-      console.log('➡️ window.store.init called');
+    
+      try {
+        window.store.verbosity = window.store.DEBUG;
+        console.log('Store verbosity set');
+      } catch (e) {
+        console.error('Erreur lors de store.verbosity', e);
+        return;
+      }
+    
+      try {
+        window.store.register({
+          id: 'prompteur_1_9',
+          type: window.store.PAID_SUBSCRIPTION,
+          platform: 'ios'
+        });
+        console.log('store.register called');
+      } catch (e) {
+        console.error('Erreur lors de store.register', e);
+        return;
+      }
+    
+      try {
+        window.store.when('prompteur_1_9').updated((product: any) => {
+          console.log('📦 Product updated:', product);
+          this.productLoaded$.next(product && product.loaded);
+        });
+        console.log('store.when().updated set');
+      } catch (e) {
+        console.error('Erreur lors de store.when(...).updated', e);
+        return;
+      }
+    
+      try {
+        window.store.when('prompteur_1_9').approved((order: any) => {
+          console.log('🛒 Order approved:', order);
+          this.handleApprovedOrder(order);
+        });
+        console.log('store.when().approved set');
+      } catch (e) {
+        console.error('Erreur lors de store.when(...).approved', e);
+        return;
+      }
+    
+      try {
+        window.store.ready(() => {
+          console.log('✅ Store ready');
+          this.isStoreReady$.next(true);
+          window.store.refresh();
+        });
+        console.log('store.ready set');
+      } catch (e) {
+        console.error('Erreur lors de store.ready', e);
+        return;
+      }
+    
+      try {
+        window.store.error((error: any) => {
+          console.error('❌ Store error:', error);
+          alert('Erreur Store : ' + (error && error.message));
+        });
+        console.log('store.error set');
+      } catch (e) {
+        console.error('Erreur lors de store.error', e);
+        return;
+      }
+    
+      try {
+        window.store.init([{
+          id: 'prompteur_1_9',
+          type: window.store.PAID_SUBSCRIPTION
+        }]);
+        console.log('➡️ window.store.init called');
+      } catch (e) {
+        console.error('Erreur lors de store.init', e);
+        return;
+      }
     }, false);
+    
   }
   
   private handleApprovedOrder(order: any): void {
