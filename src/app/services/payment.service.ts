@@ -25,14 +25,23 @@ export class PaymentService {
   private iapInitialized = false;
 
   constructor() {
-    // Initialise uniquement si sur iOS natif (pas navigateur)
     if (this.platform.is('ios')) {
       document.addEventListener('deviceready', () => this.initializeIAP(), false);
     }
   }
 
+  // Fonction utilitaire pour gérer toutes les erreurs typescript-safe
+  private getErrorMessage(err: any): string {
+    if (err && typeof err === 'object') {
+      if ('message' in err) {
+        return (err as any).message;
+      }
+      return JSON.stringify(err);
+    }
+    return String(err);
+  }
+
   private initializeIAP(): void {
-    // Évite double initialisation si rechargé plusieurs fois
     if (this.iapInitialized) return;
     this.iapInitialized = true;
 
@@ -44,10 +53,9 @@ export class PaymentService {
     try {
       window.store.verbosity = window.store.DEBUG;
 
-      // Remplace "window.store.PAID_SUBSCRIPTION" par "paid subscription" si erreur
       window.store.register({
         id: 'prompteur_1_9',
-        type: window.store.PAID_SUBSCRIPTION, // ou "paid subscription"
+        type: window.store.PAID_SUBSCRIPTION, // ou "paid subscription" selon la version
         platform: 'ios'
       });
 
@@ -65,17 +73,16 @@ export class PaymentService {
 
       window.store.error((err: any) => {
         console.error('❌ Erreur IAP :', err);
-        alert('❌ Erreur achat : ' + (err?.message || JSON.stringify(err)));
+        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
       });
 
-      // Selon version du plugin, init peut être nécessaire
       if (typeof window.store.init === 'function') {
         window.store.init([
           { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
         ]);
       }
     } catch (e) {
-      alert('❌ Exception dans initializeIAP : ' + (e?.message || JSON.stringify(e)));
+      alert('❌ Exception dans initializeIAP : ' + this.getErrorMessage(e));
       console.error('❌ Exception JS dans initializeIAP :', e);
     }
   }
@@ -87,7 +94,6 @@ export class PaymentService {
       return;
     }
 
-    // Méthode à adapter selon ta logique AuthService
     const userEmail = this.authService.getCurrentUserEmail?.();
     if (!userEmail) {
       alert('❌ Email utilisateur non trouvé');
@@ -100,7 +106,7 @@ export class PaymentService {
         alert('✅ Abonnement validé et enregistré !');
       },
       error: (err) => {
-        alert('❌ Erreur backend : ' + (err?.message || JSON.stringify(err)));
+        alert('❌ Erreur backend : ' + this.getErrorMessage(err));
       }
     });
   }
