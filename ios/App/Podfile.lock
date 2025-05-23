@@ -39,7 +39,7 @@ SPEC CHECKSUMS:
   CapacitorCamera: 6e73f1fc6c629a672658705a02409b60854bc0f1
   CapacitorCordova: 8d93e14982f440181be7304aa9559ca631d77fff
   CapacitorFilesystem: e6261c410436f54908c11f94336c5b58286b1db0
-  CordovaPlugins: fd048dcd1cd761ee371d8a1ad024d72252fc74e2
+  CordovaPlugins: 1ca8577fbd90aa21fc0a1a4428d24e3aedc3499a
 
 PODFILE CHECKSUM: f23f3e83a7f27e72335ea759d6b66261b7c8350f
 
