@@ -5,12 +5,9 @@ import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
 
-declare var store: any;
-declare global {
-  interface Window {
-    store: any;
-  }
-}
+// Import du plugin (obligatoire avec Capacitor)
+import "cordova-plugin-purchase";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,129 +19,122 @@ export class PaymentService {
 
   public isStoreReady = false;
   public productLoaded = false;
+  public store: any = null;
 
   constructor() {
     this.initializeIAP();
   }
+
   private initializeIAP(): void {
-    if (!this.platform.is('ios')) {
-      console.warn('IAP only available on iOS');
-      return;
-    }
-  
-    // Attendre que le device soit prêt
-    document.addEventListener('deviceready', () => {
-      try {
-        if (typeof window.store === 'undefined') {
-          console.error('Store plugin not available');
-          return;
-        }
-        if (typeof window.store === 'undefined') {
-          alert('❌ window.store undefined');
-          return;
-        } else {
-          alert('✅ window.store detected! Keys: ' + Object.keys(window.store).join(', '));
-          for (const key in window.store) {
-            if (typeof window.store[key] === 'function') {
-              alert(`window.store.${key} is a function`);
-            }
+    this.platform.ready().then(() => {
+      document.addEventListener('deviceready', () => {
+        try {
+          if (!(window as any).CdvPurchase || !(window as any).CdvPurchase.store) {
+            alert('❌ CdvPurchase.store undefined');
+            return;
           }
+          this.store = (window as any).CdvPurchase.store;
+          // Verbose pour debug
+          this.store.verbosity = this.store.DEBUG;
+
+          // Register product (ARRAY syntax)
+          this.store.register([{
+            id: 'prompteur_1_9',
+            type: this.store.PAID_SUBSCRIPTION,
+            platform: this.store.PLATFORM.APPLE_APPSTORE
+          }]);
+
+          // Setup event handlers (nouvelle API)
+          this.store.when()
+            .productUpdated(() => {
+              this.productLoaded = true;
+              console.log('Products loaded from the store');
+            })
+            .approved((transaction: any) => {
+              this.handleApprovedOrder(transaction);
+            })
+            .error((error: any) => {
+              console.error('IAP Error:', error);
+              alert('Erreur IAP : ' + (error?.message ?? JSON.stringify(error)));
+            });
+
+          // Ready event
+          this.store.ready(() => {
+            this.isStoreReady = true;
+            this.store.refresh();
+            console.log('Store ready');
+          });
+
+          // Initialisation du store (IMPORTANT)
+          this.store.initialize([{
+            platform: this.store.PLATFORM.APPLE_APPSTORE,
+            options: { needAppReceipt: true }
+          }]);
+
+        } catch (error: any) {
+          alert('❌ Exception dans initializeIAP : ' + (error?.message || error));
+          console.error('IAP initialization error', error);
         }
-        
-  
-        // Configuration du store
-        window.store.verbosity = window.store.DEBUG;
-  
-        // Enregistrement du produit
-        window.store.register({
-          id: 'prompteur_1_9',
-          type: window.store.PAID_SUBSCRIPTION,
-          platform: 'apple'
-        });
-  
-        // Gestion des événements
-        window.store.when('prompteur_1_9').approved((order: any) => {
-          this.handleApprovedOrder(order);
-        });
-  
-        window.store.ready(() => {
-          console.log('Store ready');
-          this.isStoreReady = true;
-          window.store.refresh();
-        });
-  
-        window.store.error((error: any) => {
-          console.error('Store error', error);
-        });
-  
-        // Initialisation
-        window.store.init([
-          { id: 'prompteur_1_9', type: window.store.PAID_SUBSCRIPTION }
-        ]);
-  
-      } catch (error) {
-        console.error('IAP initialization error', error);
-      }
-    }, false);
+      }, false);
+    });
   }
-  
+
   private handleApprovedOrder(order: any): void {
     const receipt = order?.transaction?.appStoreReceipt;
     if (!receipt) {
-      console.error('No receipt found');
+      alert('No receipt found');
       return;
     }
-  
     const userEmail = this.authService.getCurrentUserEmail();
     if (!userEmail) {
-      console.error('No user email');
+      alert('No user email');
       return;
     }
-  
     this.sendReceiptToBackend(receipt, userEmail).subscribe({
       next: () => order.finish(),
-      error: (err) => console.error('Receipt validation failed', err)
+      error: (err) => alert('Receipt validation failed: ' + JSON.stringify(err))
     });
   }
 
   startApplePurchase(productId: string): void {
     alert('🟢 Tentative d’achat Apple');
-
     if (!this.platform.is('ios')) {
       alert('⚠️ Fonctionnement réservé à iOS');
       return;
     }
-
-    if (!this.isStoreReady || typeof store === 'undefined') {
+    if (!this.isStoreReady || !this.store) {
       alert('⚠️ Système de paiement Apple non prêt');
       return;
     }
-
-    const product = store.get(productId);
+    const product = this.store.get(productId);
     if (!product || !product.loaded) {
       alert('⚠️ Produit non disponible ou non chargé');
-      store.refresh();
+      this.store.refresh();
       return;
     }
-
-    store.order(productId);
+    // Nouvelle syntaxe d'achat (version 13+)
+    product.getOffer()?.order()
+      .then((error: any) => {
+        if (error) {
+          alert("Erreur achat : " + (error?.message ?? JSON.stringify(error)));
+        }
+      });
   }
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
   }
-  
 
   refreshStore(): void {
-    if (typeof store !== 'undefined') {
-      store.refresh();
+    if (this.store) {
+      this.store.refresh();
       alert('🔄 Store rafraîchi');
     }
   }
 
   logStore(): void {
-    if (typeof store !== 'undefined') {
-      console.log('📋 store:', store);
+    if (this.store) {
+      console.log('📋 store:', this.store);
       alert('📋 Voir la console');
     }
   }
