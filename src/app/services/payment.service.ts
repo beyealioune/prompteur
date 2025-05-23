@@ -43,42 +43,47 @@ export class PaymentService {
 
   private initializeIAP(): void {
     if (this.iapInitialized) return;
-    this.iapInitialized = true;
-
-    if (typeof window.store === 'undefined') {
-      alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) n’est PAS actif. Aucun achat Apple possible !');
-      return;
-    }
-
+    
+    // Attendre que le store soit disponible
+    const checkStore = () => {
+      if (typeof window.store !== 'undefined' && typeof window.store.when === 'function') {
+        this.setupStore();
+        this.iapInitialized = true;
+      } else {
+        setTimeout(checkStore, 500);
+      }
+    };
+    
+    checkStore();
+  }
+  
+  private setupStore(): void {
     try {
       window.store.verbosity = window.store.DEBUG;
-
-      // Ajoute le listener d'achat
-      window.store.when('prompteur_1_9').approved((order: any) => {
+  
+      // Configurer les produits
+      window.store.register({
+        id: "prompteur_1_9",
+        type: window.store.PAID_SUBSCRIPTION
+      });
+  
+      // Configurer les handlers
+      window.store.when("prompteur_1_9").approved((order: any) => {
         this.handleApprovedOrder(order);
       });
-
+  
       window.store.error((err: any) => {
-        alert('❌ Erreur achat : ' + this.getErrorMessage(err));
-        console.error('❌ Erreur IAP :', err);
+        console.error('Erreur IAP:', err);
       });
-
+  
       window.store.ready(() => {
         this.isStoreReady = true;
-        const product = window.store.get('prompteur_1_9');
-        this.productLoaded = !!product && product.loaded;
-        console.log('✅ Store prêt');
-        alert('✅ Store prêt');
-        // Affiche tous les produits pour debug (à retirer après)
-        alert(JSON.stringify(window.store.products));
+        console.log('Store prêt');
       });
-
-      // Lance la découverte des produits App Store Connect
+  
       window.store.refresh();
-
     } catch (e) {
-      alert('❌ Exception dans initializeIAP : ' + this.getErrorMessage(e));
-      console.error('❌ Exception JS dans initializeIAP :', e);
+      console.error('Erreur lors de la configuration du store:', e);
     }
   }
 
