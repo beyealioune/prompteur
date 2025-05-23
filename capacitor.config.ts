@@ -4,6 +4,10 @@ const config: CapacitorConfig = {
   appId: 'com.aliapp.prompteur',
   appName: 'PrompteurApp',
   webDir: 'dist/prompteur/browser',
+  server: {
+    androidScheme: 'https',
+    iosScheme: 'capacitor'
+  },
   plugins: {
     Camera: {
       cameraPermission: 'Nécessite l\'accès à la caméra',
@@ -12,26 +16,36 @@ const config: CapacitorConfig = {
     VideoRecorder: {
       microphonePermission: 'Nécessite l\'accès au micro'
     },
-    // Ajoutez la configuration pour les achats in-app
     Purchase: {
       ios: {
         products: [
           {
             id: 'prompteur_1_9',
-            type: 'PAID_SUBSCRIPTION' // ou 'CONSUMABLE'/'NON_CONSUMABLE' selon le type
+            type: 'PAID_SUBSCRIPTION',
+            group: 'premium_subscriptions'
           }
-        ]
+        ],
+        autoFinishTransactions: true
       },
       android: {
-        // Configuration Android si nécessaire
+        licenseKey: 'VOTRE_CLE_GOOGLE_PLAY'
       }
+    },
+    PushNotifications: {
+      presentationOptions: ['alert', 'sound']
     }
   },
-  // Optionnel: Configuration iOS supplémentaire
   ios: {
     scheme: 'App',
     preferredContentMode: 'mobile',
-    cordovaLinkerFlags: ['-ObjC']
+    limitsNavigationsToAppBoundDomains: true
+  },
+  android: {
+    allowMixedContent: true,
+    buildOptions: {
+      keystorePath: 'release.keystore',
+      keystoreAlias: 'alias_name'
+    }
   }
 };
 
