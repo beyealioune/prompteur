@@ -1,13 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { PingService } from './ping.service';
 import { CommonModule } from '@angular/common';
 import { SessionService } from './services/session.service';
 import { HttpClient } from '@angular/common/http';
 import { User } from './models/user';
-import { App } from '@capacitor/app';
 import { Platform } from '@angular/cdk/platform';
+import { RouterOutlet, Router } from '@angular/router';
 
 declare var store: any;
 
@@ -33,14 +32,8 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ Redirection Stripe
-    App.addListener('appUrlOpen', (event: any) => {
-      const url = event.url;
-      if (url?.startsWith('capacitor://localhost/stripe-success')) {
-        const sessionId = new URL(url).searchParams.get('session_id');
-        this.router.navigate(['/stripe-success'], { queryParams: { session_id: sessionId } });
-      }
-    });
+
+   
 
     // ✅ Chargement session utilisateur
     const token = this.sessionService.getToken();
