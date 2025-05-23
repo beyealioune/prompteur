@@ -24,6 +24,14 @@ export class PaymentService {
   }
 
   private initializeIAP(): void {
+    console.log('typeof store :', typeof store);
+
+if (typeof store === 'undefined') {
+  alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) N’EST PAS actif. Aucun achat Apple possible !');
+} else {
+  alert('✅ Plugin In-App Purchase détecté !');
+}
+
     // Vérification de la plateforme et du plugin natif
     if (!this.platform.is('ios')) {
       console.warn('⚠️ IAP non disponible (non-iOS)');
