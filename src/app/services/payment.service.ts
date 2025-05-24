@@ -45,35 +45,52 @@ export class PaymentService {
 
   private async initializeIAP(): Promise<void> {
     if (this.iapInitialized) return;
-    this.iapInitialized = true;
-
-    await this.waitForStore();
-
+    
     try {
+      // Attendre que le store soit disponible
+      await new Promise<void>((resolve) => {
+        const check = () => {
+          if (typeof window.store !== 'undefined' && window.store.validator) {
+            resolve();
+          } else {
+            setTimeout(check, 200);
+          }
+        };
+        check();
+      });
+  
       window.store.verbosity = window.store.DEBUG;
-
-      window.store.register([{
+  
+      // Configuration initiale obligatoire
+      window.store.register({
         id: "prompteur_1_9",
         type: window.store.PAID_SUBSCRIPTION
-      }]);
-
+      });
+  
+      // Gestion des erreurs globale
+      window.store.error((error: any) => {
+        console.error('Store Error:', error);
+      });
+  
+      // Handler d'approbation
       window.store.when("prompteur_1_9").approved((order: any) => {
         this.handleApprovedOrder(order);
       });
-
+  
+      // Callback de readiness
       window.store.ready(() => {
+        console.log('Store Ready - Products:', window.store.products);
         this.isStoreReady = true;
-        console.log('Store ready');
       });
-
-      window.store.error((error: any) => {
-        console.error('Store error:', error);
-      });
-
+  
+      // Rafraîchissement initial
       window.store.refresh();
-
+      this.iapInitialized = true;
+  
     } catch (e) {
-      console.error('IAP init failed:', e);
+      console.error('IAP Initialization Failed:', e);
+      // Réessayer après un délai
+      setTimeout(() => this.initializeIAP(), 2000);
     }
   }
 
@@ -186,4 +203,6 @@ export class PaymentService {
   createImmediateSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
   }
+
+  
 }

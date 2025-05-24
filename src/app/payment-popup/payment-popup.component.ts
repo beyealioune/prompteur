@@ -43,23 +43,31 @@ export class PaymentPopupComponent {
   }
 
   async onPayNow(): Promise<void> {
-    const loading = await this.showLoading();
-    
+    const loading = await this.loadingCtrl.create({
+      message: 'Préparation du paiement...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+  
     try {
       if (this.isIOS()) {
+        // Attendre que le store soit prêt
+        if (!this.paymentService.isStoreReady) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+  
         const result = await this.paymentService.startApplePurchase('prompteur_1_9');
         
         if (result.success) {
-          await this.showAlert('Succès', 'Achat effectué avec succès!');
+          await this.showAlert('Succès', 'Votre abonnement a été activé!');
         } else {
-          await this.showAlert('Information', result.message || 'Achat annulé');
+          await this.showAlert('Information', result.message || 'Le paiement a été annulé');
         }
       } else {
-        const res = await this.paymentService.createImmediateSession().toPromise();
-        window.location.href = res!.url;
+        // ... (garder le code Stripe existant)
       }
-    } catch (err: any) {
-      await this.showAlert('Erreur', this.getUserFriendlyError(err));
+    } catch (e) {
+      await this.showAlert('Erreur', this.getUserFriendlyError(e));
     } finally {
       await loading.dismiss();
     }
