@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Platform } from "@ionic/angular";
-import { Observable, from } from "rxjs";
+import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { AuthService } from "./auth.service";
 
@@ -29,68 +29,68 @@ export class PaymentService {
   }
 
   private initIAP(): void {
+    console.log('[IAP] initIAP called');
     if (this.platform.is('ios') && this.platform.is('hybrid')) {
       if (document.readyState === 'complete') {
         this.initializeIAP();
       } else {
         document.addEventListener('deviceready', () => this.initializeIAP(), false);
       }
+    } else {
+      console.log('[IAP] Not iOS or not hybrid, skip init');
     }
   }
 
-  private getErrorMessage(err: any): string {
-    if (err?.message) return err.message;
-    return JSON.stringify(err);
-  }
-
   private async initializeIAP(): Promise<void> {
-    if (this.iapInitialized) return;
-    
+    if (this.iapInitialized) {
+      console.log('[IAP] Already initialized');
+      return;
+    }
+    this.iapInitialized = true;
+
+    console.log('[IAP] Waiting for window.store...');
+    await this.waitForStore();
+
     try {
-      // Attendre que le store soit disponible
-      await new Promise<void>((resolve) => {
-        const check = () => {
-          if (typeof window.store !== 'undefined' && window.store.validator) {
-            resolve();
-          } else {
-            setTimeout(check, 200);
-          }
-        };
-        check();
-      });
-  
+      console.log('[IAP] window.store is present:', typeof window.store !== "undefined");
       window.store.verbosity = window.store.DEBUG;
-  
-      // Configuration initiale obligatoire
-      window.store.register({
+      console.log('[IAP] Verbosity set to DEBUG');
+
+      window.store.register([{
         id: "prompteur_1_9",
         type: window.store.PAID_SUBSCRIPTION
-      });
-  
-      // Gestion des erreurs globale
-      window.store.error((error: any) => {
-        console.error('Store Error:', error);
-      });
-  
-      // Handler d'approbation
-      window.store.when("prompteur_1_9").approved((order: any) => {
-        this.handleApprovedOrder(order);
-      });
-  
-      // Callback de readiness
+      }]);
+      console.log('[IAP] Product registered');
+
+      window.store.when("prompteur_1_9")
+        .approved((order: any) => {
+          console.log('[IAP] Purchase approved!', order);
+          this.handleApprovedOrder(order);
+        })
+        .error((err: any) => {
+          console.error('[IAP] Purchase error:', err);
+        })
+        .updated((prod: any) => {
+          console.log('[IAP] Product updated', prod);
+        })
+        .cancelled((order: any) => {
+          console.log('[IAP] Purchase cancelled', order);
+        });
+      console.log('[IAP] Handlers set for approved/error/updated/cancelled');
+
       window.store.ready(() => {
-        console.log('Store Ready - Products:', window.store.products);
         this.isStoreReady = true;
+        console.log('[IAP] Store is ready');
       });
-  
-      // Rafraîchissement initial
+
+      window.store.error((error: any) => {
+        console.error('[IAP] StoreKit ERROR (global):', error);
+      });
+
       window.store.refresh();
-      this.iapInitialized = true;
-  
+      console.log('[IAP] Store refresh triggered');
     } catch (e) {
-      console.error('IAP Initialization Failed:', e);
-      // Réessayer après un délai
-      setTimeout(() => this.initializeIAP(), 2000);
+      console.error('[IAP] IAP init failed (catch):', e);
     }
   }
 
@@ -98,6 +98,7 @@ export class PaymentService {
     return new Promise((resolve) => {
       const check = () => {
         if (typeof window.store !== 'undefined') {
+          console.log('[IAP] window.store detected');
           resolve();
         } else {
           setTimeout(check, 200);
@@ -108,15 +109,16 @@ export class PaymentService {
   }
 
   async startApplePurchase(productId: string): Promise<{success: boolean, message?: string}> {
+    console.log('[IAP] startApplePurchase:', productId);
     try {
       if (!this.platform.is('ios')) {
         return {success: false, message: 'iOS only'};
       }
-
       await this.waitForStoreReady();
 
       const product = window.store.get(productId);
       if (!product?.loaded) {
+        console.warn('[IAP] Product not loaded, refreshing store...');
         window.store.refresh();
         return {success: false, message: 'Product not loaded'};
       }
@@ -128,13 +130,21 @@ export class PaymentService {
         };
 
         const handler = window.store.when(productId)
-          .approved((order: any) => done(true))
-          .error((err: any) => done(false, err.message));
+          .approved((order: any) => {
+            console.log('[IAP] Order approved in purchase', order);
+            done(true);
+          })
+          .error((err: any) => {
+            console.error('[IAP] Order error in purchase:', err);
+            done(false, err.message);
+          });
 
         window.store.order(productId);
+        console.log('[IAP] Order triggered');
       });
 
     } catch (e) {
+      console.error('[IAP] startApplePurchase failed:', e);
       return {success: false, message: this.getErrorMessage(e)};
     }
   }
@@ -142,9 +152,10 @@ export class PaymentService {
   private waitForStoreReady(): Promise<void> {
     return new Promise((resolve) => {
       if (this.isStoreReady) return resolve();
-      
+
       const check = () => {
         if (this.isStoreReady) {
+          console.log('[IAP] Store is ready (waitForStoreReady)');
           resolve();
         } else {
           setTimeout(check, 200);
@@ -155,28 +166,34 @@ export class PaymentService {
   }
 
   private handleApprovedOrder(order: any): void {
+    console.log('[IAP] handleApprovedOrder', order);
     const receipt = order?.transaction?.appStoreReceipt;
     if (!receipt) {
-      console.error('No receipt found');
+      console.error('[IAP] No receipt found in approved order');
       return;
     }
 
     const userEmail = this.authService.getCurrentUserEmail?.();
     if (!userEmail) {
-      console.error('No user email');
+      console.error('[IAP] No user email');
       return;
     }
 
     this.sendReceiptToBackend(receipt, userEmail).subscribe({
-      next: () => order.finish(),
-      error: (err) => console.error('Receipt validation failed:', err)
+      next: () => {
+        console.log('[IAP] Receipt sent to backend and validated');
+        order.finish();
+      },
+      error: (err) => {
+        console.error('[IAP] Receipt validation failed:', err);
+      }
     });
   }
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
+    console.log('[IAP] sendReceiptToBackend', receipt, email);
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
   }
-
 
   refreshStore(): void {
     if (typeof window.store !== 'undefined') {
@@ -204,5 +221,8 @@ export class PaymentService {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
   }
 
-  
+  private getErrorMessage(err: any): string {
+    if (err?.message) return err.message;
+    return JSON.stringify(err);
+  }
 }
