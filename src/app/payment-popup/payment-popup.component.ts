@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
+import { TestComponent } from '../test/test.component';
 
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [CommonModule, RouterLink, IonicModule],
+  imports: [CommonModule, RouterLink, IonicModule,TestComponent],
   templateUrl: './payment-popup.component.html',
   styleUrls: ['./payment-popup.component.css']
 })
