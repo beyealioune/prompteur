@@ -6,65 +6,83 @@ import StoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var backgroundSnapshotView: UIView?
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        // Initialisation des achats in-app au lancement
+        // Configuration initiale
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        // Configuration des achats in-app
         SKPaymentQueue.default().add(StoreObserver.shared)
+        
+        // Prévention des écrans noirs au lancement
+        if #available(iOS 13.0, *) {
+            // Géré par SceneDelegate
+        } else {
+            let controller = UIViewController()
+            controller.view.backgroundColor = .white
+            self.window?.rootViewController = controller
+            self.window?.makeKeyAndVisible()
+        }
         
         return true
     }
 
-    // MARK: UISceneSession Lifecycle (nécessaire pour iOS 13+)
-    @available(iOS 13.0, *)
-    func application(_ application: UIApplication,
-                     configurationForConnecting connectingSceneSession: UISceneSession,
-                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    @available(iOS 13.0, *)
-    func application(_ application: UIApplication,
-                     didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-    }
-
-    // MARK: Lifecycle de l'application
+    // MARK: - Gestion des snapshots et écrans noirs
+    
     func applicationWillResignActive(_ application: UIApplication) {
-        // Pause des tâches en cours
+        // Créer un faux snapshot pour éviter l'écran noir
+        guard let window = self.window else { return }
+        
+        backgroundSnapshotView = UIView(frame: window.bounds)
+        backgroundSnapshotView?.backgroundColor = .white
+        window.addSubview(backgroundSnapshotView!)
     }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Sauvegarde de l'état
-    }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Préparation retour au premier plan
-        SKPaymentQueue.default().add(StoreObserver.shared)
-    }
-
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Redémarrage des tâches
+        // Retirer le faux snapshot
+        backgroundSnapshotView?.removeFromSuperview()
+        backgroundSnapshotView = nil
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Nettoyage avant terminaison
-        SKPaymentQueue.default().remove(StoreObserver.shared)
+    // MARK: - UISceneSession Lifecycle (iOS 13+)
+    
+    @available(iOS 13.0, *)
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        config.delegateClass = SceneDelegate.self
+        return config
     }
 
-    // MARK: Gestion des URLs
-    func application(_ app: UIApplication,
-                     open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
-    }
+    // ... (conservez les autres méthodes existantes)
+}
 
-    func application(_ application: UIApplication,
-                     continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return ApplicationDelegateProxy.shared.application(application,
-                                                         continue: userActivity,
-                                                         restorationHandler: restorationHandler)
+@available(iOS 13.0, *)
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    var backgroundSnapshotView: UIView?
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        let window = UIWindow(windowScene: windowScene)
+        window.backgroundColor = .white
+        self.window = window
+        window.makeKeyAndVisible()
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+        guard let window = self.window else { return }
+        
+        backgroundSnapshotView = UIView(frame: window.bounds)
+        backgroundSnapshotView?.backgroundColor = .white
+        window.addSubview(backgroundSnapshotView!)
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        backgroundSnapshotView?.removeFromSuperview()
+        backgroundSnapshotView = nil
     }
 }
 
@@ -76,8 +94,7 @@ class StoreObserver: NSObject, SKPaymentTransactionObserver {
         super.init()
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue,
-                      updatedTransactions transactions: [SKPaymentTransaction]) {
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
             case .purchasing:
@@ -85,8 +102,18 @@ class StoreObserver: NSObject, SKPaymentTransactionObserver {
             case .purchased, .restored:
                 print("Transaction réussie")
                 queue.finishTransaction(transaction)
+                
+                // Envoyer le reçu au serveur
+                if let receiptURL = Bundle.main.appStoreReceiptURL,
+                   let receiptData = try? Data(contentsOf: receiptURL) {
+                    let receiptString = receiptData.base64EncodedString()
+                    NotificationCenter.default.post(name: .iapTransactionCompleted,
+                                                  object: nil,
+                                                  userInfo: ["receipt": receiptString])
+                }
+                
             case .failed:
-                print("Transaction échouée")
+                print("Transaction échouée: \(transaction.error?.localizedDescription ?? "")")
                 queue.finishTransaction(transaction)
             case .deferred:
                 print("Transaction différée")
@@ -95,10 +122,8 @@ class StoreObserver: NSObject, SKPaymentTransactionObserver {
             }
         }
     }
-    
-    func paymentQueue(_ queue: SKPaymentQueue,
-                      shouldAddStorePayment payment: SKPayment,
-                      for product: SKProduct) -> Bool {
-        return true
-    }
+}
+
+extension Notification.Name {
+    static let iapTransactionCompleted = Notification.Name("iapTransactionCompleted")
 }
