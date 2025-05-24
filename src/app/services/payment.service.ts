@@ -67,20 +67,25 @@ export class PaymentService {
           console.log('[IAP] Purchase approved!', order);
           this.handleApprovedOrder(order);
         })
-        .error((err: any) => {
-          console.error('[IAP] Purchase error:', err);
+        .owned((product: any) => {
+          console.log('[IAP] Product owned (déjà acheté ou abonnement actif)', product);
         })
         .updated((prod: any) => {
           console.log('[IAP] Product updated', prod);
         })
         .cancelled((order: any) => {
           console.log('[IAP] Purchase cancelled', order);
+        })
+        .error((err: any) => {
+          console.error('[IAP] Purchase error:', err);
         });
-      console.log('[IAP] Handlers set for approved/error/updated/cancelled');
+
+      console.log('[IAP] Handlers set for approved/owned/error/updated/cancelled');
 
       window.store.ready(() => {
         this.isStoreReady = true;
-        console.log('[IAP] Store is ready');
+        this.productLoaded = !!window.store.get('prompteur_1_9')?.loaded;
+        console.log('[IAP] Store is ready', window.store.get('prompteur_1_9'));
       });
 
       window.store.error((error: any) => {
@@ -206,6 +211,13 @@ export class PaymentService {
     if (typeof window.store !== 'undefined') {
       console.log('📋 store:', window.store);
       alert('📋 Voir la console');
+    }
+  }
+
+  logProduct(): void {
+    if (typeof window.store !== 'undefined') {
+      console.log('[IAP] Product:', window.store.get('prompteur_1_9'));
+      alert('Product info logged');
     }
   }
 

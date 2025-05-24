@@ -73,6 +73,10 @@ export class PaymentPopupComponent {
     }
   }
 
+  onDebug(): void {
+    this.paymentService.logProduct();
+  }
+
   onClose(): void {
     this.close.emit();
   }
