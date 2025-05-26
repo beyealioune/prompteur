@@ -2,7 +2,8 @@
   <div class="popup-card">
     <h2>Abonnement PromptCam Premium</h2>
     <p>
-      Profitez de <strong>3 jours gratuits</strong>, puis <strong>1,99 €/mois</strong> pour enregistrer des vidéos sans limite.
+      Profitez de <strong>3 jours gratuits</strong>, puis <strong>1,99&nbsp;€/mois</strong>
+      pour enregistrer des vidéos sans limite.
     </p>
 
     <ng-container *ngIf="isIOS(); else webButtons">
@@ -35,12 +36,12 @@
     </ng-template>
 
     <button class="btn-close" (click)="onClose()">Fermer</button>
-    <button (click)="onDebug()" style="margin: 8px; background: #f5e663">Debug : afficher produit dans la console</button>
 
-    <p class="terms">
+    <p class="legal-links">
       <a routerLink="/politique-confidentialite" target="_blank">Politique de confidentialité</a> |
-      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Conditions d'utilisation</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
+        Conditions d'utilisation (Apple)
+      </a>
     </p>
   </div>
 </div>
-<app-test></app-test>
