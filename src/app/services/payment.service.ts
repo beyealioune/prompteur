@@ -35,14 +35,15 @@ export class PaymentService {
     return String(err);
   }
 
-  private initializeIAP(): void {
-    if (this.iapInitialized) return;
-    this.iapInitialized = true;
-
-    if (typeof window.store === 'undefined') {
-      alert('❌ Le plugin natif In-App Purchase (cordova-plugin-purchase) n’est PAS actif. Aucun achat Apple possible !');
+  private async initializeIAP(): Promise<void> {
+    if (this.iapInitialized) {
+      console.log('[IAP] Already initialized');
       return;
     }
+    this.iapInitialized = true;
+
+    console.log('[IAP] Waiting for window.store...');
+    await this.waitForStore();
 
     window.store.verbosity = window.store.DEBUG;
 
@@ -85,23 +86,24 @@ export class PaymentService {
   }
 
   private handleApprovedOrder(order: any): void {
+    console.log('[IAP] handleApprovedOrder', order);
     const receipt = order?.transaction?.appStoreReceipt;
     if (!receipt) {
-      alert('❌ Aucun reçu Apple détecté');
+      console.error('[IAP] No receipt found in approved order');
       return;
     }
     const userEmail = this.authService.getCurrentUserEmail?.();
     if (!userEmail) {
-      alert('❌ Email utilisateur non trouvé');
+      console.error('[IAP] No user email');
       return;
     }
     this.sendReceiptToBackend(receipt, userEmail).subscribe({
       next: () => {
+        console.log('[IAP] Receipt sent to backend and validated');
         order.finish();
-        alert('✅ Abonnement validé et enregistré !');
       },
       error: (err) => {
-        alert('❌ Erreur backend : ' + this.getErrorMessage(err));
+        console.error('[IAP] Receipt validation failed:', err);
       }
     });
   }
@@ -125,6 +127,7 @@ export class PaymentService {
   }
 
   sendReceiptToBackend(receipt: string, email: string): Observable<any> {
+    console.log('[IAP] sendReceiptToBackend', receipt, email);
     return this.http.post(`${this.baseUrl}/validate-ios-receipt`, { receipt, email });
   }
 
@@ -142,7 +145,6 @@ export class PaymentService {
     }
   }
 
-  // Partie Web & Stripe
   activateIosTrial(): Observable<any> {
     return this.http.post(`${this.baseUrl}/ios-trial`, {});
   }
@@ -153,5 +155,10 @@ export class PaymentService {
 
   createImmediateSession(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/now`);
+  }
+
+  private getErrorMessage(err: any): string {
+    if (err?.message) return err.message;
+    return JSON.stringify(err);
   }
 }
