@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './payment-popup.component.html',
   styleUrl: './payment-popup.component.css'
 })
@@ -26,14 +26,6 @@ export class PaymentPopupComponent {
 
   public isIOS(): boolean {
     return this.platform.is('ios') || /iPad|iPhone|iPod/.test(navigator.userAgent);
-  }
-
-  public refreshStore(): void {
-    this.paymentService.refreshStore();
-  }
-
-  public logStore(): void {
-    this.paymentService.logStore();
   }
 
   onTryFree(): void {
@@ -63,5 +55,9 @@ export class PaymentPopupComponent {
 
   onClose(): void {
     this.close.emit();
+  }
+
+  refreshStore(): void {
+    this.paymentService.refreshStore();
   }
 }

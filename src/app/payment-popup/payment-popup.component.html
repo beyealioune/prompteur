@@ -17,6 +17,14 @@
               [disabled]="!isStoreReady">
         Essai gratuit 3 jours (Apple)
       </button>
+      <button class="btn-unified btn-outline"
+              (click)="refreshStore()"
+              style="margin-top:8px">
+        Restaurer mes achats
+      </button>
+      <div *ngIf="!isStoreReady || !productLoaded" class="iap-warning">
+        Paiement Apple non prêt. Patientez ou relancez l’application.
+      </div>
     </ng-container>
     <ng-template #webButtons>
       <button class="btn-unified btn-custom" (click)="onPayNow()">
