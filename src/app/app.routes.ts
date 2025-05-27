@@ -12,8 +12,8 @@ import { TermsAndConditionsComponent } from './terms-and-conditions/terms-and-co
 import { FaqComponent } from './faq/faq.component';
 import { PolitiqueConfidentialiteComponent } from './politique-confidentialite/politique-confidentialite.component';
 import { StripeSuccessComponent } from './stripe-success/stripe-success.component';
-import { Routes } from '@angular/router';
 import { TestComponent } from './test/test.component';
+import { Routes } from '@angular/router';
 
 
 export const routes: Routes = [
