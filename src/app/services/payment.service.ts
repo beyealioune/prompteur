@@ -22,7 +22,9 @@ export class PaymentService {
     private authService: AuthService,
     private zone: NgZone // très important !
   ) {
-
+    if (this.platform.is('ios')) {
+      document.addEventListener('deviceready', () => this.initializeIAP(), false);
+    }
   }
 
   private getErrorMessage(err: any): string {
