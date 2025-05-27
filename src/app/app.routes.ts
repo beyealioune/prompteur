@@ -26,7 +26,6 @@ export const routes: Routes = [
   { path: 'profil', component: ProfilComponent, canActivate: [AuthGuard] },
   { path: 'prompteur', component: PrompteurComponent, canActivate: [AuthGuard] },
   { path: 'stripe-success', component: StripeSuccessComponent },
-  { path: 'test', component: TestComponent },
 
   {
     path: 'connexion',
