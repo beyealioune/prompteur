@@ -100,6 +100,9 @@ export class PaymentService {
       }
     });
   }
+  getErrorMessage(err: any) {
+    throw new Error("Method not implemented.");
+  }
 
   startApplePurchase(productId: string): void {
     if (!this.platform.is('ios')) {
