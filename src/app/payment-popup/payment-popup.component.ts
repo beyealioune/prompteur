@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output, inject } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { InAppPurchase2, IAPProduct } from '@ionic-native/in-app-purchase-2/ngx';
 
 
 declare global {
@@ -10,6 +11,8 @@ declare global {
     store: any;
   }
 }
+const PRODUCT_KEY = 'prompteur_1_9';
+
 
 @Component({
   selector: 'app-payment-popup',
@@ -69,79 +72,74 @@ export class PaymentPopupComponent {
   // }
 
 
-  products: any[] = [];
-  isPremium = false;
-  storeNotReady = false;
 
-  private SUBSCRIPTION_ID = 'prompteur_1_9'; // à adapter si besoin
-  private store: any;
 
-  constructor(private ref: ChangeDetectorRef) {}
+  products: IAPProduct[] = [];
+  isSubscribed = false;
 
-  ngOnInit() {
-    this.initStore();
+  constructor(
+    private plt: Platform,
+    private store: InAppPurchase2,
+    private alertController: AlertController,
+    private ref: ChangeDetectorRef,
+    private iap: InAppPurchase2 // <= ici
+
+  ) {
+    this.plt.ready().then(() => {
+      this.store.verbosity = this.store.DEBUG;
+
+      this.registerProducts();
+      this.setupListeners();
+
+      this.store.ready(() => {
+        this.products = this.store.products;
+        this.ref.detectChanges();
+      });
+    });
   }
 
-  initStore() {
-    // Sécurité : attendre que cordova soit prêt si besoin
-    document.addEventListener('deviceready', () => this.setupStore(), false);
-    // Pour navigateur/simulateur (utile debug sur Chrome)
-    setTimeout(() => this.setupStore(), 1500);
-  }
-
-  setupStore() {
-    this.store = window.store;
-    if (!this.store) {
-      this.storeNotReady = true;
-      return;
-    }
-    this.storeNotReady = false;
-    this.store.verbosity = this.store.DEBUG;
-
-    this.registerProducts();
-    this.setupListeners();
-
-    this.store.ready(() => {
-      this.products = this.store.products ? Object.values(this.store.products) : [];
-      this.ref.detectChanges();
+  registerProducts() {
+    this.store.register({
+      id: PRODUCT_KEY,
+      type: this.store.PAID_SUBSCRIPTION,
     });
 
     this.store.refresh();
   }
 
-  registerProducts() {
-    this.store.register({
-      id: this.SUBSCRIPTION_ID,
-      type: this.store.PAID_SUBSCRIPTION,
-      platform: 'ios'
-    });
-  }
-
   setupListeners() {
-    this.store.when(this.SUBSCRIPTION_ID).approved((order: any) => {
-      // Ici tu peux traiter le reçu etc.
-      this.isPremium = true;
-      order.finish();
-      alert('✅ Achat validé !');
-      this.ref.detectChanges();
-    });
+    this.store.when(PRODUCT_KEY)
+      .approved((p: IAPProduct) => {
+        this.isSubscribed = true;
+        this.ref.detectChanges();
+        return p.verify();
+      })
+      .verified((p: IAPProduct) => p.finish());
 
-    this.store.when(this.SUBSCRIPTION_ID).owned((p: any) => {
-      this.isPremium = true;
-      this.ref.detectChanges();
-    });
-
-    this.store.error((err: any) => {
-      alert('Erreur IAP : ' + JSON.stringify(err));
-    });
+    this.store.when(PRODUCT_KEY)
+      .owned((p: IAPProduct) => {
+        this.isSubscribed = true;
+      });
   }
 
-  purchase(productId: string) {
-    if (!this.store) return;
-    this.store.order(productId);
+  purchase(product: IAPProduct) {
+    this.store.order(product).then((p: any) => {
+      // Traitement après achat
+    }, (e: any) => {
+      this.presentAlert('Failed', `Failed to purchase: ${e}`);
+    });
   }
 
   restore() {
-    if (this.store) this.store.refresh();
+    this.store.refresh();
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }
