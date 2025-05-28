@@ -46,21 +46,18 @@
   </div>
 </div> -->
 
-<ion-card *ngIf="product">
+
+<ion-card *ngFor="let p of products">
   <ion-card-header>
-    <ion-card-title>{{ product.title }}</ion-card-title>
-    <ion-card-subtitle>{{ product.price }} / mois</ion-card-subtitle>
+    <ion-card-title>{{ p.title }}</ion-card-title>
+    <ion-card-subtitle>{{ p.price }} / mois</ion-card-subtitle>
   </ion-card-header>
   <ion-card-content>
-    <p>{{ product.description }}</p>
-    <ion-button expand="full" color="primary" (click)="acheter()" [disabled]="isSubscribed">
-      {{ isSubscribed ? 'Déjà abonné' : 'S’abonner' }}
+    <p>{{ p.description }}</p>
+    <ion-button expand="full" color="primary" (click)="purchase(p)" [disabled]="isSubscribed">
+      Acheter
     </ion-button>
-    <ion-button expand="full" (click)="restore()">Restaurer mes achats</ion-button>
   </ion-card-content>
 </ion-card>
-<ion-card *ngIf="!product">
-  <ion-card-content>
-    Chargement du produit...
-  </ion-card-content>
-</ion-card>
+
+<ion-button expand="full" (click)="restore()">Restaurer mes achats</ion-button>

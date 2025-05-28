@@ -11,6 +11,7 @@ declare global {
     store: any;
   }
 }
+
 const PRODUCT_KEY = 'prompteur_1_9';
 
 
@@ -76,6 +77,7 @@ export class PaymentPopupComponent {
 
   products: IAPProduct[] = [];
   isSubscribed = false;
+  public product: any;
 
   constructor(
     private plt: Platform,
