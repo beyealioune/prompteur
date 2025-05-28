@@ -15,7 +15,6 @@ export class PaymentService {
   public isStoreReady = false;
   public productLoaded = false;
   private iapInitialized = false;
-  waitForStore: any;
 
   constructor(
     private http: HttpClient,
@@ -28,7 +27,13 @@ export class PaymentService {
     }
   }
 
-
+  private getErrorMessage(err: any): string {
+    if (err && typeof err === 'object') {
+      if ('message' in err) return (err as any).message;
+      return JSON.stringify(err);
+    }
+    return String(err);
+  }
 
   private initializeIAP(): void {
     if (this.iapInitialized) return;
@@ -99,9 +104,6 @@ export class PaymentService {
         alert('❌ Erreur backend : ' + this.getErrorMessage(err));
       }
     });
-  }
-  getErrorMessage(err: any) {
-    throw new Error("Method not implemented.");
   }
 
   startApplePurchase(productId: string): void {
