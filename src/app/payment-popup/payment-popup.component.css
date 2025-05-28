@@ -1,4 +1,4 @@
-.popup-overlay {
+/* .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -69,4 +69,63 @@
 
 .popup-card a:hover {
   text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+.iap-container {
+  padding: 2em;
+  max-width: 400px;
+  margin: auto;
+}
+
+.alert {
+  color: #856404;
+  background: #fff3cd;
+  padding: 1em;
+  border-radius: 6px;
+  margin-bottom: 1em;
+}
+
+button {
+  margin: .5em 0;
+  padding: .4em 1em;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+button.restore-btn {
+  background: #28a745;
+  margin-top: 1em;
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.premium-status {
+  margin-top: 2em;
+  font-size: 1.1em;
 }
