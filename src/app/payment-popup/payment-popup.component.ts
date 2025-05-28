@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output, inject } from '@angular/core';
-import { AlertController, Platform } from '@ionic/angular';
+import { AlertController, IonicModule, Platform } from '@ionic/angular';
 import { PaymentService } from '../services/payment.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -17,7 +17,7 @@ const PRODUCT_KEY = 'prompteur_1_9';
 @Component({
   selector: 'app-payment-popup',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, IonicModule],
   templateUrl: './payment-popup.component.html',
   styleUrl: './payment-popup.component.css'
 })
