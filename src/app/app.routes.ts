@@ -13,7 +13,6 @@ import { FaqComponent } from './faq/faq.component';
 import { PolitiqueConfidentialiteComponent } from './politique-confidentialite/politique-confidentialite.component';
 import { StripeSuccessComponent } from './stripe-success/stripe-success.component';
 import { Routes } from '@angular/router';
-import { TestComponent } from './test/test.component';
 
 
 export const routes: Routes = [
@@ -26,7 +25,6 @@ export const routes: Routes = [
   { path: 'profil', component: ProfilComponent, canActivate: [AuthGuard] },
   { path: 'prompteur', component: PrompteurComponent, canActivate: [AuthGuard] },
   { path: 'stripe-success', component: StripeSuccessComponent },
-  { path: 'test', component: TestComponent },
 
   {
     path: 'connexion',

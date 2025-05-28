@@ -6,7 +6,7 @@ import { SessionService } from './services/session.service';
 import { HttpClient } from '@angular/common/http';
 import { User } from './models/user';
 import { Platform } from '@angular/cdk/platform';
-import { RouterOutlet, Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 declare var store: any;
 
