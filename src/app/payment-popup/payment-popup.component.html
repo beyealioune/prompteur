@@ -46,25 +46,17 @@
   </div>
 </div> -->
 
-
-<div class="iap-container">
-  <h2>Achat In-App Test (iOS)</h2>
-  <div *ngIf="storeNotReady" class="alert alert-warning">
-    ⚠️ Store non initialisé ou plugin manquant.
-  </div>
-  <ul *ngIf="products.length">
-    <li *ngFor="let p of products">
-      <strong>{{ p.title || p.id }}</strong> 
-      <br>{{ p.description }}<br>
-      <b>{{ p.price ? (p.price + ' ' + p.currency) : '' }}</b>
-      <button (click)="purchase(p.id)">Acheter</button>
-    </li>
-  </ul>
-  <button (click)="restore()" [disabled]="storeNotReady" class="restore-btn">Restaurer les achats</button>
-  <div class="premium-status">
-    <b>Status premium :</b> 
-    <span [style.color]="isPremium ? 'green' : 'red'">
-      {{ isPremium ? 'Oui' : 'Non' }}
-    </span>
-  </div>
+<div *ngIf="storeNotReady" class="alert">
+  ⚠️ Le système d'achat In-App n'est pas prêt.<br>{{ debugMsg }}
+</div>
+<div *ngIf="!storeNotReady">
+  <h2>Achat abonnement premium</h2>
+  
+  
+  <button (click)="purchase(SUBSCRIPTION_ID)">
+    Acheter Premium - {{ getProductPrice(SUBSCRIPTION_ID) }}
+  </button>
+    <button (click)="restore()">Restaurer Achats</button>
+  <div *ngIf="isPremium">✅ Abonnement actif !</div>
+  <pre>{{ products | json }}</pre>
 </div>
