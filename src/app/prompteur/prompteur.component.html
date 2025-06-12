@@ -52,7 +52,6 @@
   <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
 
 <!-- Dans ton composant parent, par exemple app.component.html -->
-<app-payment-popup [show]="showPaywall" (closed)="showPaywall = false"></app-payment-popup>
 <button (click)="openPaywall()">Débloquer Premium</button>
 
   <div class="popup-overlay" *ngIf="showSuccessPopup">
@@ -63,3 +62,4 @@
     </div>
   </div>
 </div>
+<app-payment-popup [show]="showPaymentPopup" (closed)="showPaymentPopup = false"></app-payment-popup>

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
 
@@ -6,7 +7,7 @@ import { PaymentService } from '../services/payment.service';
   templateUrl: './payment-popup.component.html',
   styleUrls: ['./payment-popup.component.css'],
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
 })
 export class PaymentPopupComponent {
   @Input() show = false;
