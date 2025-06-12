@@ -11,7 +11,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
       // === Ajoute ici la configuration RevenueCat ===
-      Purchases.configure(withAPIKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK")
+Purchases.configure(withAPIKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK")
+print("🔥 RevenueCat configured!") // <-- pour vérifier
       // ==============================================
 
       return true
