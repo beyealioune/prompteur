@@ -58,6 +58,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   isScrolling = true;
   private videoBlobUrl: string | null = null;
+  ref: any;
 
   constructor(
     private videoService: VideoService,
@@ -67,11 +68,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // if (!this.sessionService.hasAccess()) {
-    //   this.showPaywall = true;
-    // }
+    if (!this.sessionService.hasAccess()) {
+      this.showPaymentPopup = true;
+    }
 
-this.showPaywall = true;
+// this.showPaymentPopup = true;
   }
 
   private refreshUserStatus() {
@@ -289,9 +290,10 @@ this.showPaywall = true;
   }
 
 
-openPaywall() {
-  this.showPaywall = true;
-}
+  openPaywall() {
+    this.showPaymentPopup = true; // Utilisez showPaymentPopup au lieu de showPaywall
+    this.ref.detectChanges(); // Force la détection de changement
+  }
 
   isTypeSupported(mimeType: string): boolean {
     return MediaRecorder.isTypeSupported(mimeType);
