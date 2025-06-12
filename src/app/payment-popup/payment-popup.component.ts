@@ -49,18 +49,7 @@ export class PaymentPopupComponent {
     this.ref.detectChanges();
   }
 
-  async restore() {
-    this.loading = true;
-    this.errorMsg = '';
-    try {
-      await this.payment.restore();
-      this.isPremium = await this.payment.checkPremium();
-    } catch (e: any) {
-      this.errorMsg = e.message || 'Erreur lors de la restauration';
-    }
-    this.loading = false;
-    this.ref.detectChanges();
-  }
+
 
   closePopup() {
     this.closed.emit();

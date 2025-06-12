@@ -8,7 +8,9 @@ const config: CapacitorConfig = {
     scheme: 'App'
   },
   plugins: {
-    Purchase: {
+    // Correction: Le nom du plugin doit être "Purchases" (avec un 's')
+    Purchases: {
+      apiKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK", // Ajoutez votre clé API ici
       ios: {
         products: [
           {

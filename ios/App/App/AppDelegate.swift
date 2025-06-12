@@ -7,16 +7,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
 
-  func application(_ application: UIApplication,
-                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+func application(_ application: UIApplication,
+               didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-      // === Ajoute ici la configuration RevenueCat ===
-Purchases.configure(withAPIKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK")
-print("🔥 RevenueCat configured!") // <-- pour vérifier
-      // ==============================================
-
-      return true
-  }
+    // Configuration RevenueCat
+    Purchases.logLevel = .debug // Ajoutez ceci pour les logs détaillés
+    Purchases.configure(withAPIKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK")
+    print("🔥 RevenueCat configured!")
+    
+    return true
+}
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

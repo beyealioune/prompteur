@@ -1,29 +1,83 @@
 import { Injectable } from '@angular/core';
-import { Purchases } from '@revenuecat/purchases-capacitor';
+import { Purchases, CustomerInfo, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  async getOfferings() {
-    return await Purchases.getOfferings();
+  private isConfigured = false;
+
+  constructor() {
+    this.initializePurchases();
   }
 
-  async purchase() {
-    const offerings = await Purchases.getOfferings();
-    if (!offerings.current || offerings.current.availablePackages.length === 0) {
-      throw new Error("Aucune offre disponible.");
+  private async initializePurchases() {
+    try {
+      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+      await Purchases.configure({
+        apiKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK"
+      });
+      this.isConfigured = true;
+      console.log('✅ RevenueCat initialized');
+    } catch (error) {
+      console.error('❌ RevenueCat initialization failed', error);
     }
-    const packageToBuy = offerings.current.availablePackages[0];
-    // ⚠️ On passe l'objet package et non juste un id
-    return await Purchases.purchasePackage({ aPackage: packageToBuy });
   }
 
-  async checkPremium() {
-    const result = await Purchases.getCustomerInfo();
-    // On accède à .customerInfo.activeSubscriptions
-    return result.customerInfo.activeSubscriptions.length > 0;
+  async getOfferings() {
+    if (!this.isConfigured) {
+      throw new Error('RevenueCat not initialized yet');
+    }
+    try {
+      return await Purchases.getOfferings();
+    } catch (error) {
+      console.error('Error getting offerings', error);
+      throw error;
+    }
   }
 
-  async restore() {
-    return await Purchases.restorePurchases();
+  async purchase(): Promise<boolean> {
+    try {
+      const offerings = await this.getOfferings();
+      if (!offerings.current || offerings.current.availablePackages.length === 0) {
+        throw new Error("No available packages");
+      }
+      const purchaseResult = await Purchases.purchasePackage({
+        aPackage: offerings.current.availablePackages[0]
+      });
+      // purchaseResult est { customerInfo: CustomerInfo }
+      return this.hasPremiumAccess(purchaseResult.customerInfo);
+    } catch (error) {
+      console.error('Purchase error', error);
+      throw error;
+    }
+  }
+
+  async checkPremium(): Promise<boolean> {
+    try {
+      const result = await Purchases.getCustomerInfo();
+      // result est { customerInfo: CustomerInfo }
+      return this.hasPremiumAccess(result.customerInfo);
+    } catch (error) {
+      console.error('Error checking premium status', error);
+      return false;
+    }
+  }
+
+  async restorePurchases(): Promise<boolean> {
+    try {
+      const result = await Purchases.restorePurchases();
+      // result est { customerInfo: CustomerInfo }
+      return this.hasPremiumAccess(result.customerInfo);
+    } catch (error) {
+      console.error('Error restoring purchases', error);
+      throw error;
+    }
+  }
+
+  private hasPremiumAccess(customerInfo: CustomerInfo): boolean {
+    // Vérifie si "premium" est actif dans les entitlements OU s'il y a un abonnement actif
+    return (
+      customerInfo.entitlements?.active?.['premium']?.isActive === true ||
+      (customerInfo.activeSubscriptions && customerInfo.activeSubscriptions.length > 0)
+    );
   }
 }
