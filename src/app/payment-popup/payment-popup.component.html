@@ -1,4 +1,4 @@
-<div class="popup-overlay" *ngIf="show">
+<div class="popup-overlay" >
   <div class="popup-card">
     <button class="btn-close" (click)="closePopup()" aria-label="Fermer">&times;</button>
     <h2>{{ productTitle }}</h2>
@@ -11,7 +11,6 @@
     <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
       S’abonner
     </button>
-    <button class="btn-unified restore-btn" (click)="restore()" [disabled]="loading || isPremium">
       Restaurer achats
     </button>
     <div *ngIf="isPremium" class="premium-status">
