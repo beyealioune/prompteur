@@ -67,11 +67,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (!this.sessionService.hasAccess()) {
-      this.showPaywall = true;
-    }
+    // if (!this.sessionService.hasAccess()) {
+    //   this.showPaywall = true;
+    // }
 
-
+this.showPaywall = true;
   }
 
   private refreshUserStatus() {
