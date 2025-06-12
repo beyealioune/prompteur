@@ -1,13 +1,21 @@
 PODS:
-  - Capacitor (6.2.1):
+  - Capacitor (7.3.0):
     - CapacitorCordova
-  - CapacitorCamera (6.1.2):
+  - CapacitorCamera (7.0.1):
     - Capacitor
-  - CapacitorCordova (6.2.1)
-  - CapacitorFilesystem (6.0.3):
+  - CapacitorCordova (7.3.0)
+  - CapacitorFilesystem (7.1.1):
     - Capacitor
-  - CordovaPlugins (6.2.1):
+    - IONFilesystemLib (~> 1.0)
+  - CordovaPlugins (7.3.0):
     - CapacitorCordova
+  - IONFilesystemLib (1.0.0)
+  - PurchasesHybridCommon (13.36.0):
+    - RevenueCat (= 5.28.1)
+  - RevenueCat (5.28.1)
+  - RevenuecatPurchasesCapacitor (10.3.4):
+    - Capacitor
+    - PurchasesHybridCommon (= 13.36.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -15,6 +23,13 @@ DEPENDENCIES:
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - "RevenuecatPurchasesCapacitor (from `../../node_modules/@revenuecat/purchases-capacitor`)"
+
+SPEC REPOS:
+  trunk:
+    - IONFilesystemLib
+    - PurchasesHybridCommon
+    - RevenueCat
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -27,14 +42,20 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/filesystem"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
+  RevenuecatPurchasesCapacitor:
+    :path: "../../node_modules/@revenuecat/purchases-capacitor"
 
 SPEC CHECKSUMS:
-  Capacitor: c95400d761e376be9da6be5a05f226c0e865cebf
-  CapacitorCamera: 9bc7b005d0e6f1d5f525b8137045b60cffffce79
-  CapacitorCordova: 8d93e14982f440181be7304aa9559ca631d77fff
-  CapacitorFilesystem: 59270a63c60836248812671aa3b15df673fbaf74
-  CordovaPlugins: 1d6968748cbc887909ab0ba41e3e7ca82c51cb86
+  Capacitor: 8585c18a230122906e114ba5f6325ec65ee1371f
+  CapacitorCamera: 6e73f1fc6c629a672658705a02409b60854bc0f1
+  CapacitorCordova: 2685f5c43675793b5f06dfd66b3b26268f003b97
+  CapacitorFilesystem: 39173fe5a0e77851119998d0d8c61c70551a412a
+  CordovaPlugins: 0c42ff1d6d9419ef60b86b035cc65cba04c40477
+  IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
+  PurchasesHybridCommon: 27d71a65d486bbfd6822a58c9802f7191e438c05
+  RevenueCat: 3fafcf295834118ed6e6ec9388a20a4c9092b1e6
+  RevenuecatPurchasesCapacitor: a916cdf5a6c65ad3c7d6fc203f75e731a514bc89
 
-PODFILE CHECKSUM: 4ec277df72aa3133accf7cb73a76134ced0aac3e
+PODFILE CHECKSUM: 53b8bedc95d2d60ca6b7d153c32103aaf477eb90
 
 COCOAPODS: 1.16.2

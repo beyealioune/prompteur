@@ -53,6 +53,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   timerInterval: any;
   showPaymentPopup = false;
   showSuccessPopup = false;
+  showPaywall = false;
+
 
   isScrolling = true;
   private videoBlobUrl: string | null = null;
@@ -285,6 +287,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
+
+
+openPaywall() {
+  this.showPaywall = true;
+}
 
   isTypeSupported(mimeType: string): boolean {
     return MediaRecorder.isTypeSupported(mimeType);

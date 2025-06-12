@@ -1,6 +1,6 @@
 import UIKit
 import Capacitor
-
+import Purchases // 👈 Ajout RevenueCat
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -9,6 +9,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+      // === Ajoute ici la configuration RevenueCat ===
+      Purchases.configure(withAPIKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK")
+      // ==============================================
+
       return true
   }
 

@@ -1,12 +1,25 @@
-
-<div *ngIf="!storeNotReady">
-  <h2>Achat abonnement premium</h2>
-  
-  
-  <button (click)="purchase(SUBSCRIPTION_ID)">
-    Acheter Premium - {{ getProductPrice(SUBSCRIPTION_ID) }}
-  </button>
-    <button (click)="restore()">Restaurer Achats</button>
-  <div *ngIf="isPremium">✅ Abonnement actif !</div>
-  <pre>{{ products | json }}</pre>
+<div class="popup-overlay" *ngIf="show">
+  <div class="popup-card">
+    <button class="btn-close" (click)="closePopup()" aria-label="Fermer">&times;</button>
+    <h2>{{ productTitle }}</h2>
+    <p>Débloquez toutes les fonctionnalités avec l’abonnement Premium.</p>
+    <div *ngIf="price && !isPremium && !loading" class="price">
+      <strong>{{ price }}/mois</strong>
+    </div>
+    <div *ngIf="loading" class="loader">Chargement...</div>
+    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+    <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
+      S’abonner
+    </button>
+    <button class="btn-unified restore-btn" (click)="restore()" [disabled]="loading || isPremium">
+      Restaurer achats
+    </button>
+    <div *ngIf="isPremium" class="premium-status">
+      ✅ Abonnement actif ! Merci 🙏
+    </div>
+    <div class="legal-links">
+      <a href="https://tonsite.fr/politique-confidentialite" target="_blank">Confidentialité</a> ·
+      <a href="https://tonsite.fr/terms" target="_blank">Conditions</a>
+    </div>
+  </div>
 </div>
