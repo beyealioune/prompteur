@@ -18,7 +18,6 @@ import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NativeVideoService } from '../services/native-video.service'; // <-- AJOUT
 
 @Component({
   selector: 'app-prompteur',
@@ -40,6 +39,7 @@ import { NativeVideoService } from '../services/native-video.service'; // <-- AJ
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>; // Pour le input natif
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
@@ -61,8 +61,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(
     private videoService: VideoService,
     private sessionService: SessionService,
-    private snackBar: MatSnackBar,
-    private nativeVideo: NativeVideoService // <-- AJOUT
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -132,21 +131,26 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
-  // 👇 ******* MÉTHODE À CHANGER POUR iOS *******
-  async startCamera() {
-    if (this.isIOS()) {
-      try {
-        const videoUri = await this.nativeVideo.recordVideo();
-        this.snackBar.open('Vidéo enregistrée !', '', { duration: 2000 });
-        this.previewNativeVideo(videoUri);
-        // 👇 Uploader après prévisualisation
-        await this.uploadNativeVideo(videoUri);
-      } catch (err) {
-        this.snackBar.open('Erreur vidéo : ' + err, '', { duration: 3000 });
-      }
-      return;
+  // 📱 iOS & Android: Utilisation du input natif vidéo
+  openNativeVideoPicker() {
+    this.videoInput.nativeElement.value = ''; // reset (sinon même vidéo impossible à re-capturer)
+    this.videoInput.nativeElement.click();
+  }
+
+  async onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.previewRecording(file);
+      this.uploadVideo(file);
+      this.snackBar.open('Vidéo chargée !', '', { duration: 2000 });
     }
-    // --- Sinon comportement Android/Web classique ---
+  }
+
+  // Les anciennes méthodes MediaRecorder pour Android/Web
+  async startCamera() {
+    // Ici tu peux masquer le bouton si iOS (utilise le bouton "Filmer une vidéo")
+    if (this.isIOS()) return;
     this.stopCamera();
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -165,19 +169,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  // 👇 ******* POUR PRÉVISUALISER LA VIDÉO iOS *******
-  private previewNativeVideo(videoUri: string) {
-    if (this.videoBlobUrl) {
-      URL.revokeObjectURL(this.videoBlobUrl);
-    }
-    const video = this.videoElement.nativeElement;
-    video.srcObject = null;
-    video.src = videoUri;
-    video.setAttribute('controls', 'true');
-    video.play().catch(console.error);
-  }
-
-  // ⬇️ Les méthodes classiques restent pour Android/Web
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
@@ -193,7 +184,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
-    const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
+    const preferredMimeType = 'video/webm';
     if (!this.isTypeSupported(preferredMimeType)) {
       alert(`Le format ${preferredMimeType} n'est pas supporté`);
       return;
@@ -212,7 +203,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     try {
       this.recordedChunks = [];
       const options = {
-        mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
+        mimeType: 'video/webm',
         videoBitsPerSecond: 2500000
       };
       try {
@@ -227,7 +218,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       };
       this.mediaRecorder.onstop = () => {
         const blob = new Blob(this.recordedChunks, {
-          type: this.mediaRecorder?.mimeType || 'video/mp4'
+          type: this.mediaRecorder?.mimeType || 'video/webm'
         });
         this.previewRecording(blob);
         this.uploadVideo(blob);
@@ -273,8 +264,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private uploadVideo(blob: Blob) {
     const extension = blob.type.includes('mp4') ? '.mp4' : '.webm';
     this.videoService.uploadVideo(blob, extension).subscribe({
-      next: () => alert('Vidéo envoyée avec succès!'),
-      error: (err) => alert('Erreur d\'upload: ' + err.message)
+      next: () => this.snackBar.open('Vidéo envoyée avec succès!', '', { duration: 2000 }),
+      error: (err) => this.snackBar.open('Erreur d\'upload: ' + err.message, '', { duration: 3000 }),
     });
   }
 
@@ -305,24 +296,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   openPaywall() {
     this.showPaymentPopup = true;
-    this.ref.detectChanges();
+    this.ref?.detectChanges?.();
   }
 
   isTypeSupported(mimeType: string): boolean {
     return MediaRecorder.isTypeSupported(mimeType);
   }
-
-  async uploadNativeVideo(fileUri: string) {
-    try {
-      // Conversion en blob natif (tu utilises la méthode qu’on a corrigée juste avant)
-      const blob = await this.nativeVideo.getBlobFromFileUri(fileUri);
-      this.videoService.uploadVideo(blob, '.mp4').subscribe({
-        next: () => this.snackBar.open('Vidéo envoyée avec succès!', '', { duration: 2000 }),
-        error: (err) => this.snackBar.open('Erreur d\'upload: ' + err.message, '', { duration: 3000 }),
-      });
-    } catch (err) {
-      this.snackBar.open('Impossible de convertir la vidéo: ' + err, '', { duration: 3000 });
-    }
-  }
-  
 }

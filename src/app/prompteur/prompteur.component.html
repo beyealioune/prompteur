@@ -1,11 +1,17 @@
 <div class="teleprompteur-wrapper">
   <div class="top-buttons">
-    <button class="btn red" (click)="startRecording()" [disabled]="isRecording || !stream">
+    <button class="btn red" (click)="startRecording()" [disabled]="isRecording || !stream && !isIOS()">
       ⏺ Start Recording
     </button>
-    <button class="btn dark" (click)="startCamera()">
+    <button class="btn dark" (click)="startCamera()" *ngIf="!isIOS()">
       📷 Start Camera
     </button>
+    <!-- Bouton pour iOS (input natif) -->
+    <button class="btn dark" (click)="openNativeVideoPicker()" *ngIf="isIOS()">
+      🎥 Filmer une vidéo
+    </button>
+    <!-- Input natif caché -->
+    <input type="file" #videoInput accept="video/*" capture="user" (change)="onFileSelected($event)" style="display:none">
   </div>
 
   <div class="video-box">
@@ -51,8 +57,7 @@
 
   <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
 
-<!-- Dans ton composant parent, par exemple app.component.html -->
-<button (click)="openPaywall()">Débloquer Premium</button>
+  <button (click)="openPaywall()">Débloquer Premium</button>
 
   <div class="popup-overlay" *ngIf="showSuccessPopup">
     <div class="popup-card">
