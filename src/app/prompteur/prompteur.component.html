@@ -1,3 +1,4 @@
+<!-- src/app/prompteur/prompteur.component.html -->
 <div class="teleprompteur-wrapper">
   <div class="top-buttons">
     <button class="btn red" (click)="startRecording()" [disabled]="isRecording || !stream && !isIOS()">
@@ -34,7 +35,6 @@
 
     <div *ngIf="isRecording" class="timer">⏱ {{ recordingTime }}s</div>
 
-    <!-- Bouton plein écran dans la vidéo -->
     <button class="fullscreen-toggle" (click)="toggleFullscreen()" matTooltip="Plein écran">
       <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
     </button>

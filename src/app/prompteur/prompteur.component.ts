@@ -1,3 +1,4 @@
+// src/app/prompteur/prompteur.component.ts
 import {
   Component,
   ElementRef,
@@ -39,7 +40,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
-  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>; // Pour le input natif
+  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>; // Input natif
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
@@ -133,7 +134,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   // 📱 iOS & Android: Utilisation du input natif vidéo
   openNativeVideoPicker() {
-    this.videoInput.nativeElement.value = ''; // reset (sinon même vidéo impossible à re-capturer)
+    this.videoInput.nativeElement.value = ''; // reset sinon même vidéo impossible à re-capturer
     this.videoInput.nativeElement.click();
   }
 
@@ -143,6 +144,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       const file = input.files[0];
       this.previewRecording(file);
       this.uploadVideo(file);
+
+      // ➡️ Optionnel : fait défiler le texte lors de la preview
+      this.updateScrollSpeed();
+      this.restartScrolling();
+
       this.snackBar.open('Vidéo chargée !', '', { duration: 2000 });
     }
   }
