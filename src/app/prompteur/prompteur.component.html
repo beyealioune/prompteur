@@ -1,17 +1,14 @@
-<!-- src/app/prompteur/prompteur.component.html -->
 <div class="teleprompteur-wrapper">
   <div class="top-buttons">
-    <button class="btn red" (click)="startRecording()" [disabled]="isRecording || !stream && !isIOS()">
-      ⏺ Start Recording
-    </button>
-    <button class="btn dark" (click)="startCamera()" *ngIf="!isIOS()">
+    <button class="btn dark" (click)="startCamera()" [disabled]="cameraOn || isRecording" *ngIf="!isIOS()">
       📷 Start Camera
     </button>
-    <!-- Bouton pour iOS (input natif) -->
-    <button class="btn dark" (click)="openNativeVideoPicker()" *ngIf="isIOS()">
-      🎥 Filmer une vidéo
+    <button class="btn red" (click)="startRecording()" [disabled]="!cameraOn || isRecording" *ngIf="!isIOS()">
+      ⏺ Start Recording
     </button>
-    <!-- Input natif caché -->
+    <button class="btn dark" (click)="openNativeVideoPicker()" *ngIf="isIOS()">
+      🎥 Filmer (iOS)
+    </button>
     <input type="file" #videoInput accept="video/*" capture="user" (change)="onFileSelected($event)" style="display:none">
   </div>
 

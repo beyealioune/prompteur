@@ -1,4 +1,3 @@
-// src/app/prompteur/prompteur.component.ts
 import {
   Component,
   ElementRef,
@@ -40,10 +39,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
-  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>; // Input natif
+  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
+  cameraOn = false;
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];
   stream: MediaStream | null = null;
@@ -132,9 +132,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
-  // 📱 iOS & Android: Utilisation du input natif vidéo
+  // iOS input natif
   openNativeVideoPicker() {
-    this.videoInput.nativeElement.value = ''; // reset sinon même vidéo impossible à re-capturer
+    this.videoInput.nativeElement.value = '';
     this.videoInput.nativeElement.click();
   }
 
@@ -145,7 +145,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.previewRecording(file);
       this.uploadVideo(file);
 
-      // ➡️ Optionnel : fait défiler le texte lors de la preview
       this.updateScrollSpeed();
       this.restartScrolling();
 
@@ -153,9 +152,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  // Les anciennes méthodes MediaRecorder pour Android/Web
   async startCamera() {
-    // Ici tu peux masquer le bouton si iOS (utilise le bouton "Filmer une vidéo")
     if (this.isIOS()) return;
     this.stopCamera();
     try {
@@ -169,6 +166,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
       await video.play();
+      this.cameraOn = true;
+      this.isScrolling = true;
+      this.updateScrollSpeed();
+      this.restartScrolling();
     } catch (err) {
       console.error('Camera error:', err);
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
@@ -180,13 +181,14 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
+    this.cameraOn = false;
     const video = this.videoElement.nativeElement;
     video.srcObject = null;
     video.src = '';
   }
 
   startRecording() {
-    if (!this.stream) {
+    if (!this.cameraOn || !this.stream) {
       alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
@@ -232,6 +234,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
+      this.isScrolling = true;
       this.updateScrollSpeed();
       this.restartScrolling();
     } catch (err) {
@@ -265,6 +268,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
     video.play().catch(console.error);
+    this.cameraOn = false;
   }
 
   private uploadVideo(blob: Blob) {
