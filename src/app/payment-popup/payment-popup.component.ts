@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
+import { SessionService } from '../services/session.service';
 
 @Component({
   selector: 'app-payment-popup',
@@ -19,7 +20,7 @@ export class PaymentPopupComponent {
   loading = false;
   errorMsg = '';
 
-  constructor(private payment: PaymentService, private ref: ChangeDetectorRef) {}
+  constructor(private payment: PaymentService, private ref: ChangeDetectorRef, private sessionService : SessionService) {}
 
   async ngOnInit() {
     this.loading = true;
@@ -43,13 +44,19 @@ export class PaymentPopupComponent {
     try {
       await this.payment.purchase();
       this.isPremium = await this.payment.checkPremium();
+      if (this.isPremium && this.sessionService.user?.email) {
+        this.payment.setPremiumInBackend(this.sessionService.user.email).subscribe({
+          next: () => this.sessionService.refreshUser().subscribe(),
+          error: err => alert('Erreur de mise à jour premium: ' + err.message)
+        });
+      }
     } catch (e: any) {
       this.errorMsg = e.message || 'Erreur lors de l’achat';
     }
     this.loading = false;
     this.ref.detectChanges();
   }
-
+  
 
 
   closePopup() {

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Purchases, CustomerInfo, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
   private isConfigured = false;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.initializePurchases();
   }
 
@@ -79,5 +81,15 @@ export class PaymentService {
       customerInfo.entitlements?.active?.['premium']?.isActive === true ||
       (customerInfo.activeSubscriptions && customerInfo.activeSubscriptions.length > 0)
     );
+  }
+
+
+  setPremiumInBackend(email: string) {
+    return this.http.post(`${environment.apiUrl}users/set-premium`, { email });
+  }
+
+  // Idem si tu veux faire pour le trial :
+  setTrialInBackend(email: string, days: number = 3) {
+    return this.http.post(`${environment.apiUrl}users/set-trial`, { email, days });
   }
 }
