@@ -17,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
-
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NativeVideoService } from '../services/native-video.service'; // <-- AJOUT
 
 @Component({
   selector: 'app-prompteur',
@@ -46,7 +46,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];
   stream: MediaStream | null = null;
-  vitesse: number = 20; // secondes
+  vitesse: number = 20;
   countdown = 0;
   isFullscreen = false;
   recordingTime = 0;
@@ -54,8 +54,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   showPaymentPopup = false;
   showSuccessPopup = false;
   showPaywall = false;
-
-
   isScrolling = true;
   private videoBlobUrl: string | null = null;
   ref: any;
@@ -63,38 +61,32 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(
     private videoService: VideoService,
     private sessionService: SessionService,
-    private snackBar: MatSnackBar 
-
+    private snackBar: MatSnackBar,
+    private nativeVideo: NativeVideoService // <-- AJOUT
   ) {}
 
   ngOnInit(): void {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
     }
-
-// this.showPaymentPopup = true;
   }
 
   private refreshUserStatus() {
     this.sessionService.refreshUser().subscribe((user) => {
       if (user.isPremium || (user.trialEnd && new Date(user.trialEnd) > new Date())) {
         if (this.showPaymentPopup) {
-          this.showPaymentPopup = false; // ❌ On ferme l'ancienne popup de paiement
-          this.showSuccessPopup = true;  // ✅ On ouvre la popup succès !
+          this.showPaymentPopup = false;
+          this.showSuccessPopup = true;
         }
       }
     }, (error) => {
       console.error('Erreur lors du rafraîchissement utilisateur', error);
     });
   }
-  
-  
+
   closeSuccessPopup() {
     this.showSuccessPopup = false;
   }
-  
-  
-
 
   ngAfterViewInit(): void {
     this.updateScrollSpeed();
@@ -123,7 +115,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     if (this.texteElement) {
       const el = this.texteElement.nativeElement;
       el.style.animation = 'none';
-      el.offsetHeight; // Force reflow
+      el.offsetHeight;
       el.style.animation = '';
     }
   }
@@ -140,7 +132,21 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
+  // 👇 ******* MÉTHODE À CHANGER POUR iOS *******
   async startCamera() {
+    if (this.isIOS()) {
+      try {
+        const videoUri = await this.nativeVideo.recordVideo();
+        this.snackBar.open('Vidéo enregistrée !', '', { duration: 2000 });
+        this.previewNativeVideo(videoUri);
+        // 👇 Uploader après prévisualisation
+        await this.uploadNativeVideo(videoUri);
+      } catch (err) {
+        this.snackBar.open('Erreur vidéo : ' + err, '', { duration: 3000 });
+      }
+      return;
+    }
+    // --- Sinon comportement Android/Web classique ---
     this.stopCamera();
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -159,6 +165,19 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  // 👇 ******* POUR PRÉVISUALISER LA VIDÉO iOS *******
+  private previewNativeVideo(videoUri: string) {
+    if (this.videoBlobUrl) {
+      URL.revokeObjectURL(this.videoBlobUrl);
+    }
+    const video = this.videoElement.nativeElement;
+    video.srcObject = null;
+    video.src = videoUri;
+    video.setAttribute('controls', 'true');
+    video.play().catch(console.error);
+  }
+
+  // ⬇️ Les méthodes classiques restent pour Android/Web
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
@@ -174,13 +193,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
-
     const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
     if (!this.isTypeSupported(preferredMimeType)) {
       alert(`Le format ${preferredMimeType} n'est pas supporté`);
       return;
     }
-
     this.countdown = 3;
     const interval = setInterval(() => {
       this.countdown--;
@@ -203,13 +220,11 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       } catch {
         this.mediaRecorder = new MediaRecorder(this.stream!);
       }
-
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
-
       this.mediaRecorder.onstop = () => {
         const blob = new Blob(this.recordedChunks, {
           type: this.mediaRecorder?.mimeType || 'video/mp4'
@@ -217,7 +232,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
-
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
@@ -289,13 +303,26 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
-
   openPaywall() {
-    this.showPaymentPopup = true; // Utilisez showPaymentPopup au lieu de showPaywall
-    this.ref.detectChanges(); // Force la détection de changement
+    this.showPaymentPopup = true;
+    this.ref.detectChanges();
   }
 
   isTypeSupported(mimeType: string): boolean {
     return MediaRecorder.isTypeSupported(mimeType);
   }
+
+  async uploadNativeVideo(fileUri: string) {
+    try {
+      // Conversion en blob natif (tu utilises la méthode qu’on a corrigée juste avant)
+      const blob = await this.nativeVideo.getBlobFromFileUri(fileUri);
+      this.videoService.uploadVideo(blob, '.mp4').subscribe({
+        next: () => this.snackBar.open('Vidéo envoyée avec succès!', '', { duration: 2000 }),
+        error: (err) => this.snackBar.open('Erreur d\'upload: ' + err.message, '', { duration: 3000 }),
+      });
+    } catch (err) {
+      this.snackBar.open('Impossible de convertir la vidéo: ' + err, '', { duration: 3000 });
+    }
+  }
+  
 }
