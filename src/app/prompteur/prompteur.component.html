@@ -1,67 +1,78 @@
-<div class="teleprompteur-wrapper">
-  <div class="top-buttons">
-    <button class="btn dark" (click)="startCamera()" [disabled]="cameraOn || isRecording" *ngIf="!isIOS()">
-      📷 Start Camera
-    </button>
-    <button class="btn red" (click)="startRecording()" [disabled]="!cameraOn || isRecording" *ngIf="!isIOS()">
-      ⏺ Start Recording
-    </button>
-    <button class="btn dark" (click)="openNativeVideoPicker()" *ngIf="isIOS()">
-      🎥 Filmer (iOS)
-    </button>
-    <input type="file" #videoInput accept="video/*" capture="user" (change)="onFileSelected($event)" style="display:none">
-  </div>
+<div class="container mat-elevation-z4">
+  <mat-card class="video-card">
+    <div class="video-container" [class.ios-video-container]="isIOS()">
+      <video #videoElement
+        class="mirror"
+        autoplay
+        muted
+        playsinline
+        webkit-playsinline
+        disablePictureInPicture
+        controlslist="nodownload nofullscreen">
+      </video>
 
-  <div class="video-box">
-    <video #videoElement
-           autoplay
-           muted
-           playsinline
-           class="video mirror"
-           webkit-playsinline
-           disablePictureInPicture
-           controlslist="nodownload nofullscreen">
-    </video>
+      <div class="texte-overlay">
+        <div class="trait"></div>
+        <div class="texte" #texteElement [class.scrolling]="isScrolling">
+          {{ texte }}
+        </div>
+      </div>
 
-    <div class="texte-overlay">
-      <div class="trait"></div>
-      <div class="texte" #texteElement [class.scrolling]="isScrolling">
-        {{ texte }}
+      <div *ngIf="isRecording" class="timer">
+        ⏱️ {{ recordingTime }}s
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Texte du prompteur</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="texte"
+      (ngModelChange)="updateScrollSpeed()"
+      placeholder="Entrez votre texte ici..."
+      rows="4">
+    </textarea>
+  </mat-form-field>
+
+  <div class="actions-column">
+    <div class="speed-buttons">
+      <button mat-raised-button color="primary" (click)="increaseSpeed()">➕ Accélérer</button>
+      <button mat-raised-button color="warn" (click)="decreaseSpeed()">➖ Ralentir</button>
+      <div class="vitesse-info">
+        Vitesse prompteur : {{ vitesse }}s
       </div>
     </div>
 
-    <div *ngIf="isRecording" class="timer">⏱ {{ recordingTime }}s</div>
-
-    <button class="fullscreen-toggle" (click)="toggleFullscreen()" matTooltip="Plein écran">
-      <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
+      📷 Démarrer caméra
     </button>
-  </div>
-  <div class="prompt-label">Vitesse du prompteur</div>
-  <div class="prompt-speed">
-    <button class="circle" (click)="decreaseSpeed()">−</button>
-    <div class="speed-display">{{ vitesse }}s</div>
-    <button class="circle" (click)="increaseSpeed()">＋</button>
-  </div>
 
-  <textarea
-    class="input-text"
-    [(ngModel)]="texte"
-    (ngModelChange)="updateScrollSpeed()"
-    placeholder="Enter your script...">
-  </textarea>
+    <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
 
-  <button class="btn stop" (click)="stopRecording()" [disabled]="!isRecording">🛑 Stop</button>
+    <button mat-raised-button 
+            color="accent" 
+            (click)="startRecording()" 
+            [disabled]="isRecording || !stream"
+            style="width: 100%;">
+      🎬 Démarrer enregistrement
+    </button>
 
-  <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
+    <button mat-raised-button 
+            color="warn" 
+            (click)="stopRecording()" 
+            [disabled]="!isRecording"
+            style="width: 100%;">
+      🛑 Arrêter
+    </button>
 
-  <button (click)="openPaywall()">Débloquer Premium</button>
-
-  <div class="popup-overlay" *ngIf="showSuccessPopup">
-    <div class="popup-card">
-      <h2>✅ Paiement validé !</h2>
-      <p>Merci beaucoup pour votre soutien 🎉</p>
-      <button class="btn btn-primary btn-custom" (click)="closeSuccessPopup()">Fermer</button>
-    </div>
+    <mat-icon class="fullscreen-icon" 
+              (click)="toggleFullscreen()"
+              matTooltip="Plein écran">
+      {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+    </mat-icon>
   </div>
 </div>
-<app-payment-popup [show]="showPaymentPopup" (closed)="showPaymentPopup = false"></app-payment-popup>
+
+<!-- Popup RevenueCat Paiement -->
+<app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false"></app-payment-popup>

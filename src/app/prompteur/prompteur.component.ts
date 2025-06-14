@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-prompteur',
@@ -39,53 +38,30 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
-  @ViewChild('videoInput') videoInput!: ElementRef<HTMLInputElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
-  cameraOn = false;
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];
   stream: MediaStream | null = null;
-  vitesse: number = 20;
+  vitesse: number = 20; // secondes
   countdown = 0;
   isFullscreen = false;
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-  showSuccessPopup = false;
-  showPaywall = false;
   isScrolling = true;
   private videoBlobUrl: string | null = null;
-  ref: any;
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService,
-    private snackBar: MatSnackBar
+    private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
     if (!this.sessionService.hasAccess()) {
       this.showPaymentPopup = true;
     }
-  }
-
-  private refreshUserStatus() {
-    this.sessionService.refreshUser().subscribe((user) => {
-      if (user.isPremium || (user.trialEnd && new Date(user.trialEnd) > new Date())) {
-        if (this.showPaymentPopup) {
-          this.showPaymentPopup = false;
-          this.showSuccessPopup = true;
-        }
-      }
-    }, (error) => {
-      console.error('Erreur lors du rafraîchissement utilisateur', error);
-    });
-  }
-
-  closeSuccessPopup() {
-    this.showSuccessPopup = false;
   }
 
   ngAfterViewInit(): void {
@@ -115,7 +91,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     if (this.texteElement) {
       const el = this.texteElement.nativeElement;
       el.style.animation = 'none';
-      el.offsetHeight;
+      el.offsetHeight; // Force reflow
       el.style.animation = '';
     }
   }
@@ -132,28 +108,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
-  // iOS input natif
-  openNativeVideoPicker() {
-    this.videoInput.nativeElement.value = '';
-    this.videoInput.nativeElement.click();
-  }
-
-  async onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.previewRecording(file);
-      this.uploadVideo(file);
-
-      this.updateScrollSpeed();
-      this.restartScrolling();
-
-      this.snackBar.open('Vidéo chargée !', '', { duration: 2000 });
-    }
-  }
-
   async startCamera() {
-    if (this.isIOS()) return;
     this.stopCamera();
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -166,7 +121,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
       await video.play();
-      this.cameraOn = true;
       this.isScrolling = true;
       this.updateScrollSpeed();
       this.restartScrolling();
@@ -181,22 +135,23 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
-    this.cameraOn = false;
     const video = this.videoElement.nativeElement;
     video.srcObject = null;
     video.src = '';
   }
 
   startRecording() {
-    if (!this.cameraOn || !this.stream) {
+    if (!this.stream) {
       alert('Veuillez d\'abord démarrer la caméra');
       return;
     }
-    const preferredMimeType = 'video/webm';
+
+    const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
     if (!this.isTypeSupported(preferredMimeType)) {
       alert(`Le format ${preferredMimeType} n'est pas supporté`);
       return;
     }
+
     this.countdown = 3;
     const interval = setInterval(() => {
       this.countdown--;
@@ -211,7 +166,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     try {
       this.recordedChunks = [];
       const options = {
-        mimeType: 'video/webm',
+        mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
         videoBitsPerSecond: 2500000
       };
       try {
@@ -219,22 +174,24 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       } catch {
         this.mediaRecorder = new MediaRecorder(this.stream!);
       }
+
       this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
       };
+
       this.mediaRecorder.onstop = () => {
         const blob = new Blob(this.recordedChunks, {
-          type: this.mediaRecorder?.mimeType || 'video/webm'
+          type: this.mediaRecorder?.mimeType || 'video/mp4'
         });
         this.previewRecording(blob);
         this.uploadVideo(blob);
       };
+
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
-      this.isScrolling = true;
       this.updateScrollSpeed();
       this.restartScrolling();
     } catch (err) {
@@ -268,14 +225,13 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
     video.play().catch(console.error);
-    this.cameraOn = false;
   }
 
   private uploadVideo(blob: Blob) {
     const extension = blob.type.includes('mp4') ? '.mp4' : '.webm';
     this.videoService.uploadVideo(blob, extension).subscribe({
-      next: () => this.snackBar.open('Vidéo envoyée avec succès!', '', { duration: 2000 }),
-      error: (err) => this.snackBar.open('Erreur d\'upload: ' + err.message, '', { duration: 3000 }),
+      next: () => alert('Vidéo envoyée avec succès!'),
+      error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
 
@@ -302,11 +258,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  }
-
-  openPaywall() {
-    this.showPaymentPopup = true;
-    this.ref?.detectChanges?.();
   }
 
   isTypeSupported(mimeType: string): boolean {
