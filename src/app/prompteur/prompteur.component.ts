@@ -4,9 +4,7 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy,
-  Output,
-  EventEmitter
+  OnDestroy
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
@@ -18,11 +16,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
-import { MatTooltipModule } from '@angular/material/tooltip';
-
 declare global {
   interface Window {
-    Capacitor: any;
+    Capacitor?: any;
   }
 }
 
@@ -35,7 +31,6 @@ declare global {
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    MatTooltipModule,
     MatIconModule,
     CommonModule,
     PaymentPopupComponent
@@ -46,8 +41,6 @@ declare global {
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
-
-  @Output() videoUploaded = new EventEmitter<void>(); // Pour rafraîchir la liste parent
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
@@ -118,7 +111,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
-  // ----- ANDROID / WEB -----
   async startCamera() {
     this.stopCamera();
     try {
@@ -132,15 +124,34 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
       await video.play();
-      this.isScrolling = true;
-      this.updateScrollSpeed();
-      this.restartScrolling();
     } catch (err) {
       console.error('Camera error:', err);
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
+
+  lancerPrompteurNatif() {
+    // Pour debug, ajoute un log/alert pour voir si le plugin est chargé
+    // @ts-ignore
+    if (window?.Capacitor?.Plugins?.VideoRecorder) {
+      console.log("🔥🔥🔥 Plugin VideoRecorder dispo !");
+      // Appel au plugin Swift
+      window.Capacitor.Plugins.VideoRecorder.recordVideo({ texte: this.texte })
+        .then((result: any) => {
+          alert('Vidéo enregistrée : ' + result.path);
+          // ici tu peux uploader la vidéo si besoin
+        })
+        .catch((err: any) => {
+          alert('Erreur ou permission refusée : ' + (err?.message || err));
+        });
+    } else {
+      console.log("❌❌❌ Plugin VideoRecorder NON dispo !");
+      alert("Plugin vidéo natif iOS non disponible");
+    }
+  }
+
+  
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
@@ -197,7 +208,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
           type: this.mediaRecorder?.mimeType || 'video/mp4'
         });
         this.previewRecording(blob);
-        this.uploadVideo(blob, true); // true = refresh list
+        this.uploadVideo(blob);
       };
 
       this.mediaRecorder.start(100);
@@ -238,18 +249,14 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.play().catch(console.error);
   }
 
-  private uploadVideo(blob: Blob, refreshList = false) {
+  private uploadVideo(blob: Blob) {
     const extension = blob.type.includes('mp4') ? '.mp4' : '.webm';
     this.videoService.uploadVideo(blob, extension).subscribe({
-      next: () => {
-        alert('Vidéo envoyée avec succès!');
-        if (refreshList) this.videoUploaded.emit();
-      },
+      next: () => alert('Vidéo envoyée avec succès!'),
       error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
 
-  // ----- PLEIN ÉCRAN -----
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
     if (!document.fullscreenElement) {
@@ -268,25 +275,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
           this.restartScrolling();
         })
         .catch(console.error);
-    }
-  }
-
-  // ----- iOS natif -----
-  lancerPrompteurNatif() {
-    if (window?.Capacitor?.Plugins?.VideoRecorder) {
-      window.Capacitor.Plugins.VideoRecorder.recordVideo({ texte: this.texte })
-        .then(async (result: any) => {
-          const videoUrl = result.path; // type file://...
-          // Récupère le fichier et crée un blob
-          const response = await fetch(videoUrl);
-          const blob = await response.blob();
-          this.uploadVideo(blob, true); // true = refresh la liste après upload
-        })
-        .catch((err: any) => {
-          alert('Erreur ou permission refusée : ' + (err?.message || err));
-        });
-    } else {
-      alert("Plugin vidéo natif iOS non disponible");
     }
   }
 
