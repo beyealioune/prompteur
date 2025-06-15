@@ -2,15 +2,15 @@
   <mat-card class="video-card">
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
-        class="mirror"
-        autoplay
-        muted
-        playsinline
-        webkit-playsinline
-        disablePictureInPicture
-        controlslist="nodownload nofullscreen">
-      </video>
-
+      class="mirror"
+      autoplay
+      muted
+      playsinline
+      webkit-playsinline
+      disablePictureInPicture
+      controlslist="nodownload nofullscreen">
+</video>
+      
       <div class="texte-overlay">
         <div class="trait"></div>
         <div class="texte" #texteElement [class.scrolling]="isScrolling">
@@ -29,49 +29,34 @@
     <textarea
       matInput
       [(ngModel)]="texte"
-      (ngModelChange)="updateScrollSpeed()"
+      (ngModelChange)="scrollTexte()"
       placeholder="Entrez votre texte ici..."
       rows="4">
     </textarea>
   </mat-form-field>
 
   <div class="actions-column">
-    <div class="speed-buttons">
-      <button mat-raised-button color="primary" (click)="increaseSpeed()">➕ Accélérer</button>
-      <button mat-raised-button color="warn" (click)="decreaseSpeed()">➖ Ralentir</button>
-      <div class="vitesse-info">
-        Vitesse prompteur : {{ vitesse }}s
-      </div>
-    </div>
+    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
+      📷 Démarrer caméra
+    </button>
 
-    <!-- Affichage Android/Web -->
-    <div *ngIf="!isIOS()">
-      <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
-        📷 Démarrer caméra
-      </button>
-      <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-      <button mat-raised-button 
-              color="accent" 
-              (click)="startRecording()" 
-              [disabled]="isRecording || !stream"
-              style="width: 100%;">
-        🎬 Démarrer enregistrement
-      </button>
-      <button mat-raised-button 
-              color="warn" 
-              (click)="stopRecording()" 
-              [disabled]="!isRecording"
-              style="width: 100%;">
-        🛑 Arrêter
-      </button>
-    </div>
+    <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
 
-    <!-- Affichage iOS natif -->
-    <div *ngIf="isIOS()">
-      <button mat-raised-button color="primary" (click)="lancerPrompteurNatif()" style="width: 100%;">
-        🎥 Filmer avec prompteur natif iOS
-      </button>
-    </div>
+    <button mat-raised-button 
+            color="accent" 
+            (click)="startRecording()" 
+            [disabled]="isRecording || !stream"
+            style="width: 100%;">
+      🎬 Démarrer enregistrement
+    </button>
+
+    <button mat-raised-button 
+            color="warn" 
+            (click)="stopRecording()" 
+            [disabled]="!isRecording"
+            style="width: 100%;">
+      🛑 Arrêter
+    </button>
 
     <mat-icon class="fullscreen-icon" 
               (click)="toggleFullscreen()"
@@ -81,5 +66,6 @@
   </div>
 </div>
 
-<!-- Popup RevenueCat Paiement -->
-<app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false"></app-payment-popup>
+<!-- Popup désactivée pour test -->
+ <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
+  
