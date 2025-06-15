@@ -17,6 +17,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
+declare global {
+  interface Window {
+    Capacitor: any;
+  }
+}
 
 @Component({
   selector: 'app-prompteur',
@@ -108,6 +113,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.restartScrolling();
   }
 
+  // ----- ANDROID / WEB -----
   async startCamera() {
     this.stopCamera();
     try {
@@ -235,6 +241,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
 
+  // ----- PLEIN ÉCRAN -----
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
     if (!document.fullscreenElement) {
@@ -253,6 +260,23 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
           this.restartScrolling();
         })
         .catch(console.error);
+    }
+  }
+
+  // ----- iOS natif -----
+  lancerPrompteurNatif() {
+    // @ts-ignore
+    if (window?.Capacitor?.Plugins?.VideoRecorder) {
+      window.Capacitor.Plugins.VideoRecorder.recordVideo({ texte: this.texte })
+        .then((result: any) => {
+          alert('Vidéo enregistrée : ' + result.path);
+          // Tu peux faire un upload ici si besoin
+        })
+        .catch((err: any) => {
+          alert('Erreur ou permission refusée : ' + (err?.message || err));
+        });
+    } else {
+      alert("Plugin vidéo natif iOS non disponible");
     }
   }
 

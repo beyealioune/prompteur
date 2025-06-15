@@ -44,27 +44,34 @@
       </div>
     </div>
 
-    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
-      📷 Démarrer caméra
-    </button>
+    <!-- Affichage Android/Web -->
+    <div *ngIf="!isIOS()">
+      <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
+        📷 Démarrer caméra
+      </button>
+      <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
+      <button mat-raised-button 
+              color="accent" 
+              (click)="startRecording()" 
+              [disabled]="isRecording || !stream"
+              style="width: 100%;">
+        🎬 Démarrer enregistrement
+      </button>
+      <button mat-raised-button 
+              color="warn" 
+              (click)="stopRecording()" 
+              [disabled]="!isRecording"
+              style="width: 100%;">
+        🛑 Arrêter
+      </button>
+    </div>
 
-    <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-
-    <button mat-raised-button 
-            color="accent" 
-            (click)="startRecording()" 
-            [disabled]="isRecording || !stream"
-            style="width: 100%;">
-      🎬 Démarrer enregistrement
-    </button>
-
-    <button mat-raised-button 
-            color="warn" 
-            (click)="stopRecording()" 
-            [disabled]="!isRecording"
-            style="width: 100%;">
-      🛑 Arrêter
-    </button>
+    <!-- Affichage iOS natif -->
+    <div *ngIf="isIOS()">
+      <button mat-raised-button color="primary" (click)="lancerPrompteurNatif()" style="width: 100%;">
+        🎥 Filmer avec prompteur natif iOS
+      </button>
+    </div>
 
     <mat-icon class="fullscreen-icon" 
               (click)="toggleFullscreen()"
