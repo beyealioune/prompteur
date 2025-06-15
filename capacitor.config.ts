@@ -1,4 +1,5 @@
 import { CapacitorConfig } from '@capacitor/cli';
+
 const config: CapacitorConfig = {
   appId: 'com.aliapp.prompteur',
   appName: 'PrompteurApp',
@@ -7,8 +8,9 @@ const config: CapacitorConfig = {
     scheme: 'App'
   },
   plugins: {
+    // Correction: Le nom du plugin doit être "Purchases" (avec un 's')
     Purchases: {
-      apiKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK",
+      apiKey: "appl_obgMsSCvFpwRSAdFHWjEueQNHqK", // Ajoutez votre clé API ici
       ios: {
         products: [
           {
@@ -17,13 +19,8 @@ const config: CapacitorConfig = {
           }
         ]
       }
-    },
-    // Ajoutez cette configuration pour votre plugin vidéo
-    VideoRecorder: {
-      ios: {
-        cameraUsageDescription: "Need camera access to record videos",
-        microphoneUsageDescription: "Need microphone access to record audio"
-      }
     }
   }
 };
+
+export default config;
