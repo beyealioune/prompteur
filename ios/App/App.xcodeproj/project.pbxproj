@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C16CA1C2DFEFA640097AE9E /* VideoPrompteurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C16CA1B2DFEFA640097AE9E /* VideoPrompteurViewController.swift */; };
 		1CB54D002DE06C0F00BBE586 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB54CFF2DE06C0F00BBE586 /* StoreKit.framework */; };
 		1CFEB1662DBBACF300292501 /* VideoRecorderPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFEB1642DBBACF300292501 /* VideoRecorderPlugin.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C16CA1B2DFEFA640097AE9E /* VideoPrompteurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPrompteurViewController.swift; sourceTree = "<group>"; };
 		1CB54CFF2DE06C0F00BBE586 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		1CB54D012DE06C6A00BBE586 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		1CFEB1642DBBACF300292501 /* VideoRecorderPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderPlugin.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 		1CFEB1652DBBACF300292501 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				1C16CA1B2DFEFA640097AE9E /* VideoPrompteurViewController.swift */,
 				1CFEB1642DBBACF300292501 /* VideoRecorderPlugin.swift */,
 			);
 			path = plugins;
@@ -227,6 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CFEB1662DBBACF300292501 /* VideoRecorderPlugin.swift in Sources */,
+				1C16CA1C2DFEFA640097AE9E /* VideoPrompteurViewController.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
