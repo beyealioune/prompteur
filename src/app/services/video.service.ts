@@ -4,6 +4,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Filesystem } from '@capacitor/filesystem';
+
 
 @Injectable({ providedIn: 'root' })
 export class VideoService {
@@ -20,6 +22,8 @@ export class VideoService {
       })
     );
   }
+
+  
 
   // ✅ utilisé pour charger les vidéos directement depuis l’URL HTTP
   streamVideoUrl(fileName: string): string {
@@ -59,5 +63,37 @@ downloadVideo(fileName: string): Observable<Blob> {
       'Expires': '0'
     })
   });
+}
+
+async uploadNativeVideo(path: string): Promise<void> {
+  try {
+    const filePath = path.startsWith('file://') ? path.replace('file://', '') : path;
+    const result = await Filesystem.readFile({ path: filePath });
+
+    // Sécurise le type
+    if (typeof result.data !== 'string') {
+      alert('Erreur : la donnée lue n\'est pas une chaîne base64');
+      return;
+    }
+
+    // Convertit le base64 en Uint8Array puis en Blob
+    const byteCharacters = atob(result.data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'video/mp4' });
+
+    // Envoie sur ton backend
+    this.uploadVideo(blob, '.mp4').subscribe({
+      next: () => alert('Vidéo native envoyée !'),
+      error: (err) => alert('Erreur upload native: ' + err.message)
+    });
+  } catch (err: any) {
+    alert('Erreur lecture ou upload vidéo native: ' + (err.message || err));
+  }
+
+
 }
 }

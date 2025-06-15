@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 declare global {
@@ -21,6 +22,8 @@ declare global {
     Capacitor?: any;
   }
 }
+import {  } from '@capacitor/core';
+import { VideoRecorder } from '../video-recorder/video-recorder-plugin';
 
 @Component({
   selector: 'app-prompteur',
@@ -129,28 +132,29 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
-
-
-  lancerPrompteurNatif() {
-    // Pour debug, ajoute un log/alert pour voir si le plugin est chargé
-    // @ts-ignore
-    if (window?.Capacitor?.Plugins?.VideoRecorder) {
-      console.log("🔥🔥🔥 Plugin VideoRecorder dispo !");
-      // Appel au plugin Swift
-      window.Capacitor.Plugins.VideoRecorder.recordVideo({ texte: this.texte })
-        .then((result: any) => {
-          alert('Vidéo enregistrée : ' + result.path);
-          // ici tu peux uploader la vidéo si besoin
-        })
-        .catch((err: any) => {
-          alert('Erreur ou permission refusée : ' + (err?.message || err));
-        });
-    } else {
-      console.log("❌❌❌ Plugin VideoRecorder NON dispo !");
-      alert("Plugin vidéo natif iOS non disponible");
+  async lancerPrompteurNatif() {
+    if (!this.sessionService.hasAccess()) {
+      this.showPaymentPopup = true;
+      return;
+    }
+  
+    try {
+      // C’est le VideoRecorder importé juste au-dessus, pas via Plugins.
+      const result = await VideoRecorder.recordVideo({
+        texte: this.texte,
+        quality: 'high',
+        duration: 300 // ou durationLimit selon ton implémentation Swift
+      });
+  
+      if (result?.path) {
+        console.log('Vidéo enregistrée:', result.path);
+        this.videoService.uploadNativeVideo(result.path); // à adapter selon ton besoin
+      }
+    } catch (err) {
+      console.error('Erreur enregistrement:', err);
+      alert('Erreur lors de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
     }
   }
-
   
   stopCamera() {
     if (this.stream) {

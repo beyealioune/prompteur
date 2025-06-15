@@ -4,6 +4,7 @@ export interface RecordVideoOptions {
   quality?: 'high' | 'medium' | 'low';
   duration?: number;
   camera?: 'front' | 'back';
+  texte?: string; // 👈 AJOUTE BIEN CETTE LIGNE !
 }
 
 export interface RecordVideoResult {
@@ -15,4 +16,4 @@ export interface VideoRecorderPlugin {
 }
 
 
-export const VideoRecorder = registerPlugin('VideoRecorderPlugin'); // 👈 correspond à @objc(VideoRecorderPlugin)
+export const VideoRecorder = registerPlugin<VideoRecorderPlugin>('VideoRecorderPlugin');
