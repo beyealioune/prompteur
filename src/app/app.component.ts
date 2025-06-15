@@ -35,7 +35,6 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
 
 StatusBar.setOverlaysWebView({ overlay: false });
-
     // ✅ Chargement session utilisateur
     const token = this.sessionService.getToken();
     if (token && !this.sessionService.user) {
