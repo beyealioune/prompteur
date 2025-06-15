@@ -2,20 +2,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  padding: 32px 16px 120px;
-  background: #ffffff;
+  gap: 28px;
+  padding: 38px 14px 120px;
+  background: #f8fafc;
   min-height: 100vh;
 }
 
 .video-card {
   width: 100%;
   max-width: 600px;
-  border-radius: 24px;
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(40,50,100,0.12);
+  background: #000;
   position: relative;
-  background-color: #000;
 }
 
 .video-container {
@@ -29,6 +29,7 @@ video, .ios-video-container video {
   height: 100%;
   object-fit: cover;
   background: #000;
+  border-radius: 0 0 22px 22px;
 }
 
 .mirror {
@@ -37,21 +38,17 @@ video, .ios-video-container video {
 
 .texte-overlay {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  overflow: hidden;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
+  top: 0; bottom: 0; width: 100%;
+  display: flex; flex-direction: column;
   justify-content: flex-end;
+  pointer-events: none;
 }
 
 .texte {
   white-space: pre-line;
   font-size: 24px;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 10px rgba(60, 0, 120, 0.7);
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 10px rgba(50,30,140,0.7);
   line-height: 1.6;
   font-weight: 500;
   min-height: 200%;
@@ -59,28 +56,9 @@ video, .ios-video-container video {
 }
 
 @keyframes scroll-up {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
 }
-.speed-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-bottom: 12px;
-}
-.speed-label {
-  font-size: 18px;
-  font-weight: 600;
-  color: #555;
-  min-width: 85px;
-  text-align: center;
-}
-
 
 .trait {
   position: absolute;
@@ -96,43 +74,72 @@ video, .ios-video-container video {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
   max-width: 400px;
   margin-top: 16px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 14px rgba(90,110,190,0.11);
+  padding: 24px 18px 20px 18px;
 }
 
-.speed-buttons {
+.speed-controls {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 4px;
 }
 
-.speed-buttons button {
-  flex: 1;
+.speed-label {
+  font-size: 1.12em;
+  font-weight: 600;
+  color: #223078;
+  background: #e4e8fb;
+  padding: 4px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.04em;
 }
 
-.fullscreen-icon {
-  align-self: center;
-  font-size: 28px;
-  color: #555;
-  margin-top: 8px;
-  cursor: pointer;
+.full-width {
+  width: 100%;
 }
 
 .countdown {
   text-align: center;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
+  color: #7b61ff;
+  margin: 6px 0;
+}
+
+.fullscreen-icon {
+  align-self: center;
+  font-size: 30px;
+  color: #666;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: color .18s;
+}
+.fullscreen-icon:hover {
   color: #7b61ff;
 }
 
-.vitesse-info {
-  text-align: center;
-  margin-top: 8px;
-  color: #555;
+.timer {
+  position: absolute;
+  left: 18px; top: 16px;
+  font-size: 1.2em;
+  color: #fff;
+  background: rgba(80,70,180,0.22);
+  padding: 6px 15px;
+  border-radius: 15px;
+  box-shadow: 0 1px 4px rgba(80,70,180,0.11);
+  z-index: 30;
 }
-.mirror {
-  transform: scaleX(-1);
+
+@media (max-width: 700px) {
+  .video-card { max-width: 99vw; }
+  .actions-column { max-width: 95vw; }
+  .container { padding: 14px 2vw 80px; }
 }

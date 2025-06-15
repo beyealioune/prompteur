@@ -43,15 +43,14 @@
       {{ user.isPremium ? 'En cours' : 'Inactif' }}
     </ng-template>
   </p>
-  
   <button 
-    class="btn-unified"
-    *ngIf="user.isPremium"
-    (click)="cancelSubscription()"
-  >
-    Désactiver mon abonnement
-  </button>
-  
+  class="btn-unified"
+  *ngIf="user.isPremium"
+  (click)="openAppleSubscriptions()"
+>
+  Gérer mon abonnement Apple
+</button>
+
 </div>
 <!-- Bouton Supprimer mon compte -->
 <div class="form-group mb-3 text-center">

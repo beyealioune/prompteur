@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from './models/user';
 import { Platform } from '@angular/cdk/platform';
 import { Router, RouterOutlet } from '@angular/router';
+import { StatusBar } from '@capacitor/status-bar';
 
 declare var store: any;
 
@@ -31,9 +32,9 @@ export class AppComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
-   
+StatusBar.setOverlaysWebView({ overlay: false });
 
     // ✅ Chargement session utilisateur
     const token = this.sessionService.getToken();

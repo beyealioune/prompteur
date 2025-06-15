@@ -1,4 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body, .container {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    /* Pour éviter que des boutons/txt soient masqués par la barre */
+    box-sizing: border-box;
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+  }
+  

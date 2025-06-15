@@ -8,8 +8,9 @@ import { AuthService } from './auth.service';
 export class SessionService {
   private readonly TOKEN_KEY = 'token';
   private userSubject = new BehaviorSubject<User | undefined>(undefined);
+  private isLoggedSubject = new BehaviorSubject<boolean>(this.hasToken()); // 👈
+
   public user?: User;
-  isLoggedSubject: any;
 
   constructor(private authService: AuthService) {}
 
@@ -30,6 +31,7 @@ export class SessionService {
       tap(user => {
         this.user = user;
         this.userSubject.next(user);
+        this.isLoggedSubject.next(true); // 👈 Ajoute bien ça pour mettre à jour l’état de login
       })
     );
   }
@@ -38,6 +40,7 @@ export class SessionService {
     localStorage.setItem(this.TOKEN_KEY, token);
     this.user = user;
     this.userSubject.next(user);
+    this.isLoggedSubject.next(true); // 👈
   }
 
   public getToken(): string | null {
@@ -48,6 +51,7 @@ export class SessionService {
     localStorage.removeItem(this.TOKEN_KEY);
     this.user = undefined;
     this.userSubject.next(undefined);
+    this.isLoggedSubject.next(false); // 👈
   }
 
   hasAccess(): boolean {
@@ -57,5 +61,10 @@ export class SessionService {
 
   private isTrialValid(): boolean {
     return this.user?.trialEnd ? new Date() <= new Date(this.user.trialEnd) : false;
+  }
+
+  // Ajoute ce helper privé
+  private hasToken(): boolean {
+    return !!localStorage.getItem(this.TOKEN_KEY);
   }
 }

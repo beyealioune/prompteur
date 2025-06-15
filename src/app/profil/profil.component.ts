@@ -37,6 +37,11 @@ export class ProfilComponent {
     console.log("coucou");
     
   }
+  openAppleSubscriptions(): void {
+    // Ouvre la gestion des abonnements Apple (iOS)
+    window.open('https://apps.apple.com/account/subscriptions', '_blank');
+  }
+  
   isTrialActive(): boolean {
     if (!this.user || !this.user.trialEnd) {
       return false;

@@ -2,23 +2,21 @@
   <mat-card class="video-card">
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
-      class="mirror"
-      [class.mirror]="isLiveCamera"
-      autoplay
-      muted
-      playsinline
-      webkit-playsinline
-      disablePictureInPicture
-      controlslist="nodownload nofullscreen">
-</video>
-      
+        class="mirror"
+        [class.mirror]="isLiveCamera"
+        autoplay
+        muted
+        playsinline
+        webkit-playsinline
+        disablePictureInPicture
+        controlslist="nodownload nofullscreen">
+      </video>
       <div class="texte-overlay">
         <div class="trait"></div>
         <div class="texte" #texteElement [class.scrolling]="isScrolling">
           {{ texte }}
         </div>
       </div>
-
       <div *ngIf="isRecording" class="timer">
         ⏱️ {{ recordingTime }}s
       </div>
@@ -26,12 +24,12 @@
   </mat-card>
 
   <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Texte du prompteur</mat-label>
+    <mat-label>Teleprompter text</mat-label>
     <textarea
       matInput
       [(ngModel)]="texte"
       (ngModelChange)="scrollTexte()"
-      placeholder="Entrez votre texte ici..."
+      placeholder="Enter your script here..."
       rows="4">
     </textarea>
   </mat-form-field>
@@ -39,12 +37,12 @@
   <div class="actions-column">
     <div class="speed-controls">
       <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
-      <span class="speed-label">{{ vitesse }}s : secondes</span>
+      <span class="speed-label">{{ vitesse }}s : seconds</span>
       <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
     </div>
-    
+
     <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
-      📷 Démarrer caméra
+      📷 Start camera
     </button>
 
     <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
@@ -54,7 +52,7 @@
             (click)="startRecording()" 
             [disabled]="isRecording || !stream"
             style="width: 100%;">
-      🎬 Démarrer enregistrement
+      🎬 Start recording
     </button>
 
     <button mat-raised-button 
@@ -62,12 +60,12 @@
             (click)="stopRecording()" 
             [disabled]="!isRecording"
             style="width: 100%;">
-      🛑 Arrêter
+      🛑 Stop recording
     </button>
 
     <mat-icon class="fullscreen-icon" 
               (click)="toggleFullscreen()"
-              matTooltip="Plein écran">
+              matTooltip="Fullscreen">
       {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
     </mat-icon>
   </div>
@@ -78,4 +76,3 @@
   [show]="showPaymentPopup"
   (closed)="showPaymentPopup = false">
 </app-payment-popup>
-  
