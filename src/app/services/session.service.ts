@@ -9,6 +9,7 @@ export class SessionService {
   private readonly TOKEN_KEY = 'token';
   private userSubject = new BehaviorSubject<User | undefined>(undefined);
   public user?: User;
+  isLoggedSubject: any;
 
   constructor(private authService: AuthService) {}
 
@@ -18,6 +19,10 @@ export class SessionService {
 
   get isLogged(): boolean {
     return !!localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  public $isLogged(): Observable<boolean> {
+    return this.isLoggedSubject.asObservable();
   }
 
   refreshUser(): Observable<User> {
@@ -33,6 +38,10 @@ export class SessionService {
     localStorage.setItem(this.TOKEN_KEY, token);
     this.user = user;
     this.userSubject.next(user);
+  }
+
+  public getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   logOut(): void {
