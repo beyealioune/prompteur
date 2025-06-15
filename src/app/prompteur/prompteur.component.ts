@@ -4,7 +4,9 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { SessionService } from '../services/session.service';
@@ -17,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { MatTooltipModule } from '@angular/material/tooltip';
+
 declare global {
   interface Window {
     Capacitor: any;
@@ -43,6 +46,8 @@ declare global {
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
+
+  @Output() videoUploaded = new EventEmitter<void>(); // Pour rafraîchir la liste parent
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording = false;
@@ -192,7 +197,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
           type: this.mediaRecorder?.mimeType || 'video/mp4'
         });
         this.previewRecording(blob);
-        this.uploadVideo(blob);
+        this.uploadVideo(blob, true); // true = refresh list
       };
 
       this.mediaRecorder.start(100);
@@ -233,10 +238,13 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.play().catch(console.error);
   }
 
-  private uploadVideo(blob: Blob) {
+  private uploadVideo(blob: Blob, refreshList = false) {
     const extension = blob.type.includes('mp4') ? '.mp4' : '.webm';
     this.videoService.uploadVideo(blob, extension).subscribe({
-      next: () => alert('Vidéo envoyée avec succès!'),
+      next: () => {
+        alert('Vidéo envoyée avec succès!');
+        if (refreshList) this.videoUploaded.emit();
+      },
       error: (err) => alert('Erreur d\'upload: ' + err.message)
     });
   }
@@ -265,12 +273,14 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   // ----- iOS natif -----
   lancerPrompteurNatif() {
-    // @ts-ignore
     if (window?.Capacitor?.Plugins?.VideoRecorder) {
       window.Capacitor.Plugins.VideoRecorder.recordVideo({ texte: this.texte })
-        .then((result: any) => {
-          alert('Vidéo enregistrée : ' + result.path);
-          // Tu peux faire un upload ici si besoin
+        .then(async (result: any) => {
+          const videoUrl = result.path; // type file://...
+          // Récupère le fichier et crée un blob
+          const response = await fetch(videoUrl);
+          const blob = await response.blob();
+          this.uploadVideo(blob, true); // true = refresh la liste après upload
         })
         .catch((err: any) => {
           alert('Erreur ou permission refusée : ' + (err?.message || err));
