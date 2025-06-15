@@ -1,3 +1,4 @@
+// src/app/payment-popup/payment-popup.component.ts
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
@@ -20,7 +21,11 @@ export class PaymentPopupComponent {
   loading = false;
   errorMsg = '';
 
-  constructor(private payment: PaymentService, private ref: ChangeDetectorRef, private sessionService : SessionService) {}
+  constructor(
+    private payment: PaymentService,
+    private ref: ChangeDetectorRef,
+    private sessionService : SessionService
+  ) {}
 
   async ngOnInit() {
     this.loading = true;
@@ -42,7 +47,7 @@ export class PaymentPopupComponent {
     this.loading = true;
     this.errorMsg = '';
     try {
-      await this.payment.purchase();
+      await this.payment.purchase(); // popup native Apple/Google
       this.isPremium = await this.payment.checkPremium();
       if (this.isPremium && this.sessionService.user?.email) {
         this.payment.setPremiumInBackend(this.sessionService.user.email).subscribe({
@@ -51,14 +56,17 @@ export class PaymentPopupComponent {
         });
       }
     } catch (e: any) {
-      this.errorMsg = e.message || 'Erreur lors de l’achat';
+      if (e.message?.includes('cancelled') || e.code === 'PURCHASE_CANCELLED') {
+        this.errorMsg = "Achat annulé.";
+  
+      } else {
+        this.errorMsg = e.message || 'Erreur lors de l’achat';
+      }
     }
     this.loading = false;
     this.ref.detectChanges();
   }
   
-
-
   closePopup() {
     this.closed.emit();
   }

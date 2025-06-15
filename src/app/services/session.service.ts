@@ -1,64 +1,49 @@
+// src/app/services/session.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../models/user';
 import { AuthService } from './auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class SessionService {
-  private readonly TOKEN_KEY = 'token'; // Clé unique pour le stockage
-  private isLoggedSubject = new BehaviorSubject<boolean>(this.hasToken());
-  public user: User | undefined;
+  private readonly TOKEN_KEY = 'token';
+  private userSubject = new BehaviorSubject<User | undefined>(undefined);
+  public user?: User;
 
   constructor(private authService: AuthService) {}
 
-
-  // Getter basé sur la présence du token
-  public get isLogged(): boolean {
-    return this.hasToken();
+  get $user(): Observable<User | undefined> {
+    return this.userSubject.asObservable();
   }
 
-  // Observable pour écouter les changements
-  public $isLogged(): Observable<boolean> {
-    return this.isLoggedSubject.asObservable();
+  get isLogged(): boolean {
+    return !!localStorage.getItem(this.TOKEN_KEY);
   }
-  public refreshUser(): Observable<User> {
+
+  refreshUser(): Observable<User> {
     return this.authService.me().pipe(
-      tap((user: User) => {
-        this.user = user; // ✅ On met à jour ici
+      tap(user => {
+        this.user = user;
+        this.userSubject.next(user);
       })
     );
   }
 
-  // Connexion (stocke le token + met à jour l'état)
-  public logIn(user: User, token: string): void {
+  logIn(user: User, token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
     this.user = user;
-    this.isLoggedSubject.next(true);
+    this.userSubject.next(user);
   }
 
-  // Déconnexion (supprime le token + nettoie l'état)
-  public logOut(): void {
+  logOut(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     this.user = undefined;
-    this.isLoggedSubject.next(false);
+    this.userSubject.next(undefined);
   }
 
-  // Vérifie la présence du token
-  private hasToken(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  // Récupère le token (pour l'intercepteur)
-  public getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  // Gestion des accès premium/trial
-  public hasAccess(): boolean {
+  hasAccess(): boolean {
     if (!this.user) return false;
-    return this.user.isPremium || this.isTrialValid();
+    return !!this.user.isPremium || this.isTrialValid();
   }
 
   private isTrialValid(): boolean {

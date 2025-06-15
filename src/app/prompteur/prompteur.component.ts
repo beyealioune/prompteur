@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { SessionService } from '../services/session.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-prompteur',
@@ -50,6 +51,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   showPaymentPopup = false;
   isScrolling = true;
   private videoBlobUrl: string | null = null;
+  private userSub?: Subscription;
+  isLiveCamera = true;
 
   constructor(
     private videoService: VideoService,
@@ -57,19 +60,52 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Désactivation temporaire du paiement pour tests
-     if (!this.sessionService.hasAccess()) {
-     this.showPaymentPopup = true;
-     }
+    this.userSub = this.sessionService.$user.subscribe(user => {
+      this.showPaymentPopup = !this.sessionService.hasAccess();
+    });
+
+    // Facultatif si tu veux auto-refresh au premier lancement
+    if (!this.sessionService.user) {
+      this.sessionService.refreshUser().subscribe();
+    }
   }
 
   ngAfterViewInit() {
     this.scrollTexte();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.cleanupResources();
+    this.userSub?.unsubscribe();
   }
+
+
+increaseSpeed() {
+  if (this.vitesse < 60) this.vitesse += 5;
+  this.updateScrollSpeed();
+  this.restartScrolling();
+}
+
+decreaseSpeed() {
+  if (this.vitesse > 5) this.vitesse -= 5;
+  this.updateScrollSpeed();
+  this.restartScrolling();
+}
+restartScrolling() {
+  // Arrête le scroll puis le relance immédiatement
+  this.isScrolling = false;
+  setTimeout(() => {
+    this.isScrolling = true;
+    this.updateScrollSpeed(); // Pour être sûr d'avoir la bonne vitesse
+  }, 10);
+}
+
+updateScrollSpeed() {
+  if (this.texteElement) {
+    this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
+  }
+}
+
 
   private cleanupResources() {
     this.stopRecording();
@@ -90,6 +126,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   async startCamera() {
+    this.isLiveCamera = true;
+
     this.stopCamera();
 
     try {
@@ -225,17 +263,25 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
-
+  
     if (!document.fullscreenElement) {
       videoContainer?.requestFullscreen()
-        .then(() => this.isFullscreen = true)
+        .then(() => {
+          this.isFullscreen = true;
+          // Restart scrolling tout de suite
+          this.scrollTexte();
+        })
         .catch(console.error);
     } else {
       document.exitFullscreen()
-        .then(() => this.isFullscreen = false)
+        .then(() => {
+          this.isFullscreen = false;
+          this.scrollTexte();
+        })
         .catch(console.error);
     }
   }
+  
 
   scrollTexte() {
     this.isScrolling = false;
@@ -245,6 +291,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private previewRecording(blob: Blob) {
+    this.isLiveCamera = false;
+
     if (this.videoBlobUrl) {
       URL.revokeObjectURL(this.videoBlobUrl);
     }

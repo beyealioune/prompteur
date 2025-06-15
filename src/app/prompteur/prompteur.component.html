@@ -3,6 +3,7 @@
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
       class="mirror"
+      [class.mirror]="isLiveCamera"
       autoplay
       muted
       playsinline
@@ -36,6 +37,12 @@
   </mat-form-field>
 
   <div class="actions-column">
+    <div class="speed-controls">
+      <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
+      <span class="speed-label">{{ vitesse }}s : secondes</span>
+      <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
+    </div>
+    
     <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
       📷 Démarrer caméra
     </button>
@@ -66,6 +73,9 @@
   </div>
 </div>
 
-<!-- Popup désactivée pour test -->
- <app-payment-popup *ngIf="showPaymentPopup" (close)="showPaymentPopup = false" /> 
+<app-payment-popup
+  *ngIf="showPaymentPopup"
+  [show]="showPaymentPopup"
+  (closed)="showPaymentPopup = false">
+</app-payment-popup>
   

@@ -66,6 +66,21 @@ video, .ios-video-container video {
     transform: translateY(-100%);
   }
 }
+.speed-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.speed-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+  min-width: 85px;
+  text-align: center;
+}
+
 
 .trait {
   position: absolute;
@@ -117,4 +132,7 @@ video, .ios-video-container video {
   text-align: center;
   margin-top: 8px;
   color: #555;
+}
+.mirror {
+  transform: scaleX(-1);
 }

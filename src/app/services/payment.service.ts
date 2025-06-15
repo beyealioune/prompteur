@@ -1,3 +1,4 @@
+// src/app/services/payment.service.ts
 import { Injectable } from '@angular/core';
 import { Purchases, CustomerInfo, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 import { environment } from '../../environments/environment';
@@ -28,12 +29,7 @@ export class PaymentService {
     if (!this.isConfigured) {
       throw new Error('RevenueCat not initialized yet');
     }
-    try {
-      return await Purchases.getOfferings();
-    } catch (error) {
-      console.error('Error getting offerings', error);
-      throw error;
-    }
+    return await Purchases.getOfferings();
   }
 
   async purchase(): Promise<boolean> {
@@ -45,10 +41,8 @@ export class PaymentService {
       const purchaseResult = await Purchases.purchasePackage({
         aPackage: offerings.current.availablePackages[0]
       });
-      // purchaseResult est { customerInfo: CustomerInfo }
       return this.hasPremiumAccess(purchaseResult.customerInfo);
     } catch (error) {
-      console.error('Purchase error', error);
       throw error;
     }
   }
@@ -56,10 +50,8 @@ export class PaymentService {
   async checkPremium(): Promise<boolean> {
     try {
       const result = await Purchases.getCustomerInfo();
-      // result est { customerInfo: CustomerInfo }
       return this.hasPremiumAccess(result.customerInfo);
     } catch (error) {
-      console.error('Error checking premium status', error);
       return false;
     }
   }
@@ -67,28 +59,22 @@ export class PaymentService {
   async restorePurchases(): Promise<boolean> {
     try {
       const result = await Purchases.restorePurchases();
-      // result est { customerInfo: CustomerInfo }
       return this.hasPremiumAccess(result.customerInfo);
     } catch (error) {
-      console.error('Error restoring purchases', error);
       throw error;
     }
   }
 
   private hasPremiumAccess(customerInfo: CustomerInfo): boolean {
-    // Vérifie si "premium" est actif dans les entitlements OU s'il y a un abonnement actif
     return (
       customerInfo.entitlements?.active?.['premium']?.isActive === true ||
       (customerInfo.activeSubscriptions && customerInfo.activeSubscriptions.length > 0)
     );
   }
 
-
   setPremiumInBackend(email: string) {
     return this.http.post(`${environment.apiUrl}users/set-premium`, { email });
   }
-
-  // Idem si tu veux faire pour le trial :
   setTrialInBackend(email: string, days: number = 3) {
     return this.http.post(`${environment.apiUrl}users/set-trial`, { email, days });
   }
