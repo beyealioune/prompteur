@@ -44,7 +44,7 @@ video, .ios-video-container video {
   pointer-events: none;
 }
 
-.texte {
+/* .texte {
   white-space: pre-line;
   font-size: 24px;
   color: rgba(255,255,255,0.95);
@@ -58,8 +58,42 @@ video, .ios-video-container video {
 @keyframes scroll-up {
   0% { transform: translateY(100%); }
   100% { transform: translateY(-100%); }
+} */
+
+.texte {
+  white-space: pre-line;
+  font-size: 24px;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 10px rgba(50,30,140,0.7);
+  line-height: 1.6;
+  font-weight: 500;
+  min-height: 200%;
+  animation-name: scroll-up;
+  animation-duration: var(--scroll-speed, 20s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* Ajout pour démarrer immédiatement */
+  animation-delay: 0s !important;
+  /* Force l'animation à rester active pendant les transitions */
+  animation-fill-mode: both;
 }
 
+@keyframes scroll-up {
+  0% { 
+    transform: translateY(100%); 
+    animation-timing-function: linear;
+  }
+  100% { 
+    transform: translateY(-100%); 
+    animation-timing-function: linear;
+  }
+}
+
+/* Ajoutez cette règle pour le mode plein écran */
+:fullscreen .texte {
+  animation: none; /* Reset d'abord */
+  animation: scroll-up var(--scroll-speed, 20s) linear infinite 0s !important;
+}
 .trait {
   position: absolute;
   top: 50%;
@@ -136,6 +170,39 @@ video, .ios-video-container video {
   border-radius: 15px;
   box-shadow: 0 1px 4px rgba(80,70,180,0.11);
   z-index: 30;
+}
+
+/* Nouveaux styles pour le plein écran */
+::backdrop {
+  display: none !important;
+  background: transparent !important;
+}
+
+:fullscreen::backdrop {
+  display: none !important;
+  background: transparent !important;
+}
+
+:-webkit-full-screen::backdrop {
+  display: none !important;
+  background: transparent !important;
+}
+
+:-moz-full-screen::backdrop {
+  display: none !important;
+  background: transparent !important;
+}
+
+:-ms-fullscreen::backdrop {
+  display: none !important;
+  background: transparent !important;
+}
+
+:fullscreen .video-container {
+  background: #000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 @media (max-width: 700px) {

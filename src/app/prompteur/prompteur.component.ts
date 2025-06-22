@@ -261,6 +261,27 @@ updateScrollSpeed() {
     });
   }
 
+  // toggleFullscreen(): void {
+  //   const videoContainer = this.videoElement.nativeElement.parentElement;
+  
+  //   if (!document.fullscreenElement) {
+  //     videoContainer?.requestFullscreen()
+  //       .then(() => {
+  //         this.isFullscreen = true;
+  //         // Restart scrolling tout de suite
+  //         this.scrollTexte();
+  //       })
+  //       .catch(console.error);
+  //   } else {
+  //     document.exitFullscreen()
+  //       .then(() => {
+  //         this.isFullscreen = false;
+  //         this.scrollTexte();
+  //       })
+  //       .catch(console.error);
+  //   }
+  // }
+
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
   
@@ -268,26 +289,43 @@ updateScrollSpeed() {
       videoContainer?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
-          // Restart scrolling tout de suite
-          this.scrollTexte();
+          // Réinitialiser et relancer immédiatement l'animation
+          this.resetAndStartScrolling();
         })
         .catch(console.error);
     } else {
       document.exitFullscreen()
         .then(() => {
           this.isFullscreen = false;
-          this.scrollTexte();
+          this.resetAndStartScrolling();
         })
         .catch(console.error);
     }
   }
   
 
-  scrollTexte() {
+  resetAndStartScrolling(): void {
+    // Forcer le redémarrage de l'animation
     this.isScrolling = false;
     setTimeout(() => {
       this.isScrolling = true;
+      // Recalculer les styles pour forcer le navigateur à redémarrer l'animation
+      if (this.texteElement) {
+        this.texteElement.nativeElement.style.animation = 'none';
+        this.texteElement.nativeElement.offsetHeight; // Trigger reflow
+        this.texteElement.nativeElement.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
+      }
     }, 10);
+  }
+  // scrollTexte() {
+    
+  //   this.isScrolling = false;
+  //   setTimeout(() => {
+  //     this.isScrolling = true;
+  //   }, 10);
+  // }
+  scrollTexte() {
+    this.resetAndStartScrolling();
   }
 
   private previewRecording(blob: Blob) {
