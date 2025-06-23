@@ -354,6 +354,7 @@ import {
   AfterViewInit,
   OnInit,
   OnDestroy,
+  Renderer2,
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -386,6 +387,7 @@ import { Subscription } from 'rxjs';
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('videoContainer') videoContainer!: ElementRef<HTMLDivElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording: boolean = false;
@@ -404,25 +406,28 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
     this.userSub = this.sessionService.$user.subscribe(user => {
       this.showPaymentPopup = !this.sessionService.hasAccess();
     });
-    if (!this.sessionService.user) {
-      this.sessionService.refreshUser().subscribe();
-    }
   }
 
   ngAfterViewInit() {
-    this.updateScrollSpeed();
+    this.initScroll();
   }
 
   ngOnDestroy(): void {
     this.cleanupResources();
     this.userSub?.unsubscribe();
+  }
+
+  initScroll() {
+    this.updateScrollSpeed();
+    this.resetScroll();
   }
 
   increaseSpeed() {
@@ -438,23 +443,17 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   updateScrollSpeed() {
     if (this.texteElement) {
       this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
+      this.resetScroll();
     }
   }
 
-  // Pour relancer le scroll à l'entrée/sortie plein écran
   resetScroll() {
-    if (this.texteElement) {
-      const el = this.texteElement.nativeElement;
-      el.style.animation = 'none';
-      void el.offsetWidth; // force reflow
-      el.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
-    }
-  }
-
-  onTexteChange() {
-    this.updateScrollSpeed();
-    // Décommente si tu veux repartir de 0 à chaque modif du texte :
-    // this.resetScroll();
+    if (!this.texteElement) return;
+    
+    const el = this.texteElement.nativeElement;
+    this.renderer.setStyle(el, 'animation', 'none');
+    void el.offsetWidth; // Force reflow
+    this.renderer.setStyle(el, 'animation', `scroll-up var(--scroll-speed) linear infinite`);
   }
 
   private cleanupResources() {
@@ -478,6 +477,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   async startCamera() {
     this.isLiveCamera = true;
     this.stopCamera();
+
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -487,20 +487,14 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
         },
         audio: true
       });
+
       const video = this.videoElement.nativeElement;
       video.srcObject = this.stream;
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
-      if (this.isIOS()) {
-        const playVideo = () => {
-          video.play().catch(e => console.error('Play error:', e));
-          document.body.removeEventListener('click', playVideo);
-        };
-        document.body.addEventListener('click', playVideo, { once: true });
-      } else {
-        await video.play();
-      }
+
+      await video.play();
     } catch (err) {
       console.error('Camera error:', err);
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
@@ -511,71 +505,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
-  isTypeSupported(mimeType: string): boolean {
-    return MediaRecorder.isTypeSupported(mimeType);
-  }
-
-  startRecording() {
-    if (!this.stream) {
-      alert('Veuillez d\'abord démarrer la caméra');
-      return;
-    }
-    const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
-    if (!this.isTypeSupported(preferredMimeType)) {
-      alert(`Le format ${preferredMimeType} n'est pas supporté sur votre appareil`);
-      return;
-    }
-    this.countdown = 3;
-    const interval = setInterval(() => {
-      this.countdown--;
-      if (this.countdown === 0) {
-        clearInterval(interval);
-        this.startMediaRecorder();
-      }
-    }, 1000);
-  }
-
-  private startMediaRecorder() {
-    try {
-      this.recordedChunks = [];
-      const options = {
-        mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
-        videoBitsPerSecond: 2500000
-      };
-      try {
-        this.mediaRecorder = new MediaRecorder(this.stream!, options);
-      } catch (e) {
-        console.warn('Format préféré non supporté, tentative avec format de base');
-        this.mediaRecorder = new MediaRecorder(this.stream!);
-      }
-      this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
-        if (e.data.size > 0) {
-          this.recordedChunks.push(e.data);
-        }
-      };
-      this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.recordedChunks, {
-          type: this.mediaRecorder?.mimeType || 'video/mp4'
-        });
-        this.previewRecording(blob);
-        this.uploadVideo(blob);
-      };
-      this.mediaRecorder.start(100);
-      this.startRecordingTimer();
-      this.isRecording = true;
-      // Pas besoin de resetScroll ici !
-    } catch (err) {
-      console.error('Recording error:', err);
-      alert('Erreur lors du démarrage de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
-    }
-  }
-
-  private startRecordingTimer() {
-    this.recordingTime = 0;
-    this.timerInterval = setInterval(() => {
-      this.recordingTime++;
-    }, 1000);
-  }
 
   stopRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
@@ -595,21 +524,23 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   toggleFullscreen(): void {
     this.isFakeFullscreen = !this.isFakeFullscreen;
+    
     if (this.isFakeFullscreen) {
       document.body.classList.add('fake-fullscreen-active');
     } else {
       document.body.classList.remove('fake-fullscreen-active');
-      // Forcer un repaint sur la vidéo à la sortie du plein écran (spécial iOS/Capacitor)
+      // Réinitialisation spécifique pour iOS
       setTimeout(() => {
         if (this.videoElement) {
-          this.videoElement.nativeElement.style.display = 'none';
-          void this.videoElement.nativeElement.offsetHeight;
-          this.videoElement.nativeElement.style.display = '';
+          const video = this.videoElement.nativeElement;
+          video.style.display = 'none';
+          void video.offsetHeight;
+          video.style.display = '';
         }
-      }, 40);
+      }, 50);
     }
-    // Toujours relancer le scroll à chaque switch
-    setTimeout(() => this.resetScroll(), 30);
+    
+    setTimeout(() => this.resetScroll(), 100);
   }
 
   private previewRecording(blob: Blob) {

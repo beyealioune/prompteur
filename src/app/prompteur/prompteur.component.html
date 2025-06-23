@@ -76,80 +76,79 @@
   [show]="showPaymentPopup"
   (closed)="showPaymentPopup = false">
 </app-payment-popup> -->
-<div class="container mat-elevation-z4" [class.fake-fullscreen]="isFakeFullscreen">
-  <mat-card class="video-card">
-    <div class="video-container" [class.ios-video-container]="isIOS()">
-      <video #videoElement
-        class="mirror"
-        [class.mirror]="isLiveCamera"
-        autoplay
-        muted
-        playsinline
-        webkit-playsinline
-        disablePictureInPicture
-        controlslist="nodownload nofullscreen">
-      </video>
-      <div class="texte-overlay">
-        <div class="trait"></div>
-        <div class="texte" #texteElement>
-          {{ texte }}
-        </div>
+<div class="container" [class.fake-fullscreen]="isFakeFullscreen">
+  <div #videoContainer class="video-container" [class.ios-video-container]="isIOS()">
+    <video #videoElement
+      class="mirror"
+      [class.mirror]="isLiveCamera"
+      autoplay
+      muted
+      playsinline
+      webkit-playsinline
+      disablePictureInPicture
+      controlslist="nodownload nofullscreen">
+    </video>
+    <div class="texte-overlay">
+      <div class="trait"></div>
+      <div class="texte" #texteElement>
+        {{ texte }}
       </div>
-      <div *ngIf="isRecording" class="timer">
-        ⏱️ {{ recordingTime }}s
+    </div>
+    
+    <div *ngIf="isRecording" class="timer">
+      ⏱️ {{ recordingTime }}s
+    </div>
+    
+    <button *ngIf="isFakeFullscreen" 
+            class="exit-fullscreen-btn"
+            mat-icon-button
+            (click)="toggleFullscreen()">
+      <mat-icon>fullscreen_exit</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="!isFakeFullscreen" class="controls-container">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Teleprompter text</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="texte"
+        (ngModelChange)="updateScrollSpeed()"
+        placeholder="Enter your script here..."
+        rows="4">
+      </textarea>
+    </mat-form-field>
+
+    <div class="actions-column">
+      <div class="speed-controls">
+        <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
+        <span class="speed-label">{{ vitesse }}s</span>
+        <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
       </div>
-      <!-- Bouton quitter plein écran -->
-      <button
-        *ngIf="isFakeFullscreen"
-        class="exit-fake-fullscreen"
-        mat-icon-button
-        (click)="toggleFullscreen()"
-        matTooltip="Quitter le plein écran">
-        <mat-icon>fullscreen_exit</mat-icon>
+
+      <button mat-raised-button color="primary" (click)="startCamera()">
+        📷 Start camera
+      </button>
+
+      <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
+
+      <button mat-raised-button color="accent" 
+              (click)="startRecording()" 
+              [disabled]="isRecording || !stream">
+        🎬 Start recording
+      </button>
+
+      <button mat-raised-button color="warn" 
+              (click)="stopRecording()" 
+              [disabled]="!isRecording">
+        🛑 Stop recording
+      </button>
+
+      <button mat-raised-button color="primary" 
+              (click)="toggleFullscreen()">
+        {{ isFakeFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
       </button>
     </div>
-  </mat-card>
-
-  <mat-form-field appearance="fill" class="full-width" *ngIf="!isFakeFullscreen">
-    <mat-label>Teleprompter text</mat-label>
-    <textarea
-      matInput
-      [(ngModel)]="texte"
-      (ngModelChange)="onTexteChange()"
-      placeholder="Enter your script here..."
-      rows="4">
-    </textarea>
-  </mat-form-field>
-
-  <div class="actions-column" *ngIf="!isFakeFullscreen">
-    <div class="speed-controls">
-      <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
-      <span class="speed-label">{{ vitesse }}s : seconds</span>
-      <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
-    </div>
-    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
-      📷 Start camera
-    </button>
-    <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-    <button mat-raised-button 
-            color="accent" 
-            (click)="startRecording()" 
-            [disabled]="isRecording || !stream"
-            style="width: 100%;">
-      🎬 Start recording
-    </button>
-    <button mat-raised-button 
-            color="warn" 
-            (click)="stopRecording()" 
-            [disabled]="!isRecording"
-            style="width: 100%;">
-      🛑 Stop recording
-    </button>
-    <mat-icon class="fullscreen-icon" 
-              (click)="toggleFullscreen()"
-              matTooltip="Fullscreen">
-      {{ isFakeFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
-    </mat-icon>
   </div>
 </div>
 
