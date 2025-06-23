@@ -282,15 +282,54 @@ updateScrollSpeed() {
   //   }
   // }
 
+  // toggleFullscreen(): void {
+  //   const videoContainer = this.videoElement.nativeElement.parentElement;
+  
+  //   if (!document.fullscreenElement) {
+  //     videoContainer?.requestFullscreen()
+  //       .then(() => {
+  //         this.isFullscreen = true;
+  //         // Réinitialiser et relancer immédiatement l'animation
+  //         this.resetAndStartScrolling();
+  //       })
+  //       .catch(console.error);
+  //   } else {
+  //     document.exitFullscreen()
+  //       .then(() => {
+  //         this.isFullscreen = false;
+  //         this.resetAndStartScrolling();
+  //       })
+  //       .catch(console.error);
+  //   }
+  // }
   toggleFullscreen(): void {
     const videoContainer = this.videoElement.nativeElement.parentElement;
   
     if (!document.fullscreenElement) {
+      // 1. Création du style pour masquer le message
+      const style = document.createElement('style');
+      style.id = 'hide-fullscreen-message';
+      style.textContent = `
+        ::backdrop, :fullscreen::backdrop {
+          display: none !important;
+          background: transparent !important;
+        }
+      `;
+      document.head.appendChild(style);
+  
+      // 2. Activation du plein écran
       videoContainer?.requestFullscreen()
         .then(() => {
           this.isFullscreen = true;
-          // Réinitialiser et relancer immédiatement l'animation
+          
+          // 3. Démarrage immédiat du défilement (sans délai)
           this.resetAndStartScrolling();
+          
+          // 4. Nettoyage du style après 1s (le temps que le plein écran se stabilise)
+          setTimeout(() => {
+            const styleElement = document.getElementById('hide-fullscreen-message');
+            styleElement?.remove();
+          }, 1000);
         })
         .catch(console.error);
     } else {
