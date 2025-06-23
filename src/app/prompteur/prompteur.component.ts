@@ -353,7 +353,7 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -398,7 +398,6 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   recordingTime = 0;
   timerInterval: any;
   showPaymentPopup = false;
-  isScrolling = true;
   private videoBlobUrl: string | null = null;
   private userSub?: Subscription;
   isLiveCamera = true;
@@ -418,7 +417,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.scrollTexte();
+    this.updateScrollSpeed();
   }
 
   ngOnDestroy(): void {
@@ -429,27 +428,33 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   increaseSpeed() {
     if (this.vitesse < 60) this.vitesse += 5;
     this.updateScrollSpeed();
-    this.restartScrolling();
   }
 
   decreaseSpeed() {
     if (this.vitesse > 5) this.vitesse -= 5;
     this.updateScrollSpeed();
-    this.restartScrolling();
-  }
-
-  restartScrolling() {
-    this.isScrolling = false;
-    setTimeout(() => {
-      this.isScrolling = true;
-      this.updateScrollSpeed();
-    }, 10);
   }
 
   updateScrollSpeed() {
     if (this.texteElement) {
       this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
     }
+  }
+
+  // Pour relancer le scroll à l'entrée/sortie plein écran
+  resetScroll() {
+    if (this.texteElement) {
+      const el = this.texteElement.nativeElement;
+      el.style.animation = 'none';
+      void el.offsetWidth; // force reflow
+      el.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
+    }
+  }
+
+  onTexteChange() {
+    this.updateScrollSpeed();
+    // Décommente si tu veux repartir de 0 à chaque modif du texte :
+    // this.resetScroll();
   }
 
   private cleanupResources() {
@@ -558,7 +563,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
-      this.scrollTexte();
+      // Pas besoin de resetScroll ici !
     } catch (err) {
       console.error('Recording error:', err);
       alert('Erreur lors du démarrage de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
@@ -594,23 +599,17 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       document.body.classList.add('fake-fullscreen-active');
     } else {
       document.body.classList.remove('fake-fullscreen-active');
+      // Forcer un repaint sur la vidéo à la sortie du plein écran (spécial iOS/Capacitor)
+      setTimeout(() => {
+        if (this.videoElement) {
+          this.videoElement.nativeElement.style.display = 'none';
+          void this.videoElement.nativeElement.offsetHeight;
+          this.videoElement.nativeElement.style.display = '';
+        }
+      }, 40);
     }
-    this.scrollTexte();
-  }
-
-  scrollTexte() {
-    // L’animation s’arrête et redémarre, ce qui relance le défilement partout (fullscreen ou pas)
-    this.isScrolling = false;
-    setTimeout(() => {
-      this.isScrolling = true;
-      this.updateScrollSpeed();
-      if (this.texteElement) {
-        this.texteElement.nativeElement.style.animation = 'none';
-        // trigger reflow
-        this.texteElement.nativeElement.offsetHeight;
-        this.texteElement.nativeElement.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
-      }
-    }, 10);
+    // Toujours relancer le scroll à chaque switch
+    setTimeout(() => this.resetScroll(), 30);
   }
 
   private previewRecording(blob: Blob) {

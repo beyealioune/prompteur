@@ -76,7 +76,6 @@
   [show]="showPaymentPopup"
   (closed)="showPaymentPopup = false">
 </app-payment-popup> -->
-
 <div class="container mat-elevation-z4" [class.fake-fullscreen]="isFakeFullscreen">
   <mat-card class="video-card">
     <div class="video-container" [class.ios-video-container]="isIOS()">
@@ -92,23 +91,23 @@
       </video>
       <div class="texte-overlay">
         <div class="trait"></div>
-        <div class="texte" #texteElement [class.scrolling]="isScrolling">
+        <div class="texte" #texteElement>
           {{ texte }}
         </div>
       </div>
       <div *ngIf="isRecording" class="timer">
         ⏱️ {{ recordingTime }}s
       </div>
+      <!-- Bouton quitter plein écran -->
+      <button
+        *ngIf="isFakeFullscreen"
+        class="exit-fake-fullscreen"
+        mat-icon-button
+        (click)="toggleFullscreen()"
+        matTooltip="Quitter le plein écran">
+        <mat-icon>fullscreen_exit</mat-icon>
+      </button>
     </div>
-    <!-- Bouton quitter plein écran visible en mode fake fullscreen -->
-    <button
-      *ngIf="isFakeFullscreen"
-      class="exit-fake-fullscreen"
-      mat-icon-button
-      (click)="toggleFullscreen()"
-      matTooltip="Quitter le plein écran">
-      <mat-icon>fullscreen_exit</mat-icon>
-    </button>
   </mat-card>
 
   <mat-form-field appearance="fill" class="full-width" *ngIf="!isFakeFullscreen">
@@ -116,7 +115,7 @@
     <textarea
       matInput
       [(ngModel)]="texte"
-      (ngModelChange)="scrollTexte()"
+      (ngModelChange)="onTexteChange()"
       placeholder="Enter your script here..."
       rows="4">
     </textarea>
@@ -128,13 +127,10 @@
       <span class="speed-label">{{ vitesse }}s : seconds</span>
       <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
     </div>
-
     <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
       📷 Start camera
     </button>
-
     <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-
     <button mat-raised-button 
             color="accent" 
             (click)="startRecording()" 
@@ -142,7 +138,6 @@
             style="width: 100%;">
       🎬 Start recording
     </button>
-
     <button mat-raised-button 
             color="warn" 
             (click)="stopRecording()" 
@@ -150,10 +145,9 @@
             style="width: 100%;">
       🛑 Stop recording
     </button>
-
     <mat-icon class="fullscreen-icon" 
               (click)="toggleFullscreen()"
-              matTooltip="Plein écran">
+              matTooltip="Fullscreen">
       {{ isFakeFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
     </mat-icon>
   </div>

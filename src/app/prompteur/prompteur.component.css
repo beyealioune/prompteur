@@ -177,6 +177,11 @@ video, .ios-video-container video {
   .container { padding: 14px 2vw 80px; }
 } */
 
+:root {
+  --scroll-speed: 20s;
+}
+
+
 .container {
   display: flex;
   flex-direction: column;
@@ -238,8 +243,15 @@ video, .ios-video-container video {
   font-weight: 500;
   min-height: 200%;
   width: 100%;
-  transform: translateY(100%);
+  animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
+
+@keyframes scroll-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+
+/* Plein écran simulé */
 .fake-fullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -286,10 +298,10 @@ body.fake-fullscreen-active {
   padding: 0 10vw !important;
 }
 @media (max-width: 700px) {
-  .fake-fullscreen .texte {
-    font-size: 5vw !important;
-    padding: 0 5vw !important;
-  }
+  .video-card { max-width: 99vw; }
+  .actions-column { max-width: 95vw; }
+  .container { padding: 14px 2vw 80px; }
+  .fake-fullscreen .texte { font-size: 5vw !important; padding: 0 5vw !important; }
 }
 .exit-fake-fullscreen {
   position: absolute !important;
@@ -301,14 +313,14 @@ body.fake-fullscreen-active {
   border-radius: 50%;
 }
 
-
-.texte.scrolling {
-  animation: scroll-up var(--scroll-speed, 20s) linear infinite;
-}
-
-@keyframes scroll-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(-100%); }
+.trait {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 3px;
+  background: #7b61ff;
+  z-index: 10;
+  box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
 
 .trait {
