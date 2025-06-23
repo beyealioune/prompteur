@@ -347,6 +347,8 @@
 //     video.play().catch(e => console.error('Playback error:', e));
 //   }
 // } 
+
+
 import {
   Component,
   ElementRef,
@@ -354,7 +356,7 @@ import {
   AfterViewInit,
   OnInit,
   OnDestroy,
-  Renderer2,
+  Renderer2
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -414,6 +416,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.userSub = this.sessionService.$user.subscribe(user => {
       this.showPaymentPopup = !this.sessionService.hasAccess();
     });
+
+    if (!this.sessionService.user) {
+      this.sessionService.refreshUser().subscribe();
+    }
   }
 
   ngAfterViewInit() {
@@ -494,7 +500,16 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
 
-      await video.play();
+      if (this.isIOS()) {
+        const playVideo = () => {
+          video.play().catch(e => console.error('Play error:', e));
+          document.body.removeEventListener('click', playVideo);
+        };
+        document.body.addEventListener('click', playVideo, { once: true });
+      } else {
+        await video.play();
+      }
+
     } catch (err) {
       console.error('Camera error:', err);
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
@@ -505,6 +520,80 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
+  isTypeSupported(mimeType: string): boolean {
+    return MediaRecorder.isTypeSupported(mimeType);
+  }
+
+  startRecording() {
+    if (!this.stream) {
+      alert('Veuillez d\'abord démarrer la caméra');
+      return;
+    }
+
+    const preferredMimeType = this.isIOS() ? 'video/mp4' : 'video/webm';
+    if (!this.isTypeSupported(preferredMimeType)) {
+      alert(`Le format ${preferredMimeType} n'est pas supporté sur votre appareil`);
+      return;
+    }
+
+    this.countdown = 3;
+
+    const interval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown === 0) {
+        clearInterval(interval);
+        this.startMediaRecorder();
+      }
+    }, 1000);
+  }
+
+  private startMediaRecorder() {
+    try {
+      this.recordedChunks = [];
+      
+      const options = {
+        mimeType: this.isIOS() ? 'video/mp4' : 'video/webm',
+        videoBitsPerSecond: 2500000
+      };
+
+      try {
+        this.mediaRecorder = new MediaRecorder(this.stream!, options);
+      } catch (e) {
+        console.warn('Format préféré non supporté, tentative avec format de base');
+        this.mediaRecorder = new MediaRecorder(this.stream!);
+      }
+
+      this.mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        if (e.data.size > 0) {
+          this.recordedChunks.push(e.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        const blob = new Blob(this.recordedChunks, { 
+          type: this.mediaRecorder?.mimeType || 'video/mp4' 
+        });
+        this.previewRecording(blob);
+        this.uploadVideo(blob);
+      };
+
+      this.mediaRecorder.start(100);
+      this.startRecordingTimer();
+      this.isRecording = true;
+      this.resetScroll();
+
+    } catch (err) {
+      console.error('Recording error:', err);
+      alert('Erreur lors du démarrage de l\'enregistrement: ' + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  private startRecordingTimer() {
+    this.recordingTime = 0;
+    this.timerInterval = setInterval(() => {
+      this.recordingTime++;
+    }, 1000);
+  }
 
   stopRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
@@ -533,9 +622,9 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       setTimeout(() => {
         if (this.videoElement) {
           const video = this.videoElement.nativeElement;
-          video.style.display = 'none';
+          this.renderer.setStyle(video, 'display', 'none');
           void video.offsetHeight;
-          video.style.display = '';
+          this.renderer.setStyle(video, 'display', '');
         }
       }, 50);
     }
@@ -545,20 +634,18 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private previewRecording(blob: Blob) {
     this.isLiveCamera = false;
+
     if (this.videoBlobUrl) {
       URL.revokeObjectURL(this.videoBlobUrl);
     }
+
     this.videoBlobUrl = URL.createObjectURL(blob);
     const video = this.videoElement.nativeElement;
+
     video.srcObject = null;
     video.src = this.videoBlobUrl;
     video.setAttribute('controls', 'true');
+
     video.play().catch(e => console.error('Playback error:', e));
   }
-   private startRecordingTimer() {
-      this.recordingTime = 0;
-      this.timerInterval = setInterval(() => {
-        this.recordingTime++;
-      }, 1000);
-    }
 }
