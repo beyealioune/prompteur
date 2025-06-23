@@ -77,7 +77,7 @@
   (closed)="showPaymentPopup = false">
 </app-payment-popup> -->
 <div class="container mat-elevation-z4" [class.fake-fullscreen]="isFakeFullscreen">
-  <mat-card class="video-card">
+  <mat-card class="video-card" *ngIf="isVideoVisible">
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
         class="mirror"

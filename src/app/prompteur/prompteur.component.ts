@@ -354,7 +354,8 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  ChangeDetectorRef
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -402,10 +403,13 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private videoBlobUrl: string | null = null;
   private userSub?: Subscription;
   isLiveCamera = true;
+  isVideoVisible = true;
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private cdr: ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -590,39 +594,25 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   //     document.body.classList.remove('fake-fullscreen-active');
   //   }
   // }
+
   toggleFakeFullscreen(): void {
     this.isFakeFullscreen = !this.isFakeFullscreen;
-    if (this.isFakeFullscreen) {
-      document.body.classList.add('fake-fullscreen-active');
-    } else {
-      document.body.classList.remove('fake-fullscreen-active');
-      // Réinitialise le layout de la vidéo à la sortie du fake fullscreen
+    if (!this.isFakeFullscreen) {
+      // On cache la vidéo puis on la réaffiche pour forcer le recalcul du layout
+      this.isVideoVisible = false;
+      this.cdr.detectChanges();
       setTimeout(() => {
-        // On enlève les styles forcés par le fake fullscreen
-        const card = document.querySelector('.video-card') as HTMLElement;
-        const container = document.querySelector('.container') as HTMLElement;
-        if (card && container && !this.isFakeFullscreen) {
-          card.style.width = '';
-          card.style.maxWidth = '';
-          card.style.height = '';
-          card.style.borderRadius = '';
-          card.style.boxShadow = '';
-          card.style.background = '';
-          container.style.padding = '';
-          container.style.margin = '';
-          container.style.overflow = '';
-          // Si jamais un style s'est accroché sur la vidéo aussi
-          const video = this.videoElement?.nativeElement;
-          if (video) {
-            video.style.width = '';
-            video.style.height = '';
-            video.style.borderRadius = '';
-          }
-        }
-      }, 40);
+        this.isVideoVisible = true;
+        this.cdr.detectChanges();
+      }, 30);
+    } else {
+      document.body.classList.add('fake-fullscreen-active');
+    }
+    if (!this.isFakeFullscreen) {
+      document.body.classList.remove('fake-fullscreen-active');
     }
   }
-  
+
   private previewRecording(blob: Blob) {
     this.isLiveCamera = false;
     if (this.videoBlobUrl) {
