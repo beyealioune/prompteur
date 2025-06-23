@@ -555,4 +555,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.setAttribute('controls', 'true');
     video.play().catch(e => console.error('Playback error:', e));
   }
+   private startRecordingTimer() {
+      this.recordingTime = 0;
+      this.timerInterval = setInterval(() => {
+        this.recordingTime++;
+      }, 1000);
+    }
 }
