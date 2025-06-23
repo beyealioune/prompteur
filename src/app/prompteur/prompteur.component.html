@@ -77,10 +77,8 @@
   (closed)="showPaymentPopup = false">
 </app-payment-popup> -->
 
-
-
-<div class="container mat-elevation-z4" [class.fullscreen-fake]="isFullscreen">
-  <mat-card class="video-card">
+<div class="container mat-elevation-z4">
+  <mat-card class="video-card" [class.fake-fullscreen]="isFakeFullscreen">
     <div class="video-container" [class.ios-video-container]="isIOS()">
       <video #videoElement
         class="mirror"
@@ -104,7 +102,7 @@
     </div>
   </mat-card>
 
-  <mat-form-field appearance="fill" class="full-width" *ngIf="!isFullscreen">
+  <mat-form-field appearance="fill" class="full-width">
     <mat-label>Teleprompter text</mat-label>
     <textarea
       matInput
@@ -115,7 +113,7 @@
     </textarea>
   </mat-form-field>
 
-  <div class="actions-column" *ngIf="!isFullscreen">
+  <div class="actions-column">
     <div class="speed-controls">
       <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
       <span class="speed-label">{{ vitesse }}s : seconds</span>
@@ -143,14 +141,13 @@
             style="width: 100%;">
       🛑 Stop recording
     </button>
-  </div>
 
-  <!-- Bouton fullscreen (switch entrée/sortie) -->
-  <mat-icon class="fullscreen-icon" 
-            (click)="toggleFullscreenFake()"
-            matTooltip="Plein écran">
-    {{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
-  </mat-icon>
+    <mat-icon class="fullscreen-icon" 
+              (click)="toggleFullscreen()"
+              matTooltip="Fullscreen">
+      {{ isFakeFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
+    </mat-icon>
+  </div>
 </div>
 
 <app-payment-popup
