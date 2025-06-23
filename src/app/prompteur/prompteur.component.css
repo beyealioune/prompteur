@@ -177,7 +177,6 @@ video, .ios-video-container video {
   .container { padding: 14px 2vw 80px; }
 } */
 
-
 .container {
   display: flex;
   flex-direction: column;
@@ -203,6 +202,7 @@ video, .ios-video-container video {
   position: relative;
   width: 100%;
   aspect-ratio: 16/9;
+  background: #000;
 }
 
 video, .ios-video-container video {
@@ -219,10 +219,14 @@ video, .ios-video-container video {
 
 .texte-overlay {
   position: absolute;
-  top: 0; bottom: 0; width: 100%;
-  display: flex; flex-direction: column;
+  top: 0; 
+  bottom: 0; 
+  width: 100%;
+  display: flex; 
+  flex-direction: column;
   justify-content: flex-end;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .texte {
@@ -233,20 +237,17 @@ video, .ios-video-container video {
   line-height: 1.6;
   font-weight: 500;
   min-height: 200%;
+  width: 100%;
+  transform: translateY(100%);
+}
+
+.texte.scrolling {
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
 }
 
 @keyframes scroll-up {
   0% { transform: translateY(100%); }
   100% { transform: translateY(-100%); }
-}
-
-.scrolling {
-  animation-play-state: running;
-}
-
-.texte:not(.scrolling) {
-  animation-play-state: paused;
 }
 
 .trait {
@@ -303,21 +304,10 @@ video, .ios-video-container video {
   margin: 6px 0;
 }
 
-.fullscreen-icon {
-  align-self: center;
-  font-size: 30px;
-  color: #666;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: color .18s;
-}
-.fullscreen-icon:hover {
-  color: #7b61ff;
-}
-
 .timer {
   position: absolute;
-  left: 18px; top: 16px;
+  left: 18px; 
+  top: 16px;
   font-size: 1.2em;
   color: #fff;
   background: rgba(80,70,180,0.22);

@@ -347,14 +347,14 @@
 //     video.play().catch(e => console.error('Playback error:', e));
 //   }
 // } 
-
 import {
   Component,
   ElementRef,
   ViewChild,
   AfterViewInit,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  Renderer2
 } from '@angular/core';
 import { VideoService } from '../services/video.service';
 import { FormsModule } from '@angular/forms';
@@ -387,6 +387,7 @@ import { Subscription } from 'rxjs';
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('videoCard') videoCard!: ElementRef<HTMLElement>;
 
   texte: string = `Bienvenue sur notre application prompteur.`;
   isRecording: boolean = false;
@@ -406,7 +407,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
 
   constructor(
     private videoService: VideoService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -420,12 +422,17 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.scrollTexte();
+    this.initScroll();
   }
 
   ngOnDestroy(): void {
     this.cleanupResources();
     this.userSub?.unsubscribe();
+  }
+
+  initScroll() {
+    this.updateScrollSpeed();
+    this.resetAndStartScrolling();
   }
 
   increaseSpeed() {
@@ -572,7 +579,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       this.mediaRecorder.start(100);
       this.startRecordingTimer();
       this.isRecording = true;
-      this.scrollTexte();
+      this.resetAndStartScrolling();
 
     } catch (err) {
       console.error('Recording error:', err);
@@ -624,15 +631,25 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   resetAndStartScrolling(): void {
+    if (!this.texteElement) return;
+
     this.isScrolling = false;
+    
+    // Réinitialiser complètement l'animation
+    this.renderer.setStyle(this.texteElement.nativeElement, 'animation', 'none');
+    
+    // Forcer le recalcul des styles
+    void this.texteElement.nativeElement.offsetHeight;
+    
     setTimeout(() => {
       this.isScrolling = true;
-      if (this.texteElement) {
-        this.texteElement.nativeElement.style.animation = 'none';
-        this.texteElement.nativeElement.offsetHeight;
-        this.texteElement.nativeElement.style.animation = `scroll-up ${this.vitesse}s linear infinite`;
-      }
-    }, 10);
+      this.updateScrollSpeed();
+      this.renderer.setStyle(
+        this.texteElement.nativeElement, 
+        'animation', 
+        `scroll-up ${this.vitesse}s linear infinite`
+      );
+    }, 50);
   }
 
   scrollTexte() {
