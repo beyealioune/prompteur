@@ -127,17 +127,15 @@
       <span class="speed-label">{{ vitesse }}s : seconds</span>
       <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
     </div>
-    <button mat-raised-button color="primary" (click)="startCamera()" style="width: 100%;">
-      📷 Start camera
-    </button>
+    <div class="two-button-row">
+      <button mat-raised-button class="start" (click)="startCamera()">📷 Camera</button>
+      <button mat-raised-button class="record" (click)="startRecording()" [disabled]="isRecording || !stream">🎬 Recording</button>
+    </div>
+    
     <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
-    <button mat-raised-button 
-            color="accent" 
-            (click)="startRecording()" 
-            [disabled]="isRecording || !stream"
-            style="width: 100%;">
-      🎬 Start recording
-    </button>
+    
+    <button mat-raised-button class="stop" (click)="stopRecording()" [disabled]="!isRecording">🛑 Stop</button>
+    
     <button mat-raised-button 
             color="warn" 
             (click)="stopRecording()" 

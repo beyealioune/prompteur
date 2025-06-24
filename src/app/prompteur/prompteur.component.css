@@ -368,3 +368,38 @@ body.fake-fullscreen-active {
   box-shadow: 0 1px 4px rgba(80,70,180,0.11);
   z-index: 30;
 }
+.two-button-row {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.two-button-row button {
+  flex: 1;
+  border-radius: 14px !important;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px !important;
+  white-space: nowrap;
+  text-transform: none;
+}
+
+button.record {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+button.start {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+button.stop {
+  background-color: #374151 !important;
+  color: white !important;
+  border-radius: 14px !important;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px !important;
+  width: 100%;
+}
