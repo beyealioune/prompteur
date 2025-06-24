@@ -1,0 +1,25 @@
+{
+    "appId": "com.aliapp.prompteur",
+    "appName": "PrompteurApp",
+    "webDir": "dist/prompteur/browser",
+    "plugins": {
+      "Purchases": {
+        "apiKey": "appl_obgMsSCvFpwRSAdFHWjEueQNHqK",
+        "ios": {
+          "products": [
+            {
+              "id": "prompteur_1_9",
+              "type": "PAID_SUBSCRIPTION"
+            }
+          ]
+        }
+      },
+      "VideoRecorder": {
+        "ios": {
+          "cameraUsageDescription": "Need camera access to record videos",
+          "microphoneUsageDescription": "Need microphone access to record audio"
+        }
+      }
+    }
+  }
+  
