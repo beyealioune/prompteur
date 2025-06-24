@@ -1,4 +1,6 @@
 .page-content {
     padding-bottom: 80px; /* hauteur de la navbar */
   }
-  
+  @tailwind base;
+@tailwind components;
+@tailwind utilities;
