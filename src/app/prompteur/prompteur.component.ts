@@ -386,6 +386,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './prompteur.component.css',
 })
 export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
+  @ViewChild('texteWrapper') texteWrapper!: ElementRef<HTMLDivElement>;
+
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
 
@@ -440,11 +442,19 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     this.updateScrollSpeed();
   }
 
-  updateScrollSpeed() {
-    if (this.texteElement) {
-      this.texteElement.nativeElement.style.setProperty('--scroll-speed', `${this.vitesse}s`);
-    }
+updateScrollSpeed() {
+  const wrapper = this.texteWrapper?.nativeElement;
+  if (wrapper) {
+    wrapper.style.setProperty('--scroll-speed', `${this.vitesse}s`);
+    // Pour forcer le restart de l’anim lors d’un changement de texte ou plein écran
+    wrapper.style.animation = 'none';
+    // Trigger un reflow (force le navigateur à recalculer)
+    // @ts-ignore
+    void wrapper.offsetWidth;
+    wrapper.style.animation = `scroll-up-continuous ${this.vitesse}s linear infinite`;
   }
+}
+
 
   onTexteChange() {
     this.updateScrollSpeed();
