@@ -1,6 +1,7 @@
 // src/app/payment-popup/payment-popup.component.ts
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, Output, EventEmitter } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { PaymentService } from '../services/payment.service';
 import { SessionService } from '../services/session.service';
 
@@ -9,7 +10,7 @@ import { SessionService } from '../services/session.service';
   templateUrl: './payment-popup.component.html',
   styleUrls: ['./payment-popup.component.css'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
 })
 export class PaymentPopupComponent {
   @Input() show = false;
