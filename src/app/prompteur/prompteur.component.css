@@ -1,3 +1,12 @@
+:root {
+  --scroll-speed: 20s;
+}
+
+body {
+  background: linear-gradient(180deg, rgb(4, 0, 65));
+  margin: 0;
+}
+
 .bg-black { background: #000 !important; }
 .text-white { color: white !important; }
 .btn-wide {
@@ -5,6 +14,116 @@
   width: 100%;
   white-space: nowrap;
   text-transform: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 38px 14px 120px;
+  min-height: 100vh;
+}
+
+/* Carte vidéo */
+.video-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(40,50,100,0.12);
+  background: #000;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Vidéo container */
+.video-container,
+video,
+.ios-video-container video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  object-fit: cover;
+  border-radius: 0 0 22px 22px;
+}
+
+/* Mode miroir */
+.mirror {
+  transform: scaleX(-1);
+}
+
+/* Texte défilant */
+.texte-overlay {
+  position: absolute;
+  top: 0; bottom: 0; width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  overflow: hidden;
+}
+.texte {
+  white-space: pre-line;
+  font-size: 24px;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 10px rgba(50,30,140,0.7);
+  line-height: 1.6;
+  font-weight: 500;
+  min-height: 200%;
+  animation: scroll-up var(--scroll-speed) linear infinite;
+}
+
+@keyframes scroll-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+
+.fake-fullscreen,
+.fake-fullscreen .video-card,
+.fake-fullscreen video,
+.fake-fullscreen .video-container {
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: #000 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: cover !important;
+}
+
+.fake-fullscreen .texte-overlay {
+  height: 100vh !important;
+}
+.fake-fullscreen .texte {
+  font-size: 3vw !important;
+  padding: 0 10vw !important;
+}
+body.fake-fullscreen-active {
+  overflow: hidden !important;
+}
+
+.exit-fake-fullscreen {
+  position: absolute !important;
+  top: 12px;
+  right: 12px;
+  z-index: 99999;
+  background: rgba(30,30,30,0.32);
+  color: #fff;
+  border-radius: 50%;
+}
+
+.trait {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 3px;
+  background: #7b61ff;
+  z-index: 10;
+  box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
 
 .actions-column {
@@ -47,12 +166,16 @@ mat-form-field.full-width .mat-mdc-text-field-wrapper {
   border-radius: 8px !important;
   border: 1px solid #4a4a90 !important;
 }
+
 mat-form-field.full-width .mat-mdc-form-field-flex {
   background-color: #1c1c4e !important;
 }
+
 mat-form-field.full-width .mat-mdc-form-field-infix {
   background-color: #1c1c4e !important;
 }
+
+
 mat-form-field.full-width .mat-mdc-form-field-infix,
 mat-form-field.full-width .mat-mdc-floating-label,
 mat-form-field.full-width textarea.mat-input-element {
@@ -72,6 +195,14 @@ mat-form-field.full-width .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
+.countdown {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #7b61ff;
+  margin: 6px 0;
+}
+
 .fullscreen-icon {
   align-self: center;
   font-size: 30px;
@@ -82,6 +213,20 @@ mat-form-field.full-width .mat-mdc-form-field-subscript-wrapper {
 }
 .fullscreen-icon:hover {
   color: #7b61ff;
+}
+
+.timer {
+  position: absolute;
+  left: 18px;
+  top: 16px;
+  font-size: 1.2em;
+  color: #fff !important;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+  background: rgba(30, 30, 30, 0.6);
+  padding: 6px 15px;
+  border-radius: 15px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  z-index: 30;
 }
 
 .two-button-row {
@@ -97,8 +242,7 @@ button.record { background-color: #b91c1c !important; color: white !important; }
 button.start  { background-color: #8b5cf6 !important; color: white !important; }
 button.stop   { background-color: #ef4444 !important; color: white !important; }
 
-button.start,
-button.record {
+button.start, button.record {
   padding: 20px !important;
   font-size: 17px !important;
   font-weight: 600;
