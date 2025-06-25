@@ -1,5 +1,5 @@
 .navbar {
-    background-color: white;
+    background-color: rgb(4, 0, 65);
     display: flex;
     position: fixed;
     bottom: 0;
@@ -18,7 +18,7 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    color: #4a4a4a;
+    color: white;
     font-size: 12px;
     transition: color 0.3s;
   }

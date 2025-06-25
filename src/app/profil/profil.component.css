@@ -1,189 +1,119 @@
+/* Fond bleu nuit général */
 .profile-wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f4f6fc;
-  }
-  
-  .profile-container {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 480px;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .profile-picture {
-    width: 110px;
-    height: 110px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid rgb(4, 0, 65);
-  }
-  
-  .upload-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .upload-wrapper input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .upload-wrapper button {
-    background-color: rgb(4, 0, 65);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    width: 100%;
-  }
-  
-  .form-control,
-  textarea.form-control {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    resize: none;
-  }
-  
-  .form-control:focus,
-  textarea.form-control:focus {
-    border-color: rgb(4, 0, 65);
-    outline: none;
-  }
-  
-  
-  .form-label {
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  
-  form {
-    width: 100%;
-  }
-  
-  .btn-unified {
-    background-color: #333;
-    color: white;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-  }
-  
-  .btn-unified:hover {
-    background-color: #222;
-  }
-  
-  
-  .btn:hover {
-    background-color: #2d2d6d;
-  }
-  
-  hr {
-    margin: 30px 0;
-    width: 100%;
-  }
-  
-  @media (max-width: 480px) {
-    .profile-container {
-      padding: 20px;
-    }
-  
-    .profile-picture {
-      width: 90px;
-      height: 90px;
-    }
-  
-    .btn {
-      font-size: 14px;
-    }
-  }
-  .form-group {
-    width: 100%;
-    margin-bottom: 16px;
-  }
-  .footer {
-    background-color: #f4f6fc;
-    padding: 20px 0;
-    font-size: 14px;
-    color: #333;
-  }
-  
-  .footer-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .footer-section {
-    margin: 10px;
-    min-width: 200px;
-  }
-  
-  .footer-section h4 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #000;
-  }
-  
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-section ul li {
-    margin-bottom: 8px;
-  }
-  
-  .footer-section a {
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .footer-section a:hover {
-    text-decoration: underline;
-  }
-  
-  .social-links a {
-    margin-right: 10px;
-    color: #333;
-    font-size: 18px;
-  }
-  
-  .social-links a:hover {
-    color: #000;
-  }
-  
-  @media (max-width: 768px) {
-    .footer-container {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .social-links a {
-      margin: 0 5px;
-    }
-  }
-  
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #040041; /* bleu nuit */
+}
+
+/* Carte profil */
+.profile-container {
+  background-color: rgba(255, 255, 255, 0.03); /* fond semi-transparent */
+  width: 100%;
+  max-width: 480px;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(8px);
+}
+
+.form-control,
+textarea.form-control {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.form-control::placeholder,
+textarea.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #eee;
+}
+
+.btn-unified {
+  background-color: #7b61ff;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-unified:hover {
+  background-color: #977aff;
+}
+
+.btn-unified.danger {
+  background-color: #ef4444;
+}
+
+.btn-cancel {
+  background-color: #444;
+  color: white;
+}
+
+.text-success {
+  color: #10b981 !important;
+}
+
+.text-danger {
+  color: #f87171 !important;
+}
+
+hr {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.popup-card {
+  background-color: #1a1a3d;
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  max-width: 90%;
+}
+
+.footer {
+  background-color: #040041;
+  padding: 20px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.footer a {
+  color: #ccc;
+}
+
+.footer a:hover {
+  color: white;
+  text-decoration: underline;
+}
