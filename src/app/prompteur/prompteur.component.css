@@ -161,27 +161,31 @@ body.fake-fullscreen-active {
   width: 100%;
   max-width: 600px;
 }
+/* Appliquer à tous les champs mat-form-field avec matInput */
 mat-form-field.full-width .mat-mdc-text-field-wrapper {
-  background-color: #1c1c4e !important; /* Violet foncé */
+  background-color: #1c1c4e !important; /* couleur bleu nuit */
   border-radius: 8px !important;
-  border: 1px solid #1c1c4e !important; /* Violet plus clair pour la bordure */
-}
-
-mat-form-field.full-width .mat-mdc-form-field-flex {
-  background-color: #1c1c4e !important; /* Violet foncé */
-}
-
-mat-form-field.full-width .mat-mdc-form-field-infix {
-  background-color: #1c1c4e !important; /* Violet foncé */
+  border: 1px solid #4a4a90 !important;
 }
 
 mat-form-field.full-width .mat-mdc-form-field-infix,
 mat-form-field.full-width .mat-mdc-floating-label,
-mat-form-field.full-width textarea.mat-input-element {
-  color: blue !important; /* Texte blanc */
+mat-form-field.full-width textarea.mat-mdc-input-element {
+  color: white !important;
+  background-color: transparent !important; /* important */
   font-size: 16px !important;
-  line-height: 1.5;
 }
+
+mat-form-field.full-width textarea.mat-mdc-input-element {
+  padding: 12px;
+  line-height: 1.5;
+  resize: none;
+}
+
+mat-form-field.full-width .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
 
 mat-form-field.full-width textarea.mat-input-element {
   background-color: #1c1c4e !important; /* Violet foncé */
@@ -189,11 +193,11 @@ mat-form-field.full-width textarea.mat-input-element {
 }
 
 mat-form-field.full-width .mat-mdc-form-field-label {
-  color: yellow !important; /* Label légèrement transparent */
+  color: rgba(255, 255, 255, 0.7) !important; /* Label légèrement transparent */
 }
 
 mat-form-field.full-width .mdc-text-field--focused .mat-mdc-floating-label {
-  color: red !important; /* Label blanc quand focus */
+  color: white !important; /* Label blanc quand focus */
 }
 
 .countdown {
@@ -215,6 +219,20 @@ mat-form-field.full-width .mdc-text-field--focused .mat-mdc-floating-label {
 .fullscreen-icon:hover {
   color: #7b61ff;
 }
+.ios-compatible-input {
+  background-color: #1c1c4e !important;
+  color: white !important;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 8px !important;
+  padding: 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #4a4a90;
+  box-sizing: border-box;
+  background-clip: padding-box;
+}
+
 
 .timer {
   position: absolute;
