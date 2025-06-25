@@ -1,18 +1,36 @@
-
 :root {
   --scroll-speed: 20s;
 }
 
+body {
+  background: linear-gradient(180deg, rgb(4, 0, 65));
+  margin: 0;
+}
+
+/* Utilitaires réutilisables */
+.bg-black { background: #000 !important; }
+.text-white { color: white !important; }
+.btn-wide {
+  padding: 14px !important;
+  font-size: 15px !important;
+  font-weight: 600;
+  border-radius: 14px !important;
+  width: 100%;
+  white-space: nowrap;
+  text-transform: none;
+}
+
+/* Container principal */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 28px;
   padding: 38px 14px 120px;
-  background: linear-gradient(180deg, rgb(4, 0, 65));
   min-height: 100vh;
 }
 
+/* Carte vidéo */
 .video-card {
   width: 100%;
   max-width: 600px;
@@ -24,34 +42,32 @@
   transition: all 0.3s ease;
 }
 
-.video-container {
-  position: relative;
+/* Vidéo container */
+.video-container,
+video,
+.ios-video-container video {
   width: 100%;
   aspect-ratio: 16/9;
   background: #000;
-}
-
-video, .ios-video-container video {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  background: #000;
   border-radius: 0 0 22px 22px;
 }
 
+/* Mode miroir */
 .mirror {
   transform: scaleX(-1);
 }
 
+/* Texte défilant */
 .texte-overlay {
   position: absolute;
   top: 0; bottom: 0; width: 100%;
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   justify-content: flex-end;
   pointer-events: none;
   overflow: hidden;
 }
-
 .texte {
   white-space: pre-line;
   font-size: 24px;
@@ -60,8 +76,7 @@ video, .ios-video-container video {
   line-height: 1.6;
   font-weight: 500;
   min-height: 200%;
-  width: 100%;
-  animation: scroll-up var(--scroll-speed, 20s) linear infinite;
+  animation: scroll-up var(--scroll-speed) linear infinite;
 }
 
 @keyframes scroll-up {
@@ -69,65 +84,35 @@ video, .ios-video-container video {
   100% { transform: translateY(-100%); }
 }
 
-.fake-fullscreen {
+/* Plein écran simulé */
+.fake-fullscreen,
+.fake-fullscreen .video-card,
+.fake-fullscreen video,
+.fake-fullscreen .video-container {
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  top: 0; left: 0;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 9999 !important;
   background: #000 !important;
   padding: 0 !important;
   margin: 0 !important;
-  overflow: hidden !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-body.fake-fullscreen-active {
-  overflow: hidden !important;
-}
-
-.fake-fullscreen .video-card {
-  width: 100vw !important;
-  max-width: 100vw !important;
-  height: 100vh !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  background: #000 !important;
-}
-
-.fake-fullscreen .video-container {
-  width: 100vw !important;
-  height: 100vh !important;
-  aspect-ratio: unset !important;
-}
-
-.fake-fullscreen video {
-  width: 100vw !important;
-  height: 100vh !important;
-  border-radius: 0 !important;
   object-fit: cover !important;
 }
 
 .fake-fullscreen .texte-overlay {
   height: 100vh !important;
 }
-
 .fake-fullscreen .texte {
   font-size: 3vw !important;
   padding: 0 10vw !important;
 }
-
-@media (max-width: 700px) {
-  .video-card { max-width: 99vw; }
-  .actions-column { max-width: 95vw; }
-  .container { padding: 14px 2vw 80px; }
-  .fake-fullscreen .texte { font-size: 5vw !important; padding: 0 5vw !important; }
+body.fake-fullscreen-active {
+  overflow: hidden !important;
 }
 
+/* Bouton quitter le plein écran */
 .exit-fake-fullscreen {
   position: absolute !important;
   top: 12px;
@@ -138,6 +123,7 @@ body.fake-fullscreen-active {
   border-radius: 50%;
 }
 
+/* Trait décoratif */
 .trait {
   position: absolute;
   top: 50%;
@@ -148,6 +134,7 @@ body.fake-fullscreen-active {
   box-shadow: 0 0 8px rgba(123, 97, 255, 0.6);
 }
 
+/* Colonne des boutons */
 .actions-column {
   display: flex;
   flex-direction: column;
@@ -162,6 +149,7 @@ body.fake-fullscreen-active {
   padding: 24px 18px 20px 18px;
 }
 
+/* Contrôle de vitesse */
 .speed-controls {
   display: flex;
   align-items: center;
@@ -169,7 +157,6 @@ body.fake-fullscreen-active {
   gap: 18px;
   margin-bottom: 4px;
 }
-
 .speed-label {
   font-size: 1.12em;
   font-weight: 600;
@@ -180,6 +167,7 @@ body.fake-fullscreen-active {
   letter-spacing: 0.04em;
 }
 
+/* Champs texte */
 .full-width {
   width: 100%;
   max-width: 600px;
@@ -191,33 +179,20 @@ body.fake-fullscreen-active {
   --mat-form-field-outline-color: rgba(255, 255, 255, 0.3);
   --mat-form-field-inactive-outline-color: rgba(255, 255, 255, 0.2);
 }
-
 mat-form-field.full-width .mat-mdc-text-field-wrapper {
   background-color: #0b0b2f !important;
   border-radius: 14px !important;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-mat-form-field.full-width .mat-mdc-form-field-infix {
-  color: white !important;
-}
-
+mat-form-field.full-width .mat-mdc-form-field-infix,
+mat-form-field.full-width .mat-mdc-floating-label,
 mat-form-field.full-width textarea.mat-input-element {
   color: white !important;
   font-size: 16px;
   line-height: 1.5;
 }
 
-mat-form-field.full-width .mat-mdc-floating-label {
-  color: white !important;
-}
-
-@media (max-width: 600px) {
-  mat-form-field.full-width {
-    width: 90vw;
-  }
-}
-
+/* Compteur */
 .countdown {
   text-align: center;
   font-size: 26px;
@@ -226,6 +201,7 @@ mat-form-field.full-width .mat-mdc-floating-label {
   margin: 6px 0;
 }
 
+/* Icône plein écran */
 .fullscreen-icon {
   align-self: center;
   font-size: 30px;
@@ -234,17 +210,17 @@ mat-form-field.full-width .mat-mdc-floating-label {
   cursor: pointer;
   transition: color .18s;
 }
-
 .fullscreen-icon:hover {
   color: #7b61ff;
 }
 
+/* Timer affiché */
 .timer {
   position: absolute;
   left: 18px;
   top: 16px;
   font-size: 1.2em;
-  color: #ffffff !important;
+  color: #fff !important;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
   background: rgba(30, 30, 30, 0.6);
   padding: 6px 15px;
@@ -253,46 +229,16 @@ mat-form-field.full-width .mat-mdc-floating-label {
   z-index: 30;
 }
 
+/* Boutons d’action */
 .two-button-row {
   display: flex;
   gap: 14px;
   justify-content: space-between;
 }
-
 .two-button-row button {
   flex: 1;
-  border-radius: 14px !important;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 14px !important;
-  white-space: nowrap;
-  text-transform: none;
 }
 
-button.record {
-  background-color: #b91c1c !important;
-  color: white !important;
-}
-
-button.start {
-  background-color: #8b5cf6 !important;
-  color: white !important;
-}
-
-button.stop {
-  background-color: #ef4444 !important;
-  color: white !important;
-  border-radius: 14px !important;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 14px !important;
-  width: 100%;
-}
-
-button.start,
-button.record,
-button.stop {
-  padding-top: 26px !important;
-  padding-bottom: 26px !important;
-  font-size: 16px !important;
-}
+button.record { background-color: #b91c1c !important; color: white !important; }
+button.start  { background-color: #8b5cf6 !important; color: white !important; }
+button.stop   { background-color: #ef4444 !important; color: white !important; }
