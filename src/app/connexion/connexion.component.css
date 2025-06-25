@@ -121,6 +121,10 @@ a:hover {
   justify-content: center;
   gap: 10px;
 }
+.btn-login {
+  margin-top: 10px; /* espace entre les champs et le bouton */
+}
+
 
 .otp-input {
   width: 40px;

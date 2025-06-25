@@ -368,6 +368,7 @@ import { CommonModule } from '@angular/common';
 import { PaymentPopupComponent } from "../payment-popup/payment-popup.component";
 import { SessionService } from '../services/session.service';
 import { Subscription } from 'rxjs';
+import { PaymentService } from '../services/payment.service';
 
 @Component({
   selector: 'app-prompteur',
@@ -404,15 +405,20 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   private userSub?: Subscription;
   isLiveCamera = true;
   isVideoVisible = true;
+  isAllowed = false;
 
   constructor(
     private videoService: VideoService,
     private sessionService: SessionService,
+    private paymentService: PaymentService,
+
     private cdr: ChangeDetectorRef
 
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.isAllowed = await this.paymentService.checkPremium();
+
     this.userSub = this.sessionService.$user.subscribe(user => {
       this.showPaymentPopup = !this.sessionService.hasAccess();
     });
@@ -467,24 +473,26 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.srcObject = null;
     video.src = '';
   }
-
   async startCamera() {
+    if (!this.isAllowed) {
+      this.showPaymentPopup = true;
+      return;
+    }
+  
     this.isLiveCamera = true;
     this.stopCamera();
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: true
       });
+  
       const video = this.videoElement.nativeElement;
       video.srcObject = this.stream;
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
+  
       if (this.isIOS()) {
         const playVideo = () => {
           video.play().catch(e => console.error('Play error:', e));
@@ -499,7 +507,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
-
+  
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
@@ -509,6 +517,10 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   startRecording() {
+    if (!this.isAllowed) {
+      this.showPaymentPopup = true;
+      return;
+    }
     if (!this.stream) {
       alert('Veuillez d\'abord démarrer la caméra');
       return;

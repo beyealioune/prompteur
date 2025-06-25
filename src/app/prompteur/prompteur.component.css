@@ -223,6 +223,10 @@ body.fake-fullscreen-active {
   appearance: none;
   resize: vertical;
 }
+.white-text {
+  color: white !important;
+}
+
 
 .timer {
   position: absolute;
