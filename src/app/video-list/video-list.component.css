@@ -1,61 +1,65 @@
 .video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 32px 16px 80px;
-  max-width: 800px;
-  margin: 0 auto;
+  background: linear-gradient(180deg, #040041, #060631); /* fond bleu nuit */
+  min-height: 100vh;
+  padding: 32px 16px 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* 2 colonnes même sur mobile */
+  gap: 16px;
+  justify-items: center;
 }
 
 .video-list h2 {
+  grid-column: 1 / -1;
   text-align: center;
-  margin-top: 40px; /* ✅ espacement en haut */
-  margin-bottom: 20px;
+  color: #ffffff;
+  margin-top: 10px;
+  font-size: 22px;
   font-weight: 600;
-  font-size: 24px;
-  color: #333;
 }
 
-@media (max-width: 375px) {
-  .video-list h2 {
-    margin-top: 60px; /* encore plus d'espace sur iPhone petit écran */
-    font-size: 22px;
-  }
+/* carte vidéo */
+.video-card {
+  width: 100%;
+  max-width: 180px; /* limite la taille */
 }
 
 .video-card mat-card {
-  background-color: #fff;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  padding: 16px;
+  padding: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
 }
 
+/* aperçu vidéo */
 .video-preview {
   width: 100%;
-  max-height: 360px;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   background-color: #000;
   object-fit: cover;
 }
 
+/* bouton télécharger */
 .video-actions {
   display: flex;
   justify-content: center;
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .btn.dark {
-  background-color: #333;
+  background-color: #8b5cf6;
   color: white;
-  padding: 12px 24px;
-  font-weight: bold;
-  font-size: 16px;
-  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 8px 12px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.25s ease;
 }
 
 .btn.dark:hover {
-  background-color: #222;
+  background-color: #6d40d4;
 }

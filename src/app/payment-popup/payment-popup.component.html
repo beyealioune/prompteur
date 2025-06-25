@@ -2,21 +2,21 @@
   <div class="popup-card">
     <button class="btn-close" (click)="closePopup()" aria-label="Fermer">&times;</button>
     <h2>{{ productTitle }}</h2>
-    <p>Débloquez toutes les fonctionnalités avec l’abonnement Premium.</p>
-    <div *ngIf="price && !isPremium && !loading" class="price">
-      <strong>{{ price }}/mois</strong>
+    <p>Abonnez-vous et profitez de 3 jours gratuits, puis 1,99 €/mois pour accéder au prompteur et enregistrer des vidéos illimitées !</p>
+    <div *ngIf="!isPremium && !loading" class="price">
+      <strong>{{ price || '1,99 €' }}/mois</strong>
     </div>
     <div *ngIf="loading" class="loader">Chargement...</div>
     <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
     <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
-      S’abonner
+      S’abonner pour 1,99 €/mois
     </button>
     <div *ngIf="isPremium" class="premium-status">
       ✅ Abonnement actif ! Merci 🙏
     </div>
     <div class="legal-links">
-      <a href="https://tonsite.fr/politique-confidentialite" target="_blank">Confidentialité</a> ·
-      <a href="https://tonsite.fr/terms" target="_blank">Conditions</a>
+      <a routerLink="/politique-confidentialite" target="_blank">Politique de confidentialité</a> ·
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Conditions d'utilisation</a>
     </div>
   </div>
 </div>

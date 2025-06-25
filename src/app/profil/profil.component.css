@@ -1,189 +1,150 @@
 .profile-wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f4f6fc;
-  }
-  
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #040041;
+}
+
+.profile-container {
+  background-color: #060631;
+  width: 100%;
+  max-width: 480px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.form-control,
+textarea.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #4a4a90;
+  background-color: #1c1c4e;
+  color: #fff;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.form-control:focus,
+textarea.form-control:focus {
+  border-color: #8b5cf6;
+  outline: none;
+}
+
+form {
+  width: 100%;
+}
+
+.btn-unified {
+  background-color: #8b5cf6;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-unified:hover {
+  background-color: #6c3ce3;
+}
+
+.btn-unified.danger {
+  background-color: #dc2626;
+}
+
+.btn-unified.btn-cancel {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+hr {
+  margin: 30px 0;
+  width: 100%;
+  border-color: #333;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  background: #1c1c4e;
+  padding: 30px;
+  border-radius: 14px;
+  color: white;
+  text-align: center;
+  max-width: 300px;
+}
+
+.footer {
+  background-color: #040041;
+  padding: 20px 0;
+  font-size: 14px;
+  color: #fff;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.footer-section a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
   .profile-container {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 480px;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 20px;
   }
-  
-  .profile-picture {
-    width: 110px;
-    height: 110px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid rgb(4, 0, 65);
-  }
-  
-  .upload-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .upload-wrapper input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .upload-wrapper button {
-    background-color: rgb(4, 0, 65);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    width: 100%;
-  }
-  
-  .form-control,
-  textarea.form-control {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    resize: none;
-  }
-  
-  .form-control:focus,
-  textarea.form-control:focus {
-    border-color: rgb(4, 0, 65);
-    outline: none;
-  }
-  
-  
-  .form-label {
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  
-  form {
-    width: 100%;
-  }
-  
+
   .btn-unified {
-    background-color: #333;
-    color: white;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease;
-  }
-  
-  .btn-unified:hover {
-    background-color: #222;
-  }
-  
-  
-  .btn:hover {
-    background-color: #2d2d6d;
-  }
-  
-  hr {
-    margin: 30px 0;
-    width: 100%;
-  }
-  
-  @media (max-width: 480px) {
-    .profile-container {
-      padding: 20px;
-    }
-  
-    .profile-picture {
-      width: 90px;
-      height: 90px;
-    }
-  
-    .btn {
-      font-size: 14px;
-    }
-  }
-  .form-group {
-    width: 100%;
-    margin-bottom: 16px;
-  }
-  .footer {
-    background-color: #f4f6fc;
-    padding: 20px 0;
     font-size: 14px;
-    color: #333;
   }
-  
-  .footer-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .footer-section {
-    margin: 10px;
-    min-width: 200px;
-  }
-  
-  .footer-section h4 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #000;
-  }
-  
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-section ul li {
-    margin-bottom: 8px;
-  }
-  
-  .footer-section a {
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .footer-section a:hover {
-    text-decoration: underline;
-  }
-  
-  .social-links a {
-    margin-right: 10px;
-    color: #333;
-    font-size: 18px;
-  }
-  
-  .social-links a:hover {
-    color: #000;
-  }
-  
-  @media (max-width: 768px) {
-    .footer-container {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .social-links a {
-      margin: 0 5px;
-    }
-  }
-  
+}
