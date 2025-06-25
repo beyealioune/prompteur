@@ -11,10 +11,7 @@ body {
 .bg-black { background: #000 !important; }
 .text-white { color: white !important; }
 .btn-wide {
-  padding: 14px !important;
-  font-size: 15px !important;
   font-weight: 600;
-  border-radius: 14px !important;
   width: 100%;
   white-space: nowrap;
   text-transform: none;
@@ -167,29 +164,33 @@ body.fake-fullscreen-active {
   letter-spacing: 0.04em;
 }
 
-/* Champs texte */
+/* Champs texte style profil */
 .full-width {
   width: 100%;
   max-width: 600px;
-  --mat-form-field-background-color: #0b0b2f;
-  --mat-form-field-label-color: white;
-  --mat-input-element-color: white;
-  --mat-form-field-hover-state-layer-color: #7b61ff;
-  --mat-form-field-focus-state-layer-color: #8b5cf6;
-  --mat-form-field-outline-color: rgba(255, 255, 255, 0.3);
-  --mat-form-field-inactive-outline-color: rgba(255, 255, 255, 0.2);
 }
 mat-form-field.full-width .mat-mdc-text-field-wrapper {
-  background-color: #0b0b2f !important;
-  border-radius: 14px !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: #1c1c4e !important;
+  border-radius: 8px !important;
+  border: 1px solid #4a4a90 !important;
 }
 mat-form-field.full-width .mat-mdc-form-field-infix,
 mat-form-field.full-width .mat-mdc-floating-label,
 mat-form-field.full-width textarea.mat-input-element {
   color: white !important;
-  font-size: 16px;
+  font-size: 16px !important;
   line-height: 1.5;
+}
+mat-form-field.full-width textarea.mat-input-element {
+  background-color: #1c1c4e !important;
+  padding: 12px;
+}
+mat-form-field.full-width .mat-mdc-form-field-infix:focus-within {
+  border-color: #8b5cf6;
+  outline: none;
+}
+mat-form-field.full-width .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
 /* Compteur */
@@ -242,3 +243,20 @@ mat-form-field.full-width textarea.mat-input-element {
 button.record { background-color: #b91c1c !important; color: white !important; }
 button.start  { background-color: #8b5cf6 !important; color: white !important; }
 button.stop   { background-color: #ef4444 !important; color: white !important; }
+
+/* Boutons Camera + Recording + styles */
+button.start, button.record {
+  padding: 20px !important;
+  font-size: 17px !important;
+  font-weight: 600;
+  border-radius: 22px !important;
+  width: 100%;
+  text-transform: none;
+  white-space: nowrap;
+  transition: background-color 0.25s ease, transform 0.2s ease;
+}
+button.start:hover,
+button.record:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}

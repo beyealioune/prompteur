@@ -1,8 +1,8 @@
 body {
-  background-color: #f8f9fa;
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(180deg, #040041, #060631);
+  color: #fff;
 }
 
 .container {
@@ -16,71 +16,87 @@ body {
 
 .signup-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .signup-form {
-  background-color: #ffffff;
-  padding: 25px 20px;
+  background-color: #060631;
+  padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  color: white;
 }
 
 .signup-form h2 {
   text-align: center;
   margin-bottom: 25px;
   font-size: 24px;
+  color: #fff;
 }
 
-.form-control {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-.form-control:focus {
-  border-color: #00124d;
-  outline: none;
-}
-
-.btn-custom {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background-color: #00124d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn-custom:hover {
-  background-color: #0a1d75;
-}
-
-.btn-secondary {
-  background-color: transparent;
-  border: 1px solid #00124d;
-  color: #00124d;
-}
-
-.btn-secondary:hover {
-  background-color: #00124d;
-  color: white;
+/* Labels et erreurs */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #fff;
+  display: block;
 }
 
 .text-danger {
   font-size: 13px;
   margin-top: 4px;
+  color: #fca5a5;
 }
 
-/* Mobile responsive */
+/* Champs input */
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #4a4a90;
+  background-color: #1c1c4e;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  border-color: #8b5cf6;
+  outline: none;
+}
+
+/* Boutons */
+.btn-custom {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: #8b5cf6;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.25s ease;
+}
+
+.btn-custom:hover {
+  background-color: #6c3ce3;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid #8b5cf6;
+  color: #8b5cf6;
+  border-radius: 12px;
+}
+
+.btn-secondary:hover {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+/* Responsive mobile */
 @media (max-width: 480px) {
   .signup-form {
     padding: 20px 15px;
