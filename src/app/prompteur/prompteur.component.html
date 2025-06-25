@@ -128,10 +128,12 @@
       <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
     </div>
     <div class="two-button-row">
-      <button mat-raised-button class="start" (click)="startCamera()">📷 Camera</button>
-      <button mat-raised-button class="record" (click)="startRecording()" [disabled]="isRecording || !stream">🎬 Recording</button>
+      <button mat-raised-button class="start" (click)="startCamera()">🎥 Start Camera</button>
+      <button mat-raised-button class="record" [class.enabled]="stream && !isRecording" (click)="startRecording()" [disabled]="isRecording || !stream">
+        <span *ngIf="!isRecording">⏺ Record</span>
+        <span *ngIf="isRecording">⏹ Stop</span>
+      </button>
     </div>
-    
     <div *ngIf="countdown > 0" class="countdown">{{ countdown }}</div>
     
     <button mat-raised-button class="stop" (click)="stopRecording()" [disabled]="!isRecording">🛑 Stop</button>
