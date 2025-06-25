@@ -219,20 +219,28 @@ mat-form-field.full-width .mdc-text-field--focused .mat-mdc-floating-label {
 .fullscreen-icon:hover {
   color: #7b61ff;
 }
-.ios-compatible-input {
-  background-color: #1c1c4e !important;
-  color: white !important;
-  -webkit-appearance: none;
-  appearance: none;
-  border-radius: 8px !important;
+.custom-input-container {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.custom-ios-input {
+  background-color: #1c1c4e;
+  color: white;
+  border: 1px solid #4a4a90;
+  border-radius: 10px;
   padding: 12px;
   font-size: 16px;
   line-height: 1.5;
-  border: 1px solid #4a4a90;
   box-sizing: border-box;
-  background-clip: padding-box;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
 }
-
 
 .timer {
   position: absolute;
