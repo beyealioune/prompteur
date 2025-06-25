@@ -110,20 +110,17 @@
     </div>
   </mat-card>
 
-  <mat-form-field appearance="fill" class="full-width" *ngIf="!isFakeFullscreen">
-    <mat-label>Teleprompter text</mat-label>
+  
+  <div class="custom-input-container" *ngIf="!isFakeFullscreen">
+    <label for="iosInput" class="custom-input-label">Teleprompter text</label>
     <textarea
-      matInput
+      id="iosInput"
+      class="custom-ios-input"
       [(ngModel)]="texte"
       (ngModelChange)="onTexteChange()"
-      placeholder="Enter your script here..."
-      rows="4">
+      placeholder="Bienvenue dans notre application.."
+      rows="6">
     </textarea>
-  </mat-form-field>
-  
-  <div class="custom-input-container">
-    <label for="iosInput">Test fond iPhone</label>
-    <input id="iosInput" type="text" class="custom-ios-input" placeholder="Tape ici...">
   </div>
   
 
