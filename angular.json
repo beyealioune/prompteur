@@ -25,9 +25,11 @@
               "src/assets"
             ],
             "styles": [
+              "src/styles/video.style.css",
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
+            
             "scripts": []
           },
           "configurations": {
