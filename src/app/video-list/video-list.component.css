@@ -47,19 +47,26 @@
   justify-content: center;
   padding-top: 8px;
 }
-
 .btn.dark {
   background-color: #8b5cf6;
   color: white;
   font-weight: 600;
-  font-size: 12px;
-  padding: 8px 12px;
+  font-size: 16px;      /* diminue la taille de texte si besoin */
+  padding: 5px 8px;     /* réduit le padding */
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   cursor: pointer;
-  transition: background-color 0.25s ease;
+  transition: background-color 0.25s ease, transform 0.18s;
 }
-
+.btn.dark:active {
+  transform: scale(0.97);
+}
 .btn.dark:hover {
   background-color: #6d40d4;
 }

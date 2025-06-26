@@ -64,13 +64,18 @@ video,
   overflow: hidden;
 }
 
-/* Nouveau conteneur scroller */
 .texte-scroller {
   display: flex;
   flex-direction: column;
   animation: scroll-up var(--scroll-speed, 20s) linear infinite;
   will-change: transform;
 }
+
+@keyframes scroll-up {
+  0%   { transform: translateY(100vh); }
+  100% { transform: translateY(calc(-1 * var(--texte-height, 100vh))); }
+}
+
 
 /* Le texte doublé */
 .texte-content {
@@ -82,11 +87,6 @@ video,
   font-weight: 500;
   min-height: 200%;
   padding-bottom: 60px; /* espace pour la transition */
-}
-
-@keyframes scroll-up {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
 }
 
 .texte {
