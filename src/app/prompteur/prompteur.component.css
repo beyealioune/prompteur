@@ -63,6 +63,32 @@ video,
   pointer-events: none;
   overflow: hidden;
 }
+
+/* Nouveau conteneur scroller */
+.texte-scroller {
+  display: flex;
+  flex-direction: column;
+  animation: scroll-up var(--scroll-speed, 20s) linear infinite;
+  will-change: transform;
+}
+
+/* Le texte doublé */
+.texte-content {
+  white-space: pre-line;
+  font-size: 24px;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 10px rgba(50,30,140,0.7);
+  line-height: 1.6;
+  font-weight: 500;
+  min-height: 200%;
+  padding-bottom: 60px; /* espace pour la transition */
+}
+
+@keyframes scroll-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
 .texte {
   white-space: pre-line;
   font-size: 24px;
