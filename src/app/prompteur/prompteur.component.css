@@ -137,10 +137,10 @@ video,
 }
 .fake-fullscreen .texte {
   font-size: 3vw !important;
-  padding: 0 5% !important; /* Ajout de padding latéral */
-  padding-left: 10vw !important;
-
+  padding-left: 15vw !important;  /* décale bien à droite */
+  padding-right: 5vw !important;  /* optionnel, pour équilibrer */
 }
+
 body.fake-fullscreen-active {
   overflow: hidden !important;
 }
