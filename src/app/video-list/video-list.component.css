@@ -2,19 +2,26 @@
   background: linear-gradient(180deg, #040041, #060631); /* fond bleu nuit */
   min-height: 100vh;
   padding: 32px 16px 100px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .video-list h2 {
-  grid-column: 1 / -1;
-  text-align: center;
   color: #ffffff;
-  margin-top: 10px;
   font-size: 22px;
   font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.video-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+  justify-items: center;
 }
 
 /* carte vidéo */
@@ -84,13 +91,6 @@
 .btn-icon.delete:hover {
   background: #ef4444;
   color: white;
-}
-
-/* option : encore plus compact */
-.btn-icon.small {
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
 }
 
 .material-icons {

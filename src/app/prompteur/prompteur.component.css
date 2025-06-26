@@ -2,6 +2,15 @@
   --scroll-speed: 20s;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  touch-action: none;
+}
+
 body {
   background: linear-gradient(180deg, rgb(4, 0, 65));
   margin: 0;
@@ -22,8 +31,9 @@ body {
   align-items: center;
   gap: 28px;
   padding: 38px 14px 120px;
-  min-height: 100vh;
-}
+  height: 100vh;
+  overflow: hidden;
+  }
 
 /* Carte vidéo */
 .video-card {
