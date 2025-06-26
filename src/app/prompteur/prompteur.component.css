@@ -105,6 +105,7 @@ video,
   color: rgba(255,255,255,0.95);
   text-shadow: 0 0 10px rgba(50,30,140,0.7);
   line-height: 1.6;
+  padding-left: 4px;   /* <-- Décale vers la droite */
   font-weight: 500;
   min-height: 200%;
   animation: scroll-up var(--scroll-speed) linear infinite;
