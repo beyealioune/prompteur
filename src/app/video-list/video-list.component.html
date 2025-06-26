@@ -17,13 +17,14 @@
       </mat-card-content>
 
       <mat-card-actions class="video-actions">
-        <button class="btn dark" (click)="download(video.fileName)">
-          ⬇️ Télécharger
+        <button class="btn-icon" (click)="download(video.fileName)" title="Télécharger">
+          <span class="material-icons">download</span>
         </button>
-        <button class="btn dark" style="background:#ef4444;margin-left:8px;" (click)="delete(video)">
-          🗑️ Supprimer
+        <button class="btn-icon delete" (click)="delete(video)" title="Supprimer">
+          <span class="material-icons">delete</span>
         </button>
       </mat-card-actions>
+      
       
     </mat-card>
   </div>
