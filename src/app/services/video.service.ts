@@ -96,4 +96,9 @@ async uploadNativeVideo(path: string): Promise<void> {
 
 
 }
+
+deleteVideo(fileName: string) {
+  return this.http.delete(`${this.pathService}/delete/${encodeURIComponent(fileName)}`);
+}
+
 }

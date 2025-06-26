@@ -183,5 +183,18 @@ export class VideoListComponent implements OnInit {
       }, 200);
     });
   }
+
+  delete(video: any): void {
+    if (confirm('Supprimer cette vidéo ?')) {
+      this.videoService.deleteVideo(video.fileName).subscribe({
+        next: () => {
+          this.videos = this.videos.filter(v => v.fileName !== video.fileName);
+          delete this.videoUrls[video.fileName];
+        },
+        error: err => alert('Erreur suppression: ' + err.message)
+      });
+    }
+  }
+  
   
 }
