@@ -474,6 +474,8 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
     video.src = '';
   }
   async startCamera() {
+    this.isAllowed = await this.paymentService.checkPremium();
+  
     if (!this.isAllowed) {
       this.showPaymentPopup = true;
       return;
@@ -481,6 +483,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   
     this.isLiveCamera = true;
     this.stopCamera();
+  
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -507,6 +510,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
+  
   
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
