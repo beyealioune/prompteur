@@ -76,12 +76,6 @@
   [show]="showPaymentPopup"
   (closed)="showPaymentPopup = false">
 </app-payment-popup> -->
-
-
-
-
-<!-- 
---------------------v2 fonctionnelle--------------------
 <div class="container mat-elevation-z4" [class.fake-fullscreen]="isFakeFullscreen">
   <mat-card class="video-card" *ngIf="isVideoVisible">
     <div class="video-container" [class.ios-video-container]="isIOS()">
@@ -106,8 +100,8 @@
       <div *ngIf="isRecording" class="timer">
         ⏱️ {{ recordingTime }}s
       </div>
-      <-- Bouton quitter fake plein écran -->
-      <!-- <button
+      <!-- Bouton quitter fake plein écran -->
+      <button
         *ngIf="isFakeFullscreen"
         class="exit-fake-fullscreen"
         mat-icon-button
@@ -155,106 +149,17 @@
             style="width: 100%;">
       🛑 Stop recording
     </button>
-    <!- BOUTON POUR ACTIVER FAKE FULLSCREEN -->
-    <!-- <mat-icon class="fullscreen-icon" 
+    <!-- BOUTON POUR ACTIVER FAKE FULLSCREEN -->
+    <mat-icon class="fullscreen-icon" 
               (click)="toggleFakeFullscreen()"
               matTooltip="Fullscreen">
       {{ isFakeFullscreen ? 'fullscreen_exit' : 'fullscreen' }}
     </mat-icon>
   </div>
-</div> --> 
+</div>
 
-<!-- <app-payment-popup
+<app-payment-popup
   *ngIf="showPaymentPopup"
   [show]="showPaymentPopup"
   (closed)="showPaymentPopup = false">
-</app-payment-popup>  -->
-
-
-
-
-<!-- -------------------v3 fonctionnelle------------------- -->
-
-
-<div class="container mat-elevation-z4" [class.fake-fullscreen]="isFakeFullscreen">
-
-  <!-- Actions haut : Start Recording & Start Camera -->
-  <div class="actions-row">
-    <button mat-raised-button color="accent"
-            (click)="startRecording()"
-            [disabled]="isRecording || !stream">
-      <mat-icon style="font-size:2em;margin-bottom:4px;">fiber_manual_record</mat-icon>
-      Start Recording
-    </button>
-    <button mat-raised-button color="primary"
-            (click)="startCamera()">
-      <mat-icon style="font-size:2em;margin-bottom:4px;">videocam</mat-icon>
-      Start Camera
-    </button>
-  </div>
-
-  <!-- Zone vidéo -->
-  <mat-card class="video-card" *ngIf="isVideoVisible">
-    <div class="video-container" [class.ios-video-container]="isIOS()">
-      <video #videoElement
-        class="mirror"
-        [class.mirror]="isLiveCamera"
-        autoplay
-        muted
-        playsinline
-        webkit-playsinline
-        disablePictureInPicture
-        controlslist="nodownload nofullscreen">
-      </video>
-      <div *ngIf="isRecording" class="timer">
-        ⏱️ {{ recordingTime }}s
-      </div>
-      <!-- Quitter fake fullscreen -->
-      <button
-        *ngIf="isFakeFullscreen"
-        class="exit-fake-fullscreen"
-        mat-icon-button
-        (click)="toggleFakeFullscreen()"
-        matTooltip="Quitter le plein écran">
-        <mat-icon>fullscreen_exit</mat-icon>
-      </button>
-    </div>
-  </mat-card>
-
-  <!-- Affichage script centré (gris clair) -->
-  <div class="script-display" *ngIf="texte?.trim(); else placeholderScript">
-    {{ texte }}
-  </div>
-  <ng-template #placeholderScript>
-    <div class="script-display">Your script will appear here</div>
-  </ng-template>
-
-  <!-- Contrôle temps/slider -->
-  <div class="speed-controls">
-    <button mat-mini-fab color="primary" (click)="decreaseSpeed()">-</button>
-    <span class="speed-label">{{ vitesse | number:'2.0' }}s</span>
-    <button mat-mini-fab color="primary" (click)="increaseSpeed()">+</button>
-  </div>
-<button mat-mini-fab color="primary"
-        (click)="toggleFakeFullscreen()"
-        style="margin: 0 auto; display: block;">
-  <mat-icon>{{ isFakeFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
-</button>
-
-  <!-- Saisie script (champ sombre) -->
-  <mat-form-field appearance="fill" class="full-width">
-    <textarea
-      matInput
-      [(ngModel)]="texte"
-      (ngModelChange)="onTexteChange()"
-      placeholder="Enter your script..."
-      rows="4"></textarea>
-  </mat-form-field>
-
-  <!-- Affichage popup paiement (inchangé) -->
-  <app-payment-popup
-    *ngIf="showPaymentPopup"
-    [show]="showPaymentPopup"
-    (closed)="showPaymentPopup = false">
-  </app-payment-popup>
-</div>
+</app-payment-popup>
