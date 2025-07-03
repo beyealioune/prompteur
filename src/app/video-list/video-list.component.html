@@ -1,26 +1,31 @@
 <div class="video-list">
-  <h2 class="mat-headline"> Vidéos enregistrées</h2>
+  <h2 class="mat-headline">Vidéos enregistrées</h2>
 
-  <div *ngFor="let video of videos" class="video-card mat-elevation-z4">
-    <mat-card>
-      <mat-card-content>
-        <video *ngIf="videoUrls[video.fileName]" 
-               #videoPlayer
-               [src]="videoUrls[video.fileName]" 
-               controls 
-               playsinline
-               webkit-playsinline
-               class="video-preview"
-               (loadedmetadata)="setupVideoForIOS(videoPlayer)">
-          <p>Votre navigateur ne supporte pas la lecture de vidéos HTML5.</p>
-        </video>
-      </mat-card-content>
+  <div class="video-list-container">
+    <div *ngFor="let video of videos" class="video-card mat-elevation-z4">
+      <mat-card>
+        <mat-card-content>
+          <video *ngIf="videoUrls[video.fileName]" 
+                 #videoPlayer
+                 [src]="videoUrls[video.fileName]" 
+                 controls 
+                 playsinline
+                 webkit-playsinline
+                 class="video-preview"
+                 (loadedmetadata)="setupVideoForIOS(videoPlayer)">
+            <p>Votre navigateur ne supporte pas la lecture de vidéos HTML5.</p>
+          </video>
+        </mat-card-content>
 
-      <mat-card-actions class="video-actions">
-        <button class="btn dark" (click)="download(video.fileName)">
-          ⬇️ Télécharger
-        </button>
-      </mat-card-actions>
-    </mat-card>
+        <mat-card-actions class="video-actions">
+          <button class="btn-icon" (click)="download(video.fileName)" title="Télécharger">
+            <span class="material-icons">download</span>
+          </button>
+          <button class="btn-icon delete" (click)="delete(video)" title="Supprimer">
+            <span class="material-icons">delete</span>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </div>

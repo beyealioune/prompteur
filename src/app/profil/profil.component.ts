@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { SessionService } from '../services/session.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-profil',
@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
   imports: [ CommonModule, FormsModule, MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule],
+    MatButtonModule,RouterLink],
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.css'
 })

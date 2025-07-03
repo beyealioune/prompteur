@@ -96,13 +96,13 @@
         controlslist="nodownload nofullscreen">
       </video>
       <div class="texte-overlay">
-  <div class="trait"></div>
-  <div class="texte-wrapper" #texteWrapper>
-    <div class="texte" #texteElement>{{ texte }}</div>
-    <div class="texte clone">{{ texte }}</div>
-  </div>
-</div>
-
+        <div class="trait"></div>
+        <div class="texte-scroller" #texteElement>
+          <span class="texte-content">{{ texte }}</span>
+          <span class="texte-content">{{ texte }}</span>
+        </div>
+      </div>
+      
       <div *ngIf="isRecording" class="timer">
         ⏱️ {{ recordingTime }}s
       </div>

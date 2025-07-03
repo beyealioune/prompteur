@@ -484,6 +484,8 @@ updateScrollSpeed() {
     video.src = '';
   }
   async startCamera() {
+    this.isAllowed = await this.paymentService.checkPremium();
+  
     if (!this.isAllowed) {
       this.showPaymentPopup = true;
       return;
@@ -491,6 +493,7 @@ updateScrollSpeed() {
   
     this.isLiveCamera = true;
     this.stopCamera();
+  
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -517,6 +520,7 @@ updateScrollSpeed() {
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
+  
   
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);

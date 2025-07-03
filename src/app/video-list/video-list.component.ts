@@ -183,5 +183,21 @@ export class VideoListComponent implements OnInit {
       }, 200);
     });
   }
+
+  delete(video: any) {
+    if (confirm('Supprimer cette vidéo ?')) {
+      this.videoService.deleteVideo(video.fileName).subscribe({
+        next: () => {
+          // On enlève la vidéo du tableau sans recharger
+          this.videos = this.videos.filter(v => v.fileName !== video.fileName);
+        },
+        error: err => {
+          alert('Erreur suppression: ' + (err.error || err.message));
+        }
+      });
+    }
+  }
+  
+  
   
 }

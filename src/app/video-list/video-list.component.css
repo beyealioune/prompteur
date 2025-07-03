@@ -2,25 +2,32 @@
   background: linear-gradient(180deg, #040041, #060631); /* fond bleu nuit */
   min-height: 100vh;
   padding: 32px 16px 100px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* 2 colonnes même sur mobile */
-  gap: 16px;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .video-list h2 {
-  grid-column: 1 / -1;
-  text-align: center;
   color: #ffffff;
-  margin-top: 10px;
   font-size: 22px;
   font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.video-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+  justify-items: center;
 }
 
 /* carte vidéo */
 .video-card {
   width: 100%;
-  max-width: 180px; /* limite la taille */
+  max-width: 180px;
 }
 
 .video-card mat-card {
@@ -41,25 +48,52 @@
   object-fit: cover;
 }
 
-/* bouton télécharger */
+/* actions compactes sous la vidéo */
 .video-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 14px;
   padding-top: 8px;
 }
 
-.btn.dark {
-  background-color: #8b5cf6;
-  color: white;
-  font-weight: 600;
-  font-size: 12px;
-  padding: 8px 12px;
+/* --- Boutons icônes modernes --- */
+.btn-icon {
+  background: #2d2850;
+  color: #8b5cf6;
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
   cursor: pointer;
-  transition: background-color 0.25s ease;
+  transition: background 0.2s, color 0.2s, transform 0.18s;
+  box-shadow: 0 2px 6px rgba(20,0,40,0.09);
+  outline: none;
+}
+.btn-icon:active {
+  transform: scale(0.97);
+}
+.btn-icon:hover {
+  background: #8b5cf6;
+  color: #fff;
+  transform: translateY(-1px) scale(1.07);
 }
 
-.btn.dark:hover {
-  background-color: #6d40d4;
+/* bouton supprimer */
+.btn-icon.delete {
+  background: #40181c;
+  color: #ef4444;
+}
+.btn-icon.delete:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.material-icons {
+  font-size: 20px;
+  line-height: 1;
 }
