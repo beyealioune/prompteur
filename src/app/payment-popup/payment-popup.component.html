@@ -1,22 +1,36 @@
 <div class="popup-overlay" *ngIf="show">
   <div class="popup-card">
-    <button class="btn-close" (click)="closePopup()" aria-label="Fermer">&times;</button>
+    <button class="btn-close" (click)="closePopup()" aria-label="Close">&times;</button>
+    
     <h2>{{ productTitle }}</h2>
-    <p>Abonnez-vous et profitez de 3 jours gratuits, puis 1,99 €/mois pour accéder au prompteur et enregistrer des vidéos illimitées !</p>
+    
+    <p>
+      Subscribe now and enjoy 3 days free, then €1.99/month to access the teleprompter and record unlimited videos!
+    </p>
+    
     <div *ngIf="!isPremium && !loading" class="price">
-      <strong>{{ price || '1,99 €' }}/mois</strong>
+      <strong>{{ price || '€1.99' }}/month</strong>
     </div>
-    <div *ngIf="loading" class="loader">Chargement...</div>
+    
+    <div *ngIf="loading" class="loader">Loading...</div>
+    
     <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+    
     <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
-      S’abonner pour 1,99 €/mois
+      Subscribe for €1.99/month
     </button>
+    
     <div *ngIf="isPremium" class="premium-status">
-      ✅ Abonnement actif ! Merci 🙏
+      ✅ Subscription active! Thank you 🙏
     </div>
+    
     <div class="legal-links">
-      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">Politique de confidentialité</a> ·
-      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Conditions d'utilisation</a>
+      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
+        Privacy Policy
+      </a> ·
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
+        Terms of Use
+      </a>
     </div>
   </div>
 </div>

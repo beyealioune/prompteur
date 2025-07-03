@@ -1,5 +1,5 @@
 <div class="video-list">
-  <h2 class="mat-headline">Vidéos enregistrées</h2>
+  <h2 class="mat-headline">Recorded Videos</h2>
 
   <div class="video-list-container">
     <div *ngFor="let video of videos" class="video-card mat-elevation-z4">
@@ -13,7 +13,7 @@
                  webkit-playsinline
                  class="video-preview"
                  (loadedmetadata)="setupVideoForIOS(videoPlayer)">
-            <p>Votre navigateur ne supporte pas la lecture de vidéos HTML5.</p>
+            <p>Your browser does not support HTML5 video playback.</p>
           </video>
         </mat-card-content>
 

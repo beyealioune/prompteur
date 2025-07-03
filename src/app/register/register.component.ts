@@ -42,17 +42,17 @@ export class RegisterComponent implements OnInit {
       // Appeler le service d'authentification pour l'inscription
       this.authService.register(this.registerForm.value).subscribe(
         (response) => {
-          console.log('Inscription réussie !');
+          console.log('Registration successful!');
           // Redirection vers la page de connexion après inscription réussie
           this.router.navigate(['/connexion']);
         },
         (error) => {
-          console.error('Erreur lors de l\'inscription :', error);
+          console.error('Error during registration:', error);
           // Gestion des erreurs d'inscription
         }
       );
     } else {
-      console.log('Le formulaire n\'est pas valide.');
+      console.log('The form is not valid.');
     }
   }
 

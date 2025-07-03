@@ -392,7 +392,7 @@ export class PrompteurComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('texteElement') texteElement!: ElementRef<HTMLDivElement>;
 
-  texte: string = `Bienvenue sur notre application prompteur.`;
+  texte: string = `  Welcome to our teleprompter app..`;
   isRecording: boolean = false;
   mediaRecorder: MediaRecorder | null = null;
   recordedChunks: Blob[] = [];

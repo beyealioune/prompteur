@@ -5,7 +5,7 @@
     (click)="setActive(1, '/prompteur')"
     *ngIf="sessionService.isLogged">
     <i class="icon-item fa-solid fa-house"></i>
-    <span>Accueil</span>
+    <span>Home</span>
   </div>
 
   <div
@@ -14,7 +14,7 @@
     (click)="setActive(2, '/videolist')"
     *ngIf="sessionService.isLogged">
     <i class="icon-item fa-solid fa-video"></i>
-    <span>Vidéo</span>
+    <span>Videos</span>
   </div>
 
   <!-- <div
@@ -32,14 +32,21 @@
     (click)="setActive(4, '/profil')"
     *ngIf="sessionService.isLogged">
     <i class="icon-item fa-solid fa-user"></i>
-    <span>Profil</span>
+    <span>Profile</span>
   </div>
+
   <div
-  class="nav-item"
-  (click)="handleAuthAction()" >
-  <i *ngIf="sessionService.isLogged"  class="icon-item fa-solid" [ngClass]="sessionService.isLogged ? 'fa-right-from-bracket' : 'fa-right-to-bracket'"></i>
-  <span *ngIf="sessionService.isLogged">{{ sessionService.isLogged ? 'Déconnexion' : 'Connexion' }}</span>
-</div>
+    class="nav-item"
+    (click)="handleAuthAction()">
+    <i 
+      *ngIf="sessionService.isLogged" 
+      class="icon-item fa-solid" 
+      [ngClass]="sessionService.isLogged ? 'fa-right-from-bracket' : 'fa-right-to-bracket'">
+    </i>
+    <span *ngIf="sessionService.isLogged">
+      {{ sessionService.isLogged ? 'Logout' : 'Login' }}
+    </span>
+  </div>
 
   <div class="bullet" [style.--bullet-index]="activeIndex">
     <div class="bullet-inside">
