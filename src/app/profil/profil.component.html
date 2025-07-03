@@ -19,7 +19,7 @@
         <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
       </div>
 
-      <button class="btn-unified w-100" type="button" (click)="updateProfile()">Save</button>
+      <button class="btn-unified w-100" type="button" (click)="updateProfile()" aria-label="Save profile">Save</button>
     </form>
 
     <hr class="my-4 w-100" />
@@ -29,7 +29,7 @@
         <label class="form-label">New Password</label>
         <input type="password" class="form-control" [(ngModel)]="newPassword" name="password" />
       </div>
-      <button class="btn-unified w-100" type="button" (click)="updatePassword()">Change Password</button>
+      <button class="btn-unified w-100" type="button" (click)="updatePassword()" aria-label="Change password">Change Password</button>
     </form>
 
     <hr class="my-4 w-100" />
@@ -48,6 +48,7 @@
         class="btn-unified"
         *ngIf="user.isPremium"
         (click)="openAppleSubscriptions()"
+        aria-label="Manage Apple Subscription"
       >
         Manage my Apple subscription
       </button>
@@ -55,7 +56,7 @@
 
     <!-- Delete Account Button -->
     <div class="form-group mb-3 text-center">
-      <button class="btn-unified danger" (click)="confirmDelete()">🗑 Delete my account</button>
+      <button class="btn-unified danger" (click)="confirmDelete()" aria-label="Delete my account">🗑 Delete my account</button>
     </div>
 
     <!-- Confirmation Popup -->

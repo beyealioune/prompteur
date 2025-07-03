@@ -1,3 +1,4 @@
+/* ✅ CSS complet pour le composant Prompteur Angular - Accessible et lisible */
 :root {
   --scroll-speed: 20s;
 }
@@ -9,20 +10,8 @@ html, body {
   height: 100%;
   width: 100%;
   touch-action: none;
-}
-
-body {
+  font-family: 'Inter', sans-serif;
   background: linear-gradient(180deg, rgb(4, 0, 65));
-  margin: 0;
-}
-
-.bg-black { background: #000 !important; }
-.text-white { color: white !important; }
-.btn-wide {
-  font-weight: 600;
-  width: 100%;
-  white-space: nowrap;
-  text-transform: none;
 }
 
 .container {
@@ -33,9 +22,8 @@ body {
   padding: 38px 14px 120px;
   height: 100vh;
   overflow: hidden;
-  }
+}
 
-/* Carte vidéo */
 .video-card {
   width: 100%;
   max-width: 600px;
@@ -47,7 +35,6 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Vidéo container */
 .video-container,
 video,
 .ios-video-container video {
@@ -58,12 +45,10 @@ video,
   border-radius: 0 0 22px 22px;
 }
 
-/* Mode miroir */
 .mirror {
   transform: scaleX(-1);
 }
 
-/* Texte défilant */
 .texte-overlay {
   position: absolute;
   top: 0; bottom: 0; width: 100%;
@@ -86,8 +71,6 @@ video,
   100% { transform: translateY(calc(-1 * var(--texte-height, 100vh))); }
 }
 
-
-/* Le texte doublé */
 .texte-content {
   white-space: pre-line;
   font-size: 24px;
@@ -96,24 +79,7 @@ video,
   line-height: 1.6;
   font-weight: 500;
   min-height: 200%;
-  padding-bottom: 60px; /* espace pour la transition */
-}
-
-.texte {
-  white-space: pre-line;
-  font-size: 24px;
-  color: rgba(255,255,255,0.95);
-  text-shadow: 0 0 10px rgba(50,30,140,0.7);
-  line-height: 1.6;
-  font-weight: 500;
-  min-height: 200%;
-  animation: scroll-up var(--scroll-speed) linear infinite;
-}
-
-
-@keyframes scroll-up {
-  0% { transform: translateY(100%); }
-  100% { transform: translateY(-100%); }
+  padding-bottom: 60px;
 }
 
 .fake-fullscreen,
@@ -137,8 +103,8 @@ video,
 }
 .fake-fullscreen .texte {
   font-size: 3vw !important;
-  padding-left: 15vw !important;  /* décale bien à droite */
-  padding-right: 5vw !important;  /* optionnel, pour équilibrer */
+  padding-left: 15vw !important;
+  padding-right: 5vw !important;
 }
 
 body.fake-fullscreen-active {
@@ -196,14 +162,6 @@ body.fake-fullscreen-active {
   letter-spacing: 0.04em;
 }
 
-.full-width {
-  width: 100%;
-  max-width: 600px;
-}
-/* Appliquer à tous les champs mat-form-field avec matInput */
-
-
-
 .countdown {
   text-align: center;
   font-size: 26px;
@@ -222,14 +180,6 @@ body.fake-fullscreen-active {
 }
 .fullscreen-icon:hover {
   color: #7b61ff;
-}
-.custom-input-container {
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 .custom-input-container {
@@ -257,15 +207,15 @@ body.fake-fullscreen-active {
   line-height: 1.6;
   box-sizing: border-box;
   width: 100%;
-  height: 80px; /* hauteur plus grande */
+  height: 80px;
   -webkit-appearance: none;
   appearance: none;
   resize: vertical;
 }
+
 .white-text {
   color: white !important;
 }
-
 
 .timer {
   position: absolute;
