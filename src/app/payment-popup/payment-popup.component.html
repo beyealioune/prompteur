@@ -1,31 +1,30 @@
 <div class="payment-fullscreen">
   <button class="btn-close-full" (click)="closePopup()" aria-label="Close">&times;</button>
-  <div class="payment-content">
-    <div class="payment-title">
-      Subscribe to access all features and unlimited videos!
-    </div>
-    <div class="payment-card">
-      <div class="trial-label">3-day free trial</div>
-      <div class="price">Then €1.99/month</div>
-      <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
-        Subscribe for €1.99/month
-      </button>
-      <div *ngIf="loading" class="loader">Loading...</div>
-      <div *ngIf="isPremium" class="premium-status">
-        ✅ Subscription active! Thank you 🙏
+  
+  <div class="paywall-center">
+    <div class="paywall-card">
+      <div class="paywall-header">
+        Subscribe to access all features and unlimited videos!
       </div>
-      <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+      <div class="offer-main">
+        <div class="offer-title">3-day free trial</div>
+        <div class="offer-desc">Then €1.99/month</div>
+        <button class="paywall-btn" (click)="buy()" [disabled]="loading || isPremium">
+          Subscribe for €1.99/month
+        </button>
+      </div>
+      <div class="paywall-note">
+        No commitment. Easy cancellation.
+      </div>
     </div>
-    <div class="payment-note">
-      No commitment. Easy cancellation.
-    </div>
-    <div class="legal-links">
-      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
-        Privacy Policy
-      </a>
-      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
-        Terms of Use
-      </a>
-    </div>
+  </div>
+  
+  <div class="paywall-footer">
+    <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
+      Privacy Policy
+    </a>
+    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
+      Terms of Use
+    </a>
   </div>
 </div>
