@@ -1,39 +1,37 @@
-<div class="payment-fullpage" *ngIf="show">
-  <button class="btn-close-full" (click)="closePopup()" aria-label="Close">&times;</button>
-
-  <h2 class="intro-message">
-    Unlock the teleprompter & record unlimited videos!
-  </h2>
-
-  <div class="plan-card-full">
-    <div class="plan-details">
-      <p class="trial">
-        3-day free trial
-      </p>
-      <p class="price">
-        then €1.99/month
-      </p>
+<div class="popup-overlay" *ngIf="show">
+  <div class="popup-card">
+    <button class="btn-close" (click)="closePopup()" aria-label="Close">&times;</button>
+    
+    <h2>{{ productTitle }}</h2>
+    
+    <p>
+      Subscribe now and enjoy 3 days free, then €1.99/month to access the teleprompter and record unlimited videos!
+    </p>
+    
+    <div *ngIf="!isPremium && !loading" class="price">
+      <strong>{{ price || '€1.99' }}/month</strong>
     </div>
-    <button class="subscribe-btn-full" (click)="buy()" [disabled]="loading || isPremium">
+    
+    <div *ngIf="loading" class="loader">Loading...</div>
+    
+    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+    
+    <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
       Subscribe for €1.99/month
     </button>
-    <div *ngIf="loading" class="loader">Loading...</div>
+    
     <div *ngIf="isPremium" class="premium-status">
       ✅ Subscription active! Thank you 🙏
     </div>
-    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
-  </div>
-
-  <p class="note">
-    No commitment. Easy cancellation.
-  </p>
-
-  <div class="footer-links-full">
-    <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank" rel="noopener">
-      Privacy Policy
-    </a>
-    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">
-      Terms of Use
-    </a>
+    
+    <div class="legal-links">
+      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
+        Privacy Policy
+      </a> ·
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
+        Terms of Use
+      </a>
+    </div>
   </div>
 </div>
+ 
