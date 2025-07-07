@@ -507,12 +507,12 @@ updateScrollSpeed() {
     console.log('[PROMPTEUR] Résultat backend (hasAccess) =', backendHasAccess);
   
     // 4. Décide d’ouvrir le paiement ou pas
-    if (!this.isAllowed || !backendHasAccess) {
-      console.log('[PROMPTEUR] Accès refusé ! Affichage du popup paiement.');
+    if (!this.isAllowed && !backendHasAccess) {
+      // ❌ Les deux refusent = PAS D’ACCÈS
+      console.log('[PROMPTEUR] Accès refusé (ni backend, ni RevenueCat n’autorisent) => popup paiement');
       this.showPaymentPopup = true;
       return;
     }
-  
     // 5. Démarre la caméra
     console.log('[PROMPTEUR] ✅ Accès autorisé ! Démarrage de la caméra…');
     this.isLiveCamera = true;
