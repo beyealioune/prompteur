@@ -1,38 +1,29 @@
-<div class="payment-fullscreen">
-  <button class="btn-close-full" (click)="closePopup()" aria-label="Close">&times;</button>
+<div class="paywall-page">
+  <div class="paywall-content">
+    <h2 class="paywall-title">
+      Subscribe to access all features and unlimited videos!
+    </h2>
 
-  <div class="payment-center">
-    <div class="payment-card">
-      <h2>{{ productTitle }}</h2>
-
-      <p>
-        Subscribe now and enjoy 3 days free,<br>then €1.99/month to access the teleprompter and record unlimited videos!
-      </p>
-
-      <div *ngIf="!isPremium && !loading" class="price">
-        <strong>{{ price || '€1.99' }}/month</strong>
-      </div>
-
-      <div *ngIf="loading" class="loader">Loading...</div>
-
-      <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
-
-      <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
+    <div class="paywall-offer-card">
+      <div class="offer-title">3-day free trial</div>
+      <div class="offer-subtitle">Then €1.99/month</div>
+      <button class="paywall-btn" (click)="buy()" [disabled]="loading || isPremium">
         Subscribe for €1.99/month
       </button>
-
+      <div *ngIf="loading" class="loader">Loading...</div>
       <div *ngIf="isPremium" class="premium-status">
         ✅ Subscription active! Thank you 🙏
       </div>
+      <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+    </div>
 
-      <div class="legal-links">
-        <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
-          Privacy Policy
-        </a> ·
-        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
-          Terms of Use
-        </a>
-      </div>
+    <div class="paywall-note">
+      No commitment. Easy cancellation.
+    </div>
+
+    <div class="paywall-legal">
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">Terms of Use</a>
+      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">Privacy Policy</a>
     </div>
   </div>
 </div>
