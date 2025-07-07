@@ -1,132 +1,122 @@
-.paywall-page {
-  min-height: 100vh;
-  background: #f6f8fd;
+.payment-fullscreen {
+  position: fixed;
+  z-index: 2000;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  background: #f4f7ff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-bottom: 60px;
 }
-
-.paywall-content {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+.btn-close-full {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #667;
+  cursor: pointer;
+  z-index: 10;
+}
+.payment-center {
+  width: 100vw;
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding-top: 28px;
+  justify-content: center;
+  padding: 0;
 }
-
-.paywall-title {
-  font-size: 1.18rem;
-  font-weight: 600;
-  color: #223078;
-  text-align: center;
-  margin-bottom: 30px;
-  padding: 0 8px;
-}
-
-.paywall-offer-card {
+.payment-card {
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 6px 32px rgba(60,70,120,0.10);
-  border: 2px solid #4b6cff;
-  padding: 38px 20px 22px 20px;
-  margin-bottom: 26px;
-  width: 100%;
-  max-width: 380px;
+  box-shadow: 0 8px 36px rgba(60,70,120,0.16);
+  max-width: 390px;
+  width: 92vw;
+  margin: 0 auto;
+  padding: 38px 22px 22px 22px;
   text-align: center;
+  animation: popup-appear .25s;
+  border: 2.2px solid #e8ebf5;
+  position: relative;
 }
-
-.offer-title {
-  font-size: 1.14em;
-  font-weight: bold;
-  color: #4b6cff;
-  margin-bottom: 6px;
+@keyframes popup-appear {
+  from { transform: scale(.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
-
-.offer-subtitle {
-  font-size: 1.06em;
-  color: #3a3a3a;
-  margin-bottom: 20px;
+.payment-card h2 {
+  margin-bottom: 12px;
+  font-size: 1.38em;
+  font-weight: 700;
+  color: #223078;
 }
-
-.paywall-btn {
-  background: #4b6cff;
+.payment-card p {
+  font-size: 1.08em;
+  margin-bottom: 18px;
+  color: #2a2a2a;
+}
+.price {
+  font-size: 1.13em;
+  margin: 14px 0 10px 0;
+  color: #007bff;
+}
+.btn-unified {
+  display: block;
+  width: 100%;
+  margin: 18px 0 0 0;
+  background: #2a3faa;
   color: #fff;
   border: none;
-  border-radius: 32px;
+  border-radius: 11px;
   padding: 15px 0;
-  font-size: 1.09em;
-  width: 100%;
+  font-size: 1.12em;
   font-weight: 700;
-  margin-bottom: 12px;
+  transition: background 0.22s;
   cursor: pointer;
-  transition: background 0.18s;
-  box-shadow: 0 2px 8px rgba(80,110,210,0.07);
 }
-.paywall-btn:disabled {
-  background: #aac6ff;
-  cursor: not-allowed;
-}
-.paywall-btn:hover:not(:disabled) {
-  background: #3651c7;
-}
-
-.loader {
-  color: #888;
-  font-size: 1em;
-  margin: 9px 0;
+.btn-unified:hover:not(:disabled) {
+  background: #1e2b6e;
 }
 .premium-status {
+  margin: 18px 0 0 0;
+  font-size: 1.11em;
   color: #189e65;
-  margin: 9px 0 0 0;
-  font-size: 1.09em;
+}
+.legal-links {
+  margin-top: 20px;
+  font-size: 0.93em;
+  color: #446de8;
+  letter-spacing: 0.01em;
+}
+.legal-links a {
+  color: #446de8;
+  text-decoration: none;
+  margin: 0 5px;
+}
+.legal-links a:hover {
+  text-decoration: underline;
 }
 .alert {
   color: #b04225;
   background: #fff3f0;
-  font-size: 0.98em;
-  margin: 11px 0 0 0;
+  font-size: 0.99em;
+  margin: 13px 0 0 0;
   border-radius: 7px;
-  padding: 8px 0;
+  padding: 9px 0;
 }
-
-.paywall-note {
-  text-align: center;
-  font-size: 0.92em;
-  color: #444;
-  margin-bottom: 24px;
-  margin-top: 4px;
+.loader {
+  font-size: 1em;
+  color: #333;
+  margin: 12px 0;
 }
-
-.paywall-legal {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  font-size: 0.97em;
-  color: #4b6cff;
-  margin-bottom: 8px;
-}
-.paywall-legal a {
-  color: #4b6cff;
-  text-decoration: none;
-  margin: 0 3px;
-}
-.paywall-legal a:hover {
-  text-decoration: underline;
-}
-
-/* Mobile friendly */
-@media (max-width: 450px) {
-  .paywall-offer-card {
-    padding: 24px 5vw 15px 5vw;
-    border-radius: 17px;
+@media (max-width: 420px) {
+  .payment-card {
+    padding: 24px 7vw 15px 7vw;
   }
-  .paywall-title {
-    font-size: 1.08rem;
+  .btn-close-full {
+    font-size: 1.7em;
+    right: 9px;
+    top: 9px;
   }
 }
-
