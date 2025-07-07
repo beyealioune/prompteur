@@ -473,7 +473,14 @@ updateScrollSpeed() {
       URL.revokeObjectURL(this.videoBlobUrl);
     }
   }
-
+  async checkAndRefreshAccess() {
+    // Re-check payment via RevenueCat et recharge user backend
+    this.isAllowed = await this.paymentService.checkPremium();
+    await this.sessionService.refreshUser().toPromise(); // recharge le user côté backend
+    // On reprend la dernière valeur pour éviter l'effet "inactive -> active"
+    this.isAllowed = await this.paymentService.checkPremium();
+  }
+  
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
@@ -484,13 +491,30 @@ updateScrollSpeed() {
     video.src = '';
   }
   async startCamera() {
+    console.log('[PROMPTEUR] ➡️ Démarrage de startCamera()');
+  
+    // 1. Rafraîchit le user depuis le backend
+    console.log('[PROMPTEUR] Rafraîchissement du profil utilisateur (backend)');
+    await this.sessionService.refreshUser().toPromise();
+  
+    // 2. Vérifie RevenueCat (paiement Apple côté device)
+    console.log('[PROMPTEUR] Vérification RevenueCat / paymentService');
     this.isAllowed = await this.paymentService.checkPremium();
-    const backendHasAccess = this.sessionService.hasAccess(); 
-
+    console.log('[PROMPTEUR] Résultat RevenueCat : isAllowed =', this.isAllowed);
+  
+    // 3. Vérifie backend (champ isPremium ou période d’essai)
+    const backendHasAccess = this.sessionService.hasAccess();
+    console.log('[PROMPTEUR] Résultat backend (hasAccess) =', backendHasAccess);
+  
+    // 4. Décide d’ouvrir le paiement ou pas
     if (!this.isAllowed || !backendHasAccess) {
+      console.log('[PROMPTEUR] Accès refusé ! Affichage du popup paiement.');
       this.showPaymentPopup = true;
       return;
     }
+  
+    // 5. Démarre la caméra
+    console.log('[PROMPTEUR] ✅ Accès autorisé ! Démarrage de la caméra…');
     this.isLiveCamera = true;
     this.stopCamera();
   
@@ -499,28 +523,26 @@ updateScrollSpeed() {
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: true
       });
-  
       const video = this.videoElement.nativeElement;
       video.srcObject = this.stream;
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
-  
       if (this.isIOS()) {
         const playVideo = () => {
-          video.play().catch(e => console.error('Play error:', e));
+          video.play().catch(e => console.error('[PROMPTEUR] Play error:', e));
           document.body.removeEventListener('click', playVideo);
         };
         document.body.addEventListener('click', playVideo, { once: true });
       } else {
         await video.play();
       }
+      console.log('[PROMPTEUR] 🎥 Caméra démarrée avec succès');
     } catch (err) {
-      console.error('Camera error:', err);
+      console.error('[PROMPTEUR] Camera error:', err);
       alert(`Erreur caméra: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
-  
   
   public isIOS(): boolean {
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
