@@ -1,37 +1,71 @@
-<div class="popup-overlay" *ngIf="show">
+<div class="profile-wrapper">
+    <div class="profile-container">
+      <h2 class="text-center mb-4">Mon profil</h2>
+
+      <!-- Form Profil -->
+      <form class="w-100">
+        <div class="form-group mb-3">
+          <label class="form-label">Nom d'utilisateur</label>
+          <input type="text" class="form-control" [(ngModel)]="user.username" name="username" />
+        </div>
+  
+        <div class="form-group mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [(ngModel)]="user.email" name="email" />
+        </div>
+  
+        <div class="form-group mb-4">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
+        </div>
+  
+        <button class="btn-unified w-100" type="button" (click)="updateProfile()">Sauvegarder</button>
+      </form>
+  
+      <hr class="my-4 w-100" />
+  
+      <form class="w-100">
+        <div class="form-group mb-3">
+          <label class="form-label">Nouveau mot de passe</label>
+          <input type="password" class="form-control" [(ngModel)]="newPassword" name="password" />
+        </div>
+        <button class="btn-unified w-100" type="button" (click)="updatePassword()">Changer le mot de passe</button>
+      </form>
+      <hr class="my-4 w-100" />
+
+<div class="form-group mb-3 text-center">
+  <label class="form-label">Mon abonnement :</label>
+  <p [ngClass]="{'text-success': user.isPremium, 'text-danger': !user.isPremium}">
+    <ng-container *ngIf="isTrialActive(); else abonnementStatus">
+      📅 Période gratuite en cours
+    </ng-container>
+    <ng-template #abonnementStatus>
+      {{ user.isPremium ? 'En cours' : 'Inactif' }}
+    </ng-template>
+  </p>
+  <button 
+  class="btn-unified"
+  *ngIf="user.isPremium"
+  (click)="openAppleSubscriptions()"
+>
+  Gérer mon abonnement Apple
+</button>
+
+</div>
+<!-- Bouton Supprimer mon compte -->
+<div class="form-group mb-3 text-center">
+  <button class="btn-unified danger" (click)="confirmDelete()">🗑 Supprimer mon compte</button>
+</div>
+
+<!-- Popup de confirmation suppression -->
+<div *ngIf="showDeletePopup" class="popup-overlay">
   <div class="popup-card">
-    <button class="btn-close" (click)="closePopup()" aria-label="Close">&times;</button>
-    
-    <h2>{{ productTitle }}</h2>
-    
-    <p>
-      Subscribe now and enjoy 3 days free, then €1.99/month to access the teleprompter and record unlimited videos!
-    </p>
-    
-    <div *ngIf="!isPremium && !loading" class="price">
-      <strong>{{ price || '€1.99' }}/month</strong>
-    </div>
-    
-    <div *ngIf="loading" class="loader">Loading...</div>
-    
-    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
-    
-    <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
-      Subscribe for €1.99/month
-    </button>
-    
-    <div *ngIf="isPremium" class="premium-status">
-      ✅ Subscription active! Thank you 🙏
-    </div>
-    
-    <div class="legal-links">
-      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
-        Privacy Policy
-      </a> ·
-      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
-        Terms of Use
-      </a>
-    </div>
+    <h2>Êtes-vous sûr ?</h2>
+    <p>Cette action est irréversible.</p>
+    <button class="btn-unified danger" (click)="deleteAccount()">Oui, supprimer</button>
+    <button class="btn-unified btn-cancel" (click)="showDeletePopup = false">Annuler</button>
   </div>
 </div>
- 
+
+  </footer>
+  
