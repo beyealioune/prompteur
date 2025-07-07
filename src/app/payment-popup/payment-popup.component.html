@@ -1,36 +1,59 @@
-<div class="popup-overlay" *ngIf="show">
-  <div class="popup-card">
-    <button class="btn-close" (click)="closePopup()" aria-label="Close">&times;</button>
-    
-    <h2>{{ productTitle }}</h2>
-    
-    <p>
-      Subscribe now and enjoy 3 days free, then €1.99/month to access the teleprompter and record unlimited videos!
-    </p>
-    
-    <div *ngIf="!isPremium && !loading" class="price">
-      <strong>{{ price || '€1.99' }}/month</strong>
+<div class="payment-fullpage">
+  <h2 class="intro-message">
+    {{ lang === 'fr'
+      ? "Accède au prompteur vidéo et enregistre sans limite !"
+      : "Unlock the teleprompter & record unlimited videos!" }}
+  </h2>
+
+  <div class="plan-card-full">
+    <div class="plan-details">
+      <p class="trial">
+        {{ lang === 'fr' ? '3 jours offerts' : '3-day free trial' }}
+      </p>
+      <p class="price">
+        {{ lang === 'fr' ? 'puis 1,99€/mois' : 'then €1.99/month' }}
+      </p>
     </div>
-    
-    <div *ngIf="loading" class="loader">Loading...</div>
-    
-    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
-    
-    <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
-      Subscribe for €1.99/month
+    <button class="subscribe-btn-full" (click)="startSubscription()" [disabled]="loading || isPremium">
+      {{ lang === 'fr'
+        ? 'Activer Premium (1,99€/mois)'
+        : 'Activate Premium (€1.99/month)' }}
     </button>
-    
+    <div *ngIf="loading" class="loader">Chargement…</div>
     <div *ngIf="isPremium" class="premium-status">
-      ✅ Subscription active! Thank you 🙏
+      ✅ {{ lang === 'fr' ? 'Abonnement actif ! Merci 🙏' : 'Subscription active! Thank you 🙏' }}
     </div>
-    
-    <div class="legal-links">
-      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
-        Privacy Policy
-      </a> ·
-      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
-        Terms of Use
-      </a>
+    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+  </div>
+
+  <p class="note">
+    {{ lang === 'fr' ? 'Sans engagement. Annulation facile.' : 'No commitment. Easy cancellation.' }}
+  </p>
+
+  <div class="footer-links-full">
+    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">
+      {{ lang === 'fr' ? 'Conditions d’utilisation' : 'Terms of Use' }}
+    </a>
+    <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank" rel="noopener">
+      {{ lang === 'fr' ? 'Politique de confidentialité' : 'Privacy Policy' }}
+    </a>
+    <a href="#" (click)="restore()">
+      {{ lang === 'fr' ? 'Restaurer achats' : 'Restore purchases' }}
+    </a>
+  </div>
+
+  <!-- Popup de succès si besoin -->
+  <div class="popup-backdrop" *ngIf="showSuccessPopup">
+    <div class="popup-box">
+      <h2>{{ lang === 'fr' ? 'Merci pour ton abonnement !' : 'Thanks for subscribing!' }}</h2>
+      <p>
+        {{ lang === 'fr'
+          ? 'Tu as maintenant accès au prompteur vidéo illimité.'
+          : 'You now have unlimited access to the teleprompter.' }}
+      </p>
+      <button (click)="closePopup()">
+        {{ lang === 'fr' ? 'Fermer' : 'Close' }}
+      </button>
     </div>
   </div>
 </div>
