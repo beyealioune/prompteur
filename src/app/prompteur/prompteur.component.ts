@@ -485,7 +485,7 @@ updateScrollSpeed() {
   }
   async startCamera() {
     this.isAllowed = await this.paymentService.checkPremium();
-    const backendHasAccess = this.sessionService.hasAccess(); // utilise ta méthode existante !
+    const backendHasAccess = this.sessionService.hasAccess(); 
 
     if (!this.isAllowed || !backendHasAccess) {
       this.showPaymentPopup = true;
