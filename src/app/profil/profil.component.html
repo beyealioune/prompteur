@@ -1,74 +1,37 @@
-<div class="profile-wrapper">
-  <div class="profile-container">
-    <h2 class="text-center mb-4">My Profile</h2>
-
-    <!-- Profile Form -->
-    <form class="w-100">
-      <div class="form-group mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" class="form-control" [(ngModel)]="user.username" name="username" />
-      </div>
-
-      <div class="form-group mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-control" [(ngModel)]="user.email" name="email" />
-      </div>
-
-      <div class="form-group mb-4">
-        <label class="form-label">Bio</label>
-        <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
-      </div>
-
-      <button class="btn-unified w-100" type="button" (click)="updateProfile()" aria-label="Save profile">Save</button>
-    </form>
-
-    <hr class="my-4 w-100" />
-
-    <form class="w-100">
-      <div class="form-group mb-3">
-        <label class="form-label">New Password</label>
-        <input type="password" class="form-control" [(ngModel)]="newPassword" name="password" />
-      </div>
-      <button class="btn-unified w-100" type="button" (click)="updatePassword()" aria-label="Change password">Change Password</button>
-    </form>
-
-    <hr class="my-4 w-100" />
-
-    <div class="form-group mb-3 text-center">
-      <label class="form-label">My Subscription:</label>
-      <p [ngClass]="{'text-success': user.isPremium, 'text-danger': !user.isPremium}">
-        <ng-container *ngIf="isTrialActive(); else subscriptionStatus">
-          📅 Free trial active
-        </ng-container>
-        <ng-template #subscriptionStatus>
-          {{ user.isPremium ? 'Active' : 'Inactive' }}
-        </ng-template>
-      </p>
-      <button 
-        class="btn-unified"
-        *ngIf="user.isPremium"
-        (click)="openAppleSubscriptions()"
-        aria-label="Manage Apple Subscription"
-      >
-        Manage my Apple subscription
-      </button>
+<div class="popup-overlay" *ngIf="show">
+  <div class="popup-card">
+    <button class="btn-close" (click)="closePopup()" aria-label="Close">&times;</button>
+    
+    <h2>{{ productTitle }}</h2>
+    
+    <p>
+      Subscribe now and enjoy 3 days free, then €1.99/month to access the teleprompter and record unlimited videos!
+    </p>
+    
+    <div *ngIf="!isPremium && !loading" class="price">
+      <strong>{{ price || '€1.99' }}/month</strong>
     </div>
-
-    <!-- Delete Account Button -->
-    <div class="form-group mb-3 text-center">
-      <button class="btn-unified danger" (click)="confirmDelete()" aria-label="Delete my account">🗑 Delete my account</button>
+    
+    <div *ngIf="loading" class="loader">Loading...</div>
+    
+    <div *ngIf="errorMsg" class="alert">{{ errorMsg }}</div>
+    
+    <button class="btn-unified" (click)="buy()" [disabled]="loading || isPremium">
+      Subscribe for €1.99/month
+    </button>
+    
+    <div *ngIf="isPremium" class="premium-status">
+      ✅ Subscription active! Thank you 🙏
     </div>
-
-    <!-- Confirmation Popup -->
-    <div *ngIf="showDeletePopup" class="popup-overlay">
-      <div class="popup-card">
-        <h2>Are you sure?</h2>
-        <p>This action cannot be undone.</p>
-        <button class="btn-unified danger" (click)="deleteAccount()">Yes, delete</button>
-        <button class="btn-unified btn-cancel" (click)="showDeletePopup = false">Cancel</button>
-      </div>
+    
+    <div class="legal-links">
+      <a href="https://sites.google.com/view/promptcam/politique-de-confidentialit%C3%A9?authuser=0" target="_blank">
+        Privacy Policy
+      </a> ·
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">
+        Terms of Use
+      </a>
     </div>
-
   </div>
 </div>
-
+ 
